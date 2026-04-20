@@ -26,12 +26,12 @@ fn get_sounds() -> SoundMap {
     SOUND_MAP.get().unwrap().lock().unwrap().clone()
 }
 #[tauri::command]
-fn toggle_play(id: String) {
+fn toggle_play(id: String) -> SoundMap {
     let mut map = SOUND_MAP.get().unwrap().lock().unwrap();
     if let Some(sound) = map.get_mut(&id) {
         sound.play = !sound.play;
-        println!("{:?}", sound.play);
     }
+    map.clone()
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

@@ -24,6 +24,15 @@ function App() {
     fetchSounds();
   }, []);
 
+  const handleTogglePlay = async (id: string) => {
+    try {
+      const updatedSounds = await invoke<SoundMap>("toggle_play", { id });
+      setSounds(   updatedSounds);
+    } catch (error) {
+      console.error("Failed to toggle play:", error);
+    }
+  };
+
   return (
     <main className="container">
       <div className="row">
@@ -32,6 +41,7 @@ function App() {
           {Object.entries(sounds).map(([id, data]) => (
             <li key={id}>
               <strong>{id}</strong>: {data.path} {data.play ? " (Playing)" : " (Stop)"}
+              <button onClick={() => handleTogglePlay(id)}>Play</button>
             </li>
           ))}
         </ul>
