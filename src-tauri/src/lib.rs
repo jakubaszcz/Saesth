@@ -1,5 +1,7 @@
 use std::collections::HashMap;
+use std::fs::File;
 use std::sync::{Mutex, OnceLock};
+use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink};
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
 pub struct SoundData {
@@ -7,31 +9,62 @@ pub struct SoundData {
     pub path: String
 }
 
-pub type SoundMap = HashMap<String, SoundData>;
+pub struct SoundStream {
+    pub handle: Option<MixerDeviceSink>,
+    pub data: SoundData
+}
+
+pub type SoundMap = HashMap<String, SoundStream>;
 
 static SOUND_MAP: OnceLock<Mutex<SoundMap>> = OnceLock::new();
-
 fn init_sounds() {
     let mut map = SoundMap::new();
-    map.insert("rain".to_string(), SoundData {
-        play: false,
-        path: "assets/sounds/rain.mp3".to_string(),
+    map.insert("rain".to_string(), SoundStream {
+        handle: None,
+        data: SoundData {
+            play: false,
+            path: "sounds/rain.mp3".to_string(),
+        }
     });
 
     SOUND_MAP.get_or_init(|| Mutex::new(map));
 }
 
 #[tauri::command]
-fn get_sounds() -> SoundMap {
-    SOUND_MAP.get().unwrap().lock().unwrap().clone()
+fn get_sounds() -> HashMap<String, SoundData> {
+    let map = SOUND_MAP.get().unwrap().lock().unwrap();
+    map.iter().map(|(k, v)| (k.clone(), v.data.clone())).collect()
 }
 #[tauri::command]
-fn toggle_play(id: String) -> SoundMap {
+fn toggle_play(id: String) -> HashMap<String, SoundData> {
     let mut map = SOUND_MAP.get().unwrap().lock().unwrap();
+
     if let Some(sound) = map.get_mut(&id) {
-        sound.play = !sound.play;
+        if sound.data.play {
+            if let Some(handle) = sound.handle.take() {
+                drop(handle);
+            }
+            sound.data.play = false;
+        } else {
+            let handle = DeviceSinkBuilder::open_default_sink()
+                .expect("failed to open default audio device");
+
+            let file = File::open(&sound.data.path)
+                .expect("failed to open audio file");
+
+            let source = Decoder::try_from(file)
+                .expect("failed to decode audio file");
+
+            handle.mixer().add(source);
+
+            sound.handle = Some(handle);
+            sound.data.play = true;
+        }
     }
-    map.clone()
+
+    map.iter()
+        .map(|(k, v)| (k.clone(), v.data.clone()))
+        .collect()
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
