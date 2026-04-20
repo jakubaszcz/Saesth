@@ -26,6 +26,13 @@ fn init_sounds() {
             path: "sounds/rain.mp3".to_string(),
         }
     });
+    map.insert("thunder".to_string(), SoundStream {
+        handle: None,
+        data: SoundData {
+            play: false,
+            path: "sounds/thunder.mp3".to_string(),
+        }
+    });
 
     SOUND_MAP.get_or_init(|| Mutex::new(map));
 }
