@@ -1,14 +1,25 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { X } from "lucide-react";
+import { X, Minimize } from "lucide-react";
 
 export const Header = () => {
   const appWindow = getCurrentWindow();
 
   const handleClose = async () => {
+    console.log("close")
+
     try {
       await appWindow.close();
     } catch (error) {
       console.error("Failed to close window:", error);
+    }
+  };
+
+  const handleMinimize = async () => {
+    console.log("minimize")
+    try {
+      await appWindow.minimize();
+    } catch (error) {
+      console.error("Failed to minimize window:", error);
     }
   };
 
@@ -21,11 +32,18 @@ export const Header = () => {
         Saesth
       </div>
 
-      <div className="flex items-center relative z-10">
+      <div className="flex items-end relative z-10">
+        <button
+            onClick={handleMinimize}
+            className="hover:bg-[var(--minimize-secondary)] hover:text-[var(--minimize-primary)] rounded-full p-1.5 transition-all cursor-pointer group"
+            aria-label="Minimize"
+        >
+          <Minimize size={20} className="group-hover:scale-110 transition-transform" />
+        </button>
         <button 
           onClick={handleClose}
-          className="hover:bg-red-500/20 hover:text-red-500 rounded-full p-1.5 transition-all cursor-pointer group"
-          aria-label="Fermer"
+          className="hover:bg-[var(--close-secondary)] hover:text-[var(--close-primary)] rounded-full p-1.5 transition-all cursor-pointer group"
+          aria-label="Close"
         >
           <X size={20} className="group-hover:scale-110 transition-transform" />
         </button>

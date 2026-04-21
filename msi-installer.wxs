@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Product Id="*" Name="Saesth" Version="1.0.0"
+             Manufacturer="Toi" Language="1033"
+             UpgradeCode="be2c1fd9-c47c-44c8-9c23-ee7f459c17e6">
+
+        <Package InstallerVersion="200"
+                 Compressed="yes"
+                 InstallScope="perUser"
+                 InstallPrivileges="limited" />
+
+        <MediaTemplate EmbedCab="yes"/>
+
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="LocalAppDataFolder">
+                <Directory Id="INSTALLDIR" Name="Saesth">
+                    <Directory Id="SoundsDir" Name="sounds" />
+                </Directory>
+            </Directory>
+
+            <Directory Id="DesktopFolder" Name="Desktop" />
+            <Directory Id="ProgramMenuFolder" Name="Programs" />
+        </Directory>
+
+        <DirectoryRef Id="INSTALLDIR">
+            <Component Id="SaesthComponent" Guid="8af092ce-98ea-49cc-93ca-aaf6d23113ad">
+                <File Id="SaesthExe" Source="saesth.exe" />
+
+                <Shortcut Id="DesktopShortcut"
+                          Directory="DesktopFolder"
+                          Name="Saesth"
+                          WorkingDirectory="INSTALLDIR"
+                          Target="[INSTALLDIR]saesth.exe"
+                          Advertise="no" />
+
+                <Shortcut Id="StartMenuShortcut"
+                          Directory="ProgramMenuFolder"
+                          Name="Saesth"
+                          WorkingDirectory="INSTALLDIR"
+                          Target="[INSTALLDIR]saesth.exe"
+                          Advertise="no" />
+
+                <RemoveFolder Id="RemoveDesktop" Directory="DesktopFolder" On="uninstall" />
+                <RemoveFolder Id="RemoveStartMenu" Directory="ProgramMenuFolder" On="uninstall" />
+                <RemoveFolder Id="RemoveInstallDir" On="uninstall" />
+
+                <RegistryValue Root="HKCU"
+                               Key="Software\Saesth"
+                               Name="Installed"
+                               Type="integer"
+                               Value="1"
+                               KeyPath="yes" />
+            </Component>
+        </DirectoryRef>
+
+        <DirectoryRef Id="SoundsDir">
+            <Component Id="SoundsComponent" Guid="f3a5b6c7-d8e9-40a1-b2c3-d4e5f6a7b8c9">
+                <File Id="BirdMp3" Source="src-tauri\sounds\bird.mp3" />
+                <File Id="FireMp3" Source="src-tauri\sounds\fire.mp3" />
+                <File Id="WindMp3" Source="src-tauri\sounds\wind.mp3" />
+                <File Id="RainWav" Source="src-tauri\sounds\rain.wav" />
+                <RemoveFolder Id="RemoveSoundsDir" On="uninstall" />
+                <RegistryValue Root="HKCU" Key="Software\Saesth\Sounds" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+            </Component>
+        </DirectoryRef>
+
+        <Feature Id="MainFeature" Level="1">
+            <ComponentRef Id="SaesthComponent"/>
+            <ComponentRef Id="SoundsComponent"/>
+        </Feature>
+
+    </Product>
+</Wix>

@@ -112,4 +112,15 @@
 
   --wind-primary: #e4dcc7;
   --wind-secondary: #85795f;
+
+  /* Close button */
+
+  --close-primary: #b93212;
+  --close-secondary: #611a11;
+
+  /* Minimize button */
+
+  --minimize-primary: #7834ca;
+  --minimize-secondary: #2f1350;
+
 }
