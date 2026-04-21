@@ -1,7 +1,22 @@
-# Tauri + React + Typescript
+# Saesth
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+Work with aesthetics.
 
-## Recommended IDE Setup
+Saesth lets you enjoy natural and atmospheric sounds designed to help you focus, relax, and work in a beautiful environment.
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+![Screenshot](assets/screen.png)
+
+## Features
+
+- Play relaxing natural sounds
+- Mix multiple sounds together
+- Create your perfect work atmosphere
+- Designed for focus and calm sessions
+
+## License
+
+Source available.
+
+You may view the source code, report issues, and contribute through pull requests. Unauthorized redistribution or commercial use may be restricted.
+
+![Icon](assets/icon.png)
