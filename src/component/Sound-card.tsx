@@ -43,14 +43,14 @@ export const SoundCard = ({id,  data, onClick, onChanged} : SoundCardProps) => {
 
             <button
                 onClick={onClick}
-                className="mb-6 px-6 py-2 rounded-full font-semibold flex items-center gap-2 transition-transform active:scale-95 shadow-md"
+                className="cursor-pointer mb-6 px-6 py-2 rounded-full font-semibold flex items-center gap-2 transition-transform active:scale-95 shadow-md"
                 style={{
                     background: `var(--${nid}-100)`,
                     color: `var(--${nid}-600)`,
                 }}
             >
                 {data.play ? <CirclePauseIcon size={20} /> : <CirclePlay size={20} />}
-                {data.play ? "Pause" : "Play"}
+                {data.play ? "Stop" : "Play"}
             </button>
 
             <div className="w-full space-y-2 mt-auto">
