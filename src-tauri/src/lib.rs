@@ -1,6 +1,8 @@
 use std::fs::File;
+use std::io::Repeat;
 use std::sync::{Mutex, OnceLock};
-use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Source};
+use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Player, Source};
+use tauri::async_runtime::handle;
 use tauri::Manager;
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
@@ -13,6 +15,7 @@ pub struct SoundData {
 
 pub struct SoundStream {
     pub handle: Option<MixerDeviceSink>,
+    pub player: Option<Player>,
     pub data: SoundData
 }
 
@@ -23,6 +26,7 @@ fn init_sounds() {
     let mut list = Vec::new();
     list.push(SoundStream {
         handle: None,
+        player: None,
         data: SoundData {
             id: "rain".to_string(),
             play: false,
@@ -32,6 +36,7 @@ fn init_sounds() {
     });
     list.push(SoundStream {
         handle: None,
+        player: None,
         data: SoundData {
             id: "fire".to_string(),
             play: false,
@@ -41,6 +46,7 @@ fn init_sounds() {
     });
     list.push(SoundStream {
         handle: None,
+        player: None,
         data: SoundData {
             id: "bird".to_string(),
             play: false,
@@ -50,6 +56,7 @@ fn init_sounds() {
     });
     list.push(SoundStream {
         handle: None,
+        player: None,
         data: SoundData {
             id: "wind".to_string(),
             play: false,
@@ -73,6 +80,9 @@ fn change_volume(id: String, volume: f32) -> Vec<SoundData> {
 
     if let Some(sound) = list.iter_mut().find(|s| s.data.id == id) {
         sound.data.volume = volume;
+        if let Some(player) = &sound.player {
+            player.set_volume(volume);
+        }
     }
     list.iter()
         .map(|v| v.data.clone())
@@ -85,6 +95,9 @@ fn toggle_play(id: String) -> Vec<SoundData> {
 
     if let Some(sound) = list.iter_mut().find(|s| s.data.id == id) {
         if sound.data.play {
+            if let Some(player) = sound.player.take() {
+                drop(player);
+            }
             if let Some(handle) = sound.handle.take() {
                 drop(handle);
             }
@@ -93,16 +106,19 @@ fn toggle_play(id: String) -> Vec<SoundData> {
             let handle = DeviceSinkBuilder::open_default_sink()
                 .expect("failed to open default audio device");
 
+            let player = Player::connect_new(&handle.mixer());
+
             let file = File::open(&sound.data.path)
                 .expect("failed to open audio file");
 
             let source = Decoder::try_from(file)
                 .expect("failed to decode audio file")
-                .amplify(sound.data.volume)
                 .repeat_infinite();
 
-            handle.mixer().add(source);
+            player.append(source);
+            player.set_volume(sound.data.volume);
 
+            sound.player = Some(player);
             sound.handle = Some(handle);
             sound.data.play = true;
         }
