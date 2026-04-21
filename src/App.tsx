@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { SoundData } from "./interface/sound-data.ts";
 import "./App.css";
-import {SoundCard} from "./component/sound-card.tsx";
+import {SoundCard} from "./component/Sound-card.tsx";
 
 
 function App() {
@@ -39,8 +39,11 @@ function App() {
   }
 
   return (
-    <main className="container">
-      <div className="row">
+    <main className="
+    h-screen w-screen
+    overflow-y-auto
+    bg-linear-to-r from-[var(--background-700)] to-[var(--background-900)] p-8">
+      <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-8">
         {sounds.map((data) => (
             <SoundCard
                 key={data.id}
