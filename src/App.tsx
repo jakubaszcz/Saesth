@@ -30,6 +30,15 @@ function App() {
     }
   };
 
+  const handleVolumeChange = async (id: string, volume: number) => {
+    try {
+      const updatedSounds = await invoke<SoundMap>("change_volume", { id, volume });
+      setSounds(updatedSounds);
+    } catch (error) {
+      console.error("Failed to change volume:", error);
+    }
+  }
+
   return (
     <main className="container">
       <div className="row">
@@ -38,6 +47,7 @@ function App() {
                 id={id}
                 data={data}
                 onClick={() => handleTogglePlay(id)}
+                onChanged={(volume) => handleVolumeChange(id, volume)}
             />
         ))}
       </div>

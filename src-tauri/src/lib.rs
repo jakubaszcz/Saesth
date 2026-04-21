@@ -1,12 +1,13 @@
 use std::collections::HashMap;
 use std::fs::File;
 use std::sync::{Mutex, OnceLock};
-use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink};
+use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Source};
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
 pub struct SoundData {
     pub play: bool,
-    pub path: String
+    pub path: String,
+    pub volume: f32
 }
 
 pub struct SoundStream {
@@ -23,6 +24,7 @@ fn init_sounds() {
         handle: None,
         data: SoundData {
             play: false,
+            volume: 0.5,
             path: "sounds/rain.mp3".to_string(),
         }
     });
@@ -30,6 +32,7 @@ fn init_sounds() {
         handle: None,
         data: SoundData {
             play: false,
+            volume: 0.5,
             path: "sounds/thunder.mp3".to_string(),
         }
     });
@@ -42,6 +45,19 @@ fn get_sounds() -> HashMap<String, SoundData> {
     let map = SOUND_MAP.get().unwrap().lock().unwrap();
     map.iter().map(|(k, v)| (k.clone(), v.data.clone())).collect()
 }
+
+#[tauri::command]
+fn change_volume(id: String, volume: f32) -> HashMap<String, SoundData> {
+    let mut map = SOUND_MAP.get().unwrap().lock().unwrap();
+
+    if let Some(sound) = map.get_mut(&id) {
+        sound.data.volume = volume;
+    }
+    map.iter()
+        .map(|(k, v)| (k.clone(), v.data.clone()))
+        .collect()
+}
+
 #[tauri::command]
 fn toggle_play(id: String) -> HashMap<String, SoundData> {
     let mut map = SOUND_MAP.get().unwrap().lock().unwrap();
@@ -60,7 +76,9 @@ fn toggle_play(id: String) -> HashMap<String, SoundData> {
                 .expect("failed to open audio file");
 
             let source = Decoder::try_from(file)
-                .expect("failed to decode audio file");
+                .expect("failed to decode audio file")
+                .amplify(sound.data.volume)
+                .repeat_infinite();
 
             handle.mixer().add(source);
 
@@ -84,6 +102,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             get_sounds,
             toggle_play,
+            change_volume,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
