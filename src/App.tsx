@@ -3,6 +3,7 @@ import {Header} from "./component/Header.tsx";
 import { DrawHome } from "./pages/DrawHome.tsx";
 import {useState} from "react";
 import {Pages} from "./pages/pages.ts";
+import {DrawSettings} from "./pages/DrawSettings.tsx";
 function App() {
 
   const [tab, setTab] = useState<Pages>(Pages.HOME);
@@ -15,7 +16,8 @@ function App() {
       overflow-y-auto
       bg-linear-to-r from-[var(--background-700)] to-[var(--background-900)] p-8 pt-4
       flex items-center justify-center">
-        {tab === Pages.HOME && <DrawHome />}
+          {tab === Pages.HOME && <DrawHome />}
+          {tab === Pages.SETTINGS && <DrawSettings />}
       </main>
     </div>
   );
