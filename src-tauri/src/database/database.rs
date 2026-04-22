@@ -15,6 +15,32 @@ fn db() -> std::sync::MutexGuard<'static, Connection> {
         .unwrap()
 }
 
+pub fn init_database_settings() {
+    create_setting_if_missing("hide", "true");
+}
+
+pub fn set_setting(key: &str, value: &str) {
+    let conn = db();
+
+    conn.execute(
+        "INSERT INTO settings (id, value)
+         VALUES (?1, ?2)
+         ON CONFLICT(id)
+         DO UPDATE SET value = excluded.value",
+        rusqlite::params![key, value],
+    ).unwrap();
+}
+
+pub fn get_setting(key: &str) -> String {
+    let conn = db();
+
+    conn.query_row(
+        "SELECT value FROM settings WHERE id = ?1",
+        [key],
+        |row| row.get(0),
+    ).unwrap_or_else(|_| "".to_string())
+}
+
 fn get_database_path() -> PathBuf {
     let directory = ProjectDirs::from("com", "saesth", "saesth").unwrap();
 
@@ -49,6 +75,15 @@ pub fn create_if_missing(sound: &str) {
     conn.execute(
         "INSERT OR IGNORE INTO sounds (id, volume) VALUES (?1, 0.5)",
         [sound],
+    ).unwrap();
+}
+
+pub fn create_setting_if_missing(key: &str, value: &str) {
+    let conn = db();
+
+    conn.execute(
+        "INSERT OR IGNORE INTO settings (id, value) VALUES (?1, ?2)",
+        rusqlite::params![key, value],
     ).unwrap();
 }
 

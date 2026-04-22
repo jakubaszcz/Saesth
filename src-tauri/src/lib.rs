@@ -97,6 +97,16 @@ fn change_volume(id: String, volume: f32) -> Vec<SoundData> {
 }
 
 #[tauri::command]
+fn set_settings(id: String, value: String) {
+    database::database::set_setting(&*id, &*value);
+}
+
+#[tauri::command]
+fn get_settings(id: String) -> String {
+    database::database::get_setting(id.as_str())
+}
+
+#[tauri::command]
 fn toggle_play(id: String) -> Vec<SoundData> {
     let mut list = SOUND_LIST.get().unwrap().lock().unwrap();
 
@@ -146,6 +156,8 @@ pub fn run() {
         database::database::create_if_missing(default);
     }
 
+    database::database::init_database_settings();
+
     init_sounds();
 
     tauri::Builder::default()
@@ -181,9 +193,11 @@ pub fn run() {
             Ok(())
         })
         .on_window_event(|window, event| {
-            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-                api.prevent_close();
-                window.hide().unwrap();
+            if database::database::get_setting("hide") == "true" {
+                if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                    api.prevent_close();
+                    window.hide().unwrap();
+                }
             }
         })
         .plugin(tauri_plugin_opener::init())
@@ -191,6 +205,8 @@ pub fn run() {
             get_sounds,
             toggle_play,
             change_volume,
+            get_settings,
+            set_settings,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
