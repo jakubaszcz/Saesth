@@ -194,7 +194,7 @@ pub fn run() {
             Ok(())
         })
         .on_window_event(|window, event| {
-            if database::database::get_setting("hide") == "true" {
+            if database::database::get_setting("close_to_tray") == "true" {
                 if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                     api.prevent_close();
                     window.hide().unwrap();
