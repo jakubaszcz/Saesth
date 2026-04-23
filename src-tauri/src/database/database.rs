@@ -16,7 +16,7 @@ fn db() -> std::sync::MutexGuard<'static, Connection> {
 }
 
 pub fn init_database_settings() {
-    create_setting_if_missing("hide", "true");
+    create_setting_if_missing("close_to_tray", "true");
 }
 
 pub fn set_setting(key: &str, value: &str) {
@@ -100,12 +100,8 @@ pub fn get_volume(sound: &str) -> f32 {
 pub fn set_volume(sound: &str, volume: f32) {
     let conn = db();
 
-    println!("Setting volume of {} to {}", sound, volume);
-
-    let updated = conn.execute(
+    conn.execute(
         "UPDATE sounds SET volume = ?1 WHERE id = ?2",
         rusqlite::params![volume, sound],
     ).unwrap();
-
-    println!("Rows updated: {}", updated);
 }
