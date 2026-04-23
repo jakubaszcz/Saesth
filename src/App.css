@@ -1,132 +1,51 @@
 @import "tailwindcss";
 
 :root {
-  /* =========================
-     BACKGROUND (forest stone)
-     Base: #2c302e
-  ========================== */
-  --background-50:  #f4f5f4;
-  --background-100: #e6e8e7;
-  --background-200: #cdd1cf;
-  --background-300: #b3b9b6;
-  --background-400: #7f8883;
-  --background-500: #59615d;
-  --background-600: #454b48;
-  --background-700: #2c302e;
-  --background-800: #232725;
-  --background-900: #1a1d1b;
-  --background-950: #101211;
+  /* Deep Moss */
+  --primary-50:  #eef2f0;
+  --primary-100: #dce4e0;
+  --primary-200: #bcc9c1;
+  --primary-300: #9aada2;
+  --primary-400: #74897d;
+  --primary-500: #596e62;
+  --primary-600: #45574d;
+  --primary-700: #2e3a34;
+  --primary-800: #242e29;
+  --primary-900: #1a221e;
+  --primary-950: #101513;
 
-  /* =========================
-     BIRD
-     Primary base: #9AE19D
-     Secondary base: #537A5A
-  ========================== */
-  --bird-50:  #f3fcf4;
-  --bird-100: #e3f8e5;
-  --bird-200: #c6f0ca;
-  --bird-300: #9AE19D;
-  --bird-400: #78cb7c;
-  --bird-500: #5db462;
-  --bird-600: #46924b;
-  --bird-700: #35713a;
-  --bird-800: #28562c;
-  --bird-900: #1b3a1e;
-  --bird-950: #0d1f10;
+  /* Mist Stone */
+  --secondary-50:  #f3f5f4;
+  --secondary-100: #e5e9e7;
+  --secondary-200: #ccd3d0;
+  --secondary-300: #b1bbb7;
+  --secondary-400: #8f9b95;
+  --secondary-500: #6e7c76;
+  --secondary-600: #58635e;
+  --secondary-700: #444c48;
+  --secondary-800: #333936;
+  --secondary-900: #242826;
+  --secondary-950: #161917;
 
-  --bird-primary: #9AE19D;
-  --bird-secondary: #537A5A;
+  /* Rain Light */
+  --accent-50:  #fafcfb;
+  --accent-100: #f1f5f3;
+  --accent-200: #e4ebe7;
+  --accent-300: #d6dfda;
+  --accent-400: #c8d6cf;
+  --accent-500: #a9b8b0;
+  --accent-600: #87958e;
+  --accent-700: #68746e;
+  --accent-800: #4a544f;
+  --accent-900: #2f3632;
+  --accent-950: #1a1f1c;
+}
 
-  /* =========================
-     RAIN
-     Blue derived from nature harmony
-  ========================== */
-  --rain-50:  #f2f8ff;
-  --rain-100: #ddeeff;
-  --rain-200: #bddcff;
-  --rain-300: #8fc5ff;
-  --rain-400: #63adff;
-  --rain-500: #3f95f2;
-  --rain-600: #2b78d0;
-  --rain-700: #205fa6;
-  --rain-800: #19497d;
-  --rain-900: #113154;
-  --rain-950: #091a2d;
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
-  --rain-primary: #63adff;
-  --rain-secondary: #205fa6;
-
-  /* =========================
-     THUNDER
-     Violet derived from nature energy
-  ========================== */
-  --thunder-50:  #f8f3ff;
-  --thunder-100: #efe2ff;
-  --thunder-200: #ddc2ff;
-  --thunder-300: #c69bff;
-  --thunder-400: #ae72ff;
-  --thunder-500: #954af0;
-  --thunder-600: #7834ca;
-  --thunder-700: #5e289f;
-  --thunder-800: #461d78;
-  --thunder-900: #2f1350;
-  --thunder-950: #170927;
-
-  --thunder-primary: #ae72ff;
-  --thunder-secondary: #5e289f;
-
-  /* =========================
-   FIRE
-   Red / orange ember energy
-========================== */
-  --fire-50:  #fff6f1;
-  --fire-100: #ffe8db;
-  --fire-200: #ffd0b3;
-  --fire-300: #ffae7a;
-  --fire-400: #ff8647;
-  --fire-500: #ff5f1f;
-  --fire-600: #e24312;
-  --fire-700: #b93212;
-  --fire-800: #8d2613;
-  --fire-900: #611a11;
-  --fire-950: #330c08;
-
-  --fire-primary: #ff8647;
-  --fire-secondary: #b93212;
-
-  /* =========================
-   WIND
-   Silver / white / soft gold air energy
-========================== */
-  --wind-50:  #fffdf8;
-  --wind-100: #faf7ef;
-  --wind-200: #f1ebdb;
-  --wind-300: #e4dcc7;
-  --wind-400: #d4c9ae;
-  --wind-500: #c1b595;
-  --wind-600: #a69777;
-  --wind-700: #85795f;
-  --wind-800: #655b47;
-  --wind-900: #474033;
-  --wind-950: #25211a;
-
-  --wind-primary: #e4dcc7;
-  --wind-secondary: #85795f;
-
-  /* Close button */
-
-  --close-primary: #ffd0b3;
-  --close-secondary: #ff5f1f;
-
-  /* Minimize button */
-
-  --minimize-primary: #ddc2ff;
-  --minimize-secondary: #954af0;
-
-  --setting-primary: #f1ebdb;
-  --setting-secondary: #c1b595;
-
-  --home-primary: #bddcff;
-  --home-secondary: #3f95f2;
-
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

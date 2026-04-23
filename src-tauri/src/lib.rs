@@ -71,6 +71,7 @@ fn init_sounds() {
         }
     });
 
+
     SOUND_LIST.get_or_init(|| Mutex::new(list));
 }
 

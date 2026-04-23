@@ -9,17 +9,26 @@ function App() {
   const [tab, setTab] = useState<Pages>(Pages.HOME);
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden">
-      <Header tab={tab} setTab={setTab}/>
-      <main className="
-      flex-1
-      overflow-y-auto
-      bg-linear-to-r from-[var(--background-700)] to-[var(--background-900)] p-8 pt-4
-      flex items-center justify-center">
-          {tab === Pages.HOME && <DrawHome />}
-          {tab === Pages.SETTINGS && <DrawSettings />}
+      <main
+          className="
+    h-screen
+    w-full
+    flex flex-col
+    overflow-hidden
+    bg-radial-[at_50%_20%]
+    from-[var(--primary-400)]
+    via-[var(--primary-700)]
+    to-[var(--primary-950)]
+    to-90%">
+          <div className="shrink-0">
+              <Header tab={tab} setTab={setTab} />
+          </div>
+
+          <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar p-6">
+              {tab === Pages.HOME && <DrawHome />}
+              {tab === Pages.SETTINGS && <DrawSettings />}
+          </div>
       </main>
-    </div>
   );
 }
 
