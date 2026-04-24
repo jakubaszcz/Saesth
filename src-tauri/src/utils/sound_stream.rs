@@ -1,3 +1,5 @@
+use std::sync::{Arc, Mutex};
+use std::sync::atomic::AtomicBool;
 use rodio::{MixerDeviceSink, Player};
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
@@ -10,7 +12,8 @@ pub struct SoundData {
 
 pub struct SoundStream {
     pub handle: Option<MixerDeviceSink>,
-    pub player: Option<Player>,
+    pub player: Option<Arc<Mutex<Player>>>,
+    pub play: Arc<AtomicBool>,
     pub data: SoundData
 }
 

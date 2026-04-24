@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::Repeat;
-use std::sync::{Mutex, OnceLock};
+use std::sync::{Arc, Mutex, OnceLock};
+use std::sync::atomic::AtomicBool;
 use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Player, Source};
 use tauri::async_runtime::handle;
 use tauri::{menu::{Menu, MenuItem}, tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}, utils as other_utils, App, AppHandle, Emitter, Manager};
@@ -19,6 +20,7 @@ fn init_sounds() {
     list.push(utils::sound_stream::SoundStream {
         handle: None,
         player: None,
+        play: Arc::new(AtomicBool::new(false)),
         data: utils::sound_stream::SoundData {
             id: "rain".to_string(),
             play: false,
@@ -29,6 +31,7 @@ fn init_sounds() {
     list.push(utils::sound_stream::SoundStream {
         handle: None,
         player: None,
+        play: Arc::new(AtomicBool::new(false)),
         data: utils::sound_stream::SoundData {
             id: "fire".to_string(),
             play: false,
@@ -39,6 +42,7 @@ fn init_sounds() {
     list.push(utils::sound_stream::SoundStream {
         handle: None,
         player: None,
+        play: Arc::new(AtomicBool::new(false)),
         data: utils::sound_stream::SoundData {
             id: "bird".to_string(),
             play: false,
@@ -49,6 +53,7 @@ fn init_sounds() {
     list.push(utils::sound_stream::SoundStream {
         handle: None,
         player: None,
+        play: Arc::new(AtomicBool::new(false)),
         data: utils::sound_stream::SoundData {
             id: "wind".to_string(),
             play: false,
@@ -75,7 +80,7 @@ fn change_volume(id: String, volume: f32) -> Vec<utils::sound_stream::SoundData>
         sound.data.volume = volume;
         database::database::set_volume(&id, volume);
         if let Some(player) = &sound.player {
-            player.set_volume(volume);
+            player.lock().unwrap().set_volume(volume);
         }
     }
     list.iter()
