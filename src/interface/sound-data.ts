@@ -4,3 +4,13 @@ export interface SoundData {
     path: string;
     volume: number;
 }
+
+export interface SoundFront {
+    data: SoundData;
+    effects: SoundEffect[];
+}
+
+export interface SoundEffect {
+    id: string;
+    active: boolean;
+}

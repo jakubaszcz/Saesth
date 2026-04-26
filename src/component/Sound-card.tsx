@@ -1,16 +1,17 @@
-import { SoundData } from "../interface/sound-data.ts";
+import {SoundData, SoundEffect} from "../interface/sound-data.ts";
 import {
     CloudRainWind,
     Play,
     FlameIcon,
     Bird,
     Wind,
-    Volume2, Pause
+    Volume2, Pause, BookPlus, Sparkle
 } from "lucide-react";
 
 interface SoundCardProps {
     id: string;
     data: SoundData;
+    effects: SoundEffect[];
     onClick: () => void;
     onChanged?: (volume: number) => void;
 }
@@ -29,6 +30,7 @@ const getIcon = (id: string) => {
 export const SoundCard = ({
                               id,
                               data,
+                              effects = [],
                               onClick,
                               onChanged
                           }: SoundCardProps) => {
@@ -60,9 +62,10 @@ export const SoundCard = ({
                     </div>
                 </div>
 
-                <button
-                    onClick={onClick}
-                    className="
+                <div className="flex items-center gap-2">
+
+                    <button
+                        className="
           w-11 h-11
           rounded-xl
           flex items-center justify-center
@@ -74,13 +77,33 @@ export const SoundCard = ({
           hover:scale-105
           active:scale-95
         "
-                >
-                    {data.play ? (
-                        <Pause size={20} />
-                    ) : (
-                        <Play size={20} />
-                    )}
-                </button>
+                    >
+                        <Sparkle size={20}/>
+                    </button>
+
+                    <button
+                        onClick={onClick}
+                        className="
+          w-11 h-11
+          rounded-xl
+          flex items-center justify-center
+          bg-white/10
+          border border-white/10
+          text-[var(--primary-100)]
+          transition-all duration-300
+          hover:bg-white/20
+          hover:scale-105
+          active:scale-95
+        "
+                    >
+                        {data.play ? (
+                            <Pause size={20} />
+                        ) : (
+                            <Play size={20} />
+                        )}
+                    </button>
+
+                </div>
             </div>
 
             <div className="flex flex-col gap-2">

@@ -1,16 +1,16 @@
 import {SoundCard} from "../component/Sound-card.tsx";
 import {useEffect, useState} from "react";
-import {SoundData} from "../interface/sound-data.ts";
+import {SoundFront} from "../interface/sound-data.ts";
 import {invoke} from "@tauri-apps/api/core";
 
 export function DrawHome() {
 
-    const [sounds, setSounds] = useState<SoundData[]>([]);
+    const [sounds, setSounds] = useState<SoundFront[]>([]);
 
     useEffect(() => {
         async function fetchSounds() {
             try {
-                const fetchedSounds = await invoke<SoundData[]>("get_sounds");
+                const fetchedSounds = await invoke<SoundFront[]>("get_sounds");
                 setSounds(fetchedSounds);
             } catch (error) {
                 console.error("Failed loading songs :", error);
@@ -21,7 +21,7 @@ export function DrawHome() {
 
     const handleTogglePlay = async (id: string) => {
         try {
-            const updatedSounds = await invoke<SoundData[]>("toggle_play", { id });
+            const updatedSounds = await invoke<SoundFront[]>("toggle_play", { id });
             setSounds(   updatedSounds);
         } catch (error) {
             console.error("Failed to toggle play:", error);
@@ -30,7 +30,7 @@ export function DrawHome() {
 
     const handleVolumeChange = async (id: string, volume: number) => {
         try {
-            const updatedSounds = await invoke<SoundData[]>("change_volume", { id, volume });
+            const updatedSounds = await invoke<SoundFront[]>("change_volume", { id, volume });
             setSounds(updatedSounds);
         } catch (error) {
             console.error("Failed to change volume:", error);
@@ -41,11 +41,12 @@ export function DrawHome() {
         <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-4 font-manrope">
             {sounds.map((data) => (
                 <SoundCard
-                    key={data.id}
-                    id={data.id}
-                    data={data}
-                    onClick={() => handleTogglePlay(data.id)}
-                    onChanged={(volume) => handleVolumeChange(data.id, volume)}
+                    key={data.data.id}
+                    id={data.data.id}
+                    data={data.data}
+                    effects={data.effects ?? []}
+                    onClick={() => handleTogglePlay(data.data.id)}
+                    onChanged={(volume) => handleVolumeChange(data.data.id, volume)}
                 />
             ))}
         </div>

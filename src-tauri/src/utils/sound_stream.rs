@@ -11,6 +11,19 @@ pub struct SoundData {
     pub volume: f32
 }
 
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
+
+pub struct SoundFront {
+    pub data: SoundData,
+    pub effects: Vec<SoundEffectFront>,
+}
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
+
+pub struct SoundEffectFront {
+    pub id: String,
+    pub active: bool,
+}
+
 pub struct SoundStream {
 
     pub effects: Vec<SoundEffect>,
