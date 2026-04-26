@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::AtomicBool;
 use rodio::{MixerDeviceSink, Player};
+use rodio::cpal::Data;
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
 pub struct SoundData {
@@ -12,7 +13,7 @@ pub struct SoundData {
 
 pub struct SoundStream {
 
-    pub effect: SoundEffect,
+    pub effects: Vec<SoundEffect>,
 
     pub handle: Option<MixerDeviceSink>,
     pub player: Option<Arc<Mutex<Player>>>,
@@ -26,7 +27,14 @@ pub struct SoundStream {
 #[derive(Clone)]
 pub struct SoundEffect {
     pub player: Option<Arc<Mutex<Player>>>,
-    pub path: String
+    pub path: String,
+    pub data: SoundEffectData
+}
+
+#[derive(Clone)]
+pub struct SoundEffectData {
+    pub id: String,
+    pub active: Arc<AtomicBool>,
 }
 
 pub type SoundList = Vec<SoundStream>;

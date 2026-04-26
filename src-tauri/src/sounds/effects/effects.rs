@@ -1,5 +1,6 @@
 use std::fs::File;
-use std::sync::atomic::Ordering;
+use std::sync::{Arc, Mutex};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::Duration;
 
@@ -7,26 +8,17 @@ use rand::RngExt;
 use rodio::{Decoder, Player};
 
 use crate::sounds::random_sound;
-use crate::utils::sound_stream::SoundStream;
+use crate::utils::sound_stream::SoundEffect;
 
-pub fn thunder(sound: &mut SoundStream) {
-    let play_flag = sound.play.clone();
-    let user_volume = sound.volume.clone();
-    let drift_volume = sound.drift_volume.clone();
-    let fade_volume = sound.fade_volume.clone();
-
-    let effect = sound.effect.clone() else {
-        return;
-    };
-
-    let Some(handle) = sound.handle.as_ref() else {
-        return;
-    };
-
-    let mixer = handle.mixer().clone();
-
+pub fn effects_manager(
+    effect: SoundEffect,
+    play_flag: Arc<AtomicBool>,
+    user_volume: Arc<Mutex<f32>>,
+    fade_volume: Arc<Mutex<f32>>,
+    drift_volume: Arc<Mutex<f32>>,
+    mixer: rodio::mixer::Mixer,
+) {
     thread::spawn(move || {
-
         let min = 5;
         let max = 20;
 
@@ -34,6 +26,11 @@ pub fn thunder(sound: &mut SoundStream) {
         let max_bonus = 0.6;
 
         while play_flag.load(Ordering::Relaxed) {
+            if !effect.data.active.load(Ordering::Relaxed) {
+                thread::sleep(Duration::from_millis(200));
+                continue;
+            }
+
             let wait = rand::rng().random_range(min..max);
             thread::sleep(Duration::from_secs(wait));
 
@@ -41,7 +38,13 @@ pub fn thunder(sound: &mut SoundStream) {
                 return;
             }
 
-            let path = random_sound::random_sound(effect.path.as_str());
+            if !effect.data.active.load(Ordering::Relaxed) {
+                continue;
+            }
+
+            let path = random_sound::random_sound(effect.path.as_str()) else {
+                continue;
+            };
 
             let Ok(file) = File::open(&path) else {
                 continue;

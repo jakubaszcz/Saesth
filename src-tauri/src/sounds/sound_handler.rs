@@ -8,7 +8,7 @@ use crate::sounds::apply_sound::apply_sound;
 use crate::sounds::drift::sound_drift::song_drift;
 use crate::utils::sound_stream::SoundStream;
 
-use crate::sounds::effects::rain::thunder::thunder;
+use crate::sounds::effects::effects::{effects_manager};
 pub(crate) const FADE_STEPS: u64 = 5;
 const FADE_DURATION_MS: u64 = 1500;
 
@@ -75,9 +75,37 @@ pub fn play_sound(id: &str, sound: &mut SoundStream) {
     sound.handle = Some(handle);
     sound.data.play = true;
 
-    thunder(sound);
-
     song_drift(sound);
+
+    handle_effects(sound);
+}
+
+fn handle_effects(sound: &mut SoundStream) {
+    let effects = sound.effects.clone();
+
+    let Some(handle) = sound.handle.as_ref() else {
+        return;
+    };
+
+    let mixer = handle.mixer().clone();
+
+    let play_flag = sound.play.clone();
+    let volume = sound.volume.clone();
+    let fade_volume = sound.fade_volume.clone();
+    let drift_volume = sound.drift_volume.clone();
+
+    thread::spawn(move || {
+        for effect in effects {
+            effects_manager(
+                effect,
+                play_flag.clone(),
+                volume.clone(),
+                fade_volume.clone(),
+                drift_volume.clone(),
+                mixer.clone(),
+            );
+        }
+    });
 }
 pub fn stop_sound(sound: &mut SoundStream) {
     sound.play.store(false, Ordering::Relaxed);
