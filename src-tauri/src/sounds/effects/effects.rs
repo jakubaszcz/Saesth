@@ -6,9 +6,12 @@ use std::time::Duration;
 
 use rand::RngExt;
 use rodio::{Decoder, Player};
-
+use crate::sounds::apply_sound::apply_sound;
 use crate::sounds::random_sound;
 use crate::utils::sound_stream::SoundEffect;
+
+pub(crate) const FADE_STEPS: u64 = 5;
+const FADE_DURATION_MS: u64 = 1500;
 
 pub fn effects_manager(
     effect: SoundEffect,
@@ -67,7 +70,35 @@ pub fn effects_manager(
             player.append(source);
             player.play();
 
+            loop {
+                if !play_flag.load(Ordering::Relaxed)
+                    || !effect.data.active.load(Ordering::Relaxed)
+                {
+                    fade_out_effect(&player, volume);
+                    break;
+                }
+
+                if player.empty() {
+                    break;
+                }
+
+                thread::sleep(Duration::from_millis(50));
+            }
             player.sleep_until_end();
         }
     });
+}
+
+fn fade_out_effect(player: &Player, volume: f32) {
+    let steps = FADE_DURATION_MS / FADE_STEPS;
+
+    for step in (0..=steps).rev() {
+
+        let t = step as f32 / steps as f32;
+        let eased = t * t;
+
+        player.set_volume(volume * eased);
+
+        thread::sleep(Duration::from_millis(FADE_STEPS));
+    }
 }
