@@ -21,12 +21,12 @@ fn init_sounds() {
     list.push(SoundStream {
         effects: vec![
             SoundEffect {
-            player: None,
-            path: "sounds/rain/effects".to_string(),
-            data: utils::sound_stream::SoundEffectData {
-                id: "thunder".to_string(),
-                active: Arc::new(AtomicBool::new(true)),
-            },
+                player: None,
+                path: "sounds/rain/effects".to_string(),
+                data: utils::sound_stream::SoundEffectData {
+                    id: "thunder".to_string(),
+                    active: Arc::new(AtomicBool::new(true)),
+                }
             }
 
         ],

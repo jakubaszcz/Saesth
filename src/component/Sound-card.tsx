@@ -1,35 +1,23 @@
-import {SoundData} from "../interface/sound-data.ts";
+import {SoundData, SoundEffect} from "../interface/sound-data.ts";
 import {
-    CloudRainWind,
-    Play,
-    FlameIcon,
-    Bird,
-    Wind,
-    Volume2, Pause, Sparkle
+    Play, Pause, Sparkle
 } from "lucide-react";
+import {getSoundIcon} from "../sounds/SoundsIcon.tsx";
+import {getSoundEffectIcon} from "../sounds/EffectsIcon.tsx";
 
 interface SoundCardProps {
     id: string;
     data: SoundData;
+    effect: SoundEffect[] | undefined
     onClick: () => void;
     onOpen: () => void;
     onChanged?: (volume: number) => void;
 }
 
-const getIcon = (id: string) => {
-    const nid = id.toLowerCase();
-
-    if (nid.includes("rain")) return <CloudRainWind size={24} />;
-    if (nid.includes("fire")) return <FlameIcon size={24} />;
-    if (nid.includes("fire")) return <Bird size={24} />;
-    if (nid.includes("wind")) return <Wind size={24} />;
-
-    return <Volume2 size={24} />;
-};
-
 export const SoundCard = ({
                               id,
                               data,
+                              effect,
                               onClick,
                               onOpen,
                               onChanged
@@ -53,7 +41,7 @@ export const SoundCard = ({
             <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <div className="text-[var(--primary-100)]">
-                        {getIcon(id)}
+                        {getSoundIcon(id)}
                     </div>
 
                     <div className="flex flex-col">
@@ -107,6 +95,51 @@ export const SoundCard = ({
 
                 </div>
             </div>
+
+            {effect && effect.length > 0 ? (
+                <div
+                    className="
+            flex items-center gap-2
+            rounded-lg
+            bg-white/5
+            border border-white/10
+            backdrop-blur-md
+            px-3 py-2
+            shadow-[0_8px_24px_rgba(0,0,0,0.14)]
+            overflow-hidden
+            text-center
+
+        "
+                >
+                    {effect.slice(0, 10).map((item) => (
+                        <div
+                            key={item.id}
+                            title={item.id}
+                            className="text-[var(--primary-100)] shrink-0"
+                        >
+                            {getSoundEffectIcon(data.id, item.id, 20)}
+                        </div>
+                    ))}
+
+                    {effect.length > 10 && (
+                        <p className="text-[var(--primary-100)]">+{effect.length - 10}</p>
+                    )}
+                </div>
+            ) : (
+                <div
+                    className="
+            rounded-xl
+            bg-white/5
+            border border-white/10
+            backdrop-blur-md
+            px-3 py-2
+            text-center
+            text-sm text-[var(--primary-100)]
+        "
+                >
+                    No effect selected.
+                </div>
+            )}
 
             <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between text-sm uppercase tracking-wide text-[var(--primary-100)]">

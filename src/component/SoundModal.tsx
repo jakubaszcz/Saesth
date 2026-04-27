@@ -1,5 +1,7 @@
 import { SoundFront } from "../interface/sound-data.ts";
 import { X } from "lucide-react";
+import {getSoundIcon} from "../sounds/SoundsIcon.tsx";
+import {getSoundEffectIcon} from "../sounds/EffectsIcon.tsx";
 
 interface SoundCardProps {
     data: SoundFront;
@@ -36,9 +38,17 @@ export const SoundModal = ({
             >
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-[var(--primary-100)] text-xl font-semibold capitalize">
-                            {data.data.id}
-                        </h2>
+                        <div className="flex items-center gap-3">
+                            <div className="text-[var(--primary-100)]">
+                                {getSoundIcon(data.data.id)}
+                            </div>
+
+                            <div className="flex flex-col">
+                                <h3 className="text-[var(--primary-100)] font-semibold text-xl capitalize">
+                                    {data.data.id}
+                                </h3>
+                            </div>
+                        </div>
 
                         <p className="mt-1 text-sm text-[var(--primary-100)]/70">
                             Sound effects settings
@@ -69,22 +79,28 @@ export const SoundModal = ({
                             <div
                                 key={effect.id}
                                 className="
-                                    rounded-lg
-                                    border border-white/10
-                                    bg-white/5
-                                    backdrop-blur-md
-                                    shadow-[0_10px_40px_rgba(0,0,0,0.18)]
-                                    transition-all duration-300
-                                    hover:bg-white/[0.07]
-                                    hover:shadow-[0_14px_44px_rgba(0,0,0,0.24)]
-                                    p-5
+                                    w-full max-w-md
+                    rounded-lg
+                    bg-white/5
+                    backdrop-blur-md
+                    border border-white/10
+                    shadow-[0_10px_40px_rgba(0,0,0,0.18)]
+                    p-5
+                    flex flex-col gap-5
+                    transition-all duration-300
                                 "
                             >
-                                <div className="flex items-center justify-between gap-4">
-                                    <div className="min-w-0">
-                                        <p className="font-inter text-base font-semibold text-[var(--primary-100)] capitalize">
-                                            {effect.id}
-                                        </p>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <div className="text-[var(--primary-100)] shrink-0">
+                                            {getSoundEffectIcon(data.data.id, effect.id)}
+                                        </div>
+
+                                        <div className="flex flex-col min-w-0">
+                                            <h3 className="text-[var(--primary-100)] font-semibold text-xl capitalize truncate">
+                                                {effect.id}
+                                            </h3>
+                                        </div>
                                     </div>
 
                                     <button
