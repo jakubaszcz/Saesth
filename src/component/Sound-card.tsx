@@ -1,18 +1,18 @@
-import {SoundData, SoundEffect} from "../interface/sound-data.ts";
+import {SoundData} from "../interface/sound-data.ts";
 import {
     CloudRainWind,
     Play,
     FlameIcon,
     Bird,
     Wind,
-    Volume2, Pause, BookPlus, Sparkle
+    Volume2, Pause, Sparkle
 } from "lucide-react";
 
 interface SoundCardProps {
     id: string;
     data: SoundData;
-    effects: SoundEffect[];
     onClick: () => void;
+    onOpen: () => void;
     onChanged?: (volume: number) => void;
 }
 
@@ -30,10 +30,11 @@ const getIcon = (id: string) => {
 export const SoundCard = ({
                               id,
                               data,
-                              effects = [],
                               onClick,
+                              onOpen,
                               onChanged
                           }: SoundCardProps) => {
+
     return (
         <div
             className="
@@ -65,6 +66,7 @@ export const SoundCard = ({
                 <div className="flex items-center gap-2">
 
                     <button
+                        onClick={onOpen}
                         className="
           w-11 h-11
           rounded-xl

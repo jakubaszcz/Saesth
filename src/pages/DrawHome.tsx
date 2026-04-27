@@ -2,10 +2,12 @@ import {SoundCard} from "../component/Sound-card.tsx";
 import {useEffect, useState} from "react";
 import {SoundFront} from "../interface/sound-data.ts";
 import {invoke} from "@tauri-apps/api/core";
+import {SoundModal} from "../component/SoundModal.tsx";
 
 export function DrawHome() {
 
     const [sounds, setSounds] = useState<SoundFront[]>([]);
+    const [open, setOpen] = useState<SoundFront | null>(null);
 
     useEffect(() => {
         async function fetchSounds() {
@@ -18,6 +20,26 @@ export function DrawHome() {
         }
         fetchSounds();
     }, []);
+
+    const handleToggleEffect = async (id: string, effect_id: string) => {
+        try {
+            const updatedSounds = await invoke<SoundFront[]>("toggle_effect", {
+                soundId: id,
+                effectId: effect_id,
+            });
+
+            setSounds(updatedSounds);
+
+            const updatedOpen = updatedSounds.find(
+                (sound) => sound.data.id === id
+            );
+
+            setOpen(updatedOpen ?? null);
+
+        } catch (error) {
+            console.error("Failed to toggle effect:", error);
+        }
+    };
 
     const handleTogglePlay = async (id: string) => {
         try {
@@ -38,17 +60,20 @@ export function DrawHome() {
     }
 
     return (
-        <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-4 font-manrope">
-            {sounds.map((data) => (
-                <SoundCard
-                    key={data.data.id}
-                    id={data.data.id}
-                    data={data.data}
-                    effects={data.effects ?? []}
-                    onClick={() => handleTogglePlay(data.data.id)}
-                    onChanged={(volume) => handleVolumeChange(data.data.id, volume)}
-                />
-            ))}
+        <div>
+            <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-4 font-manrope">
+                {sounds.map((data) => (
+                    <SoundCard
+                        key={data.data.id}
+                        id={data.data.id}
+                        data={data.data}
+                        onClick={() => handleTogglePlay(data.data.id)}
+                        onOpen={() => setOpen(data)}
+                        onChanged={(volume) => handleVolumeChange(data.data.id, volume)}
+                    />
+                ))}
+            </div>
+            <SoundModal data={open} onClose={() => setOpen(null)} isClose={!open} onToggleEffect={handleToggleEffect}/>
         </div>
     )
 }

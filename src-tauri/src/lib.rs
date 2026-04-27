@@ -8,7 +8,7 @@ use tauri::async_runtime::handle;
 use tauri::{menu::{Menu, MenuItem}, tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}, utils as other_utils, App, AppHandle, Emitter, Manager};
 use tauri::image::Image;
 use crate::utils::init_tray::init_tray;
-use crate::utils::sound_stream::{SoundEffect, SoundEffectFront};
+use crate::utils::sound_stream::{SoundEffect, SoundEffectFront, SoundFront, SoundStream};
 
 mod database;
 mod utils;
@@ -18,7 +18,7 @@ static SOUND_LIST: OnceLock<Mutex<utils::sound_stream::SoundList>> = OnceLock::n
 
 fn init_sounds() {
     let mut list = Vec::new();
-    list.push(utils::sound_stream::SoundStream {
+    list.push(SoundStream {
         effects: vec![
             SoundEffect {
             player: None,
@@ -27,7 +27,9 @@ fn init_sounds() {
                 id: "thunder".to_string(),
                 active: Arc::new(AtomicBool::new(true)),
             },
-            }],
+            }
+
+        ],
         handle: None,
         player: None,
         play: Arc::new(AtomicBool::new(false)),
@@ -48,16 +50,40 @@ fn init_sounds() {
 }
 
 #[tauri::command]
-fn get_sounds() -> Vec<utils::sound_stream::SoundFront> {
+fn get_sounds() -> Vec<SoundFront> {
 
 
     let list = SOUND_LIST.get().unwrap().lock().unwrap();
     list.iter()
-        .map(|sound| utils::sound_stream::SoundFront {
+        .map(|sound| SoundFront {
             data: sound.data.clone(),
             effects: sound.effects
                 .iter()
-                .map(|effect| utils::sound_stream::SoundEffectFront {
+                .map(|effect| SoundEffectFront {
+                    id: effect.data.id.clone(),
+                    active: effect.data.active.load(Ordering::Relaxed),
+                })
+                .collect(),
+        })
+        .collect()
+}
+#[tauri::command]
+fn toggle_effect(sound_id: String, effect_id: String) -> Vec<SoundFront> {
+    let mut list = SOUND_LIST.get().unwrap().lock().unwrap();
+
+    if let Some(sound) = list.iter_mut().find(|s| s.data.id == sound_id) {
+        if let Some(effect) = sound.effects.iter_mut().find(|e| e.data.id == effect_id) {
+            let current = effect.data.active.load(Ordering::Relaxed);
+            effect.data.active.store(!current, Ordering::Relaxed);
+        }
+    }
+
+    list.iter()
+        .map(|sound| SoundFront {
+            data: sound.data.clone(),
+            effects: sound.effects
+                .iter()
+                .map(|effect| SoundEffectFront {
                     id: effect.data.id.clone(),
                     active: effect.data.active.load(Ordering::Relaxed),
                 })
@@ -67,7 +93,7 @@ fn get_sounds() -> Vec<utils::sound_stream::SoundFront> {
 }
 
 #[tauri::command]
-fn change_volume(id: String, volume: f32) -> Vec<utils::sound_stream::SoundFront> {
+fn change_volume(id: String, volume: f32) -> Vec<SoundFront> {
     let mut list = SOUND_LIST.get().unwrap().lock().unwrap();
 
     if let Some(sound) = list.iter_mut().find(|s| s.data.id == id) {
@@ -82,12 +108,15 @@ fn change_volume(id: String, volume: f32) -> Vec<utils::sound_stream::SoundFront
             sounds::apply_sound::apply_sound(player, &sound.volume, &sound.fade_volume, &sound.drift_volume);
         }
     }
+
+    print!("volume changerd");
+
     list.iter()
-        .map(|sound| utils::sound_stream::SoundFront {
+        .map(|sound| SoundFront {
             data: sound.data.clone(),
             effects: sound.effects
                 .iter()
-                .map(|effect| utils::sound_stream::SoundEffectFront {
+                .map(|effect| SoundEffectFront {
                     id: effect.data.id.clone(),
                     active: effect.data.active.load(Ordering::Relaxed),
                 })
@@ -107,8 +136,9 @@ fn get_settings(id: String) -> String {
 }
 
 #[tauri::command]
-fn toggle_play(id: String) -> Vec<utils::sound_stream::SoundFront> {
+fn toggle_play(id: String) -> Vec<SoundFront> {
     let mut list = SOUND_LIST.get().unwrap().lock().unwrap();
+
 
     if let Some(sound) = list.iter_mut().find(|s| s.data.id == id) {
         if sound.data.play {
@@ -118,12 +148,14 @@ fn toggle_play(id: String) -> Vec<utils::sound_stream::SoundFront> {
         }
     }
 
+    print!("toggle play");
+
     list.iter()
-        .map(|sound| utils::sound_stream::SoundFront {
+        .map(|sound| SoundFront {
             data: sound.data.clone(),
             effects: sound.effects
                 .iter()
-                .map(|effect| utils::sound_stream::SoundEffectFront {
+                .map(|effect| SoundEffectFront {
                     id: effect.data.id.clone(),
                     active: effect.data.active.load(Ordering::Relaxed),
                 })
@@ -188,6 +220,7 @@ pub fn run() {
         })
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
+            toggle_effect,
             get_sounds,
             toggle_play,
             change_volume,
