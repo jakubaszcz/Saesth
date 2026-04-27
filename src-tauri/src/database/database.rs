@@ -69,6 +69,52 @@ pub fn init_db() {
     DATABASE.set(Mutex::new(conn)).unwrap();
 }
 
+pub fn create_if_missing_effect() {
+    let conn = db();
+
+    conn.execute(
+       "CREATE TABLE IF NOT EXISTS effects (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            effect TEXT NOT NULL,
+            sound TEXT KEY NOT NULL,
+            active INTEGER NOT NULL DEFAULT 0,
+
+            FOREIGN KEY (sound) REFERENCES sounds(id) ON DELETE CASCADE,
+            UNIQUE (effect, sound)
+        )",
+       []
+    ).unwrap();
+}
+
+pub fn create_or_update_effect(sound: &str, effect: &str, active: bool) {
+
+    create_if_missing_effect();
+
+    let conn = db();
+
+    conn.execute(
+        "INSERT INTO effects (effect, sound, active)
+            VALUES (?1, ?2, ?3)
+            ON CONFLICT(effect, sound)
+            DO UPDATE SET active = excluded.active",
+        rusqlite::params![effect, sound, active as i32],
+    ).unwrap();
+}
+
+pub fn get_effect_active(sound: &str, effect: &str) -> bool {
+    let conn = db();
+
+    conn.query_row(
+        "SELECT active FROM effects
+         WHERE sound = ?1 AND effect = ?2",
+        rusqlite::params![sound, effect],
+        |row| {
+            let active: i32 = row.get(0)?;
+            Ok(active == 1)
+        },
+    ).unwrap_or(false)
+}
+
 pub fn create_if_missing(sound: &str) {
     let conn = db();
 

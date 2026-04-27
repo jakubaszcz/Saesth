@@ -7,6 +7,7 @@ use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Player, Source};
 use tauri::async_runtime::handle;
 use tauri::{menu::{Menu, MenuItem}, tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}, utils as other_utils, App, AppHandle, Emitter, Manager};
 use tauri::image::Image;
+use crate::database::database::{create_or_update_effect, get_effect_active};
 use crate::utils::init_tray::init_tray;
 use crate::utils::sound_stream::{SoundEffect, SoundEffectFront, SoundFront, SoundStream};
 
@@ -25,7 +26,7 @@ fn init_sounds() {
                 path: "sounds/rain/effects".to_string(),
                 data: utils::sound_stream::SoundEffectData {
                     id: "thunder".to_string(),
-                    active: Arc::new(AtomicBool::new(true)),
+                    active: Arc::new(AtomicBool::new(get_effect_active("rain", "thunder"))),
                 }
             }
 
@@ -74,6 +75,7 @@ fn toggle_effect(sound_id: String, effect_id: String) -> Vec<SoundFront> {
     if let Some(sound) = list.iter_mut().find(|s| s.data.id == sound_id) {
         if let Some(effect) = sound.effects.iter_mut().find(|e| e.data.id == effect_id) {
             let current = effect.data.active.load(Ordering::Relaxed);
+            create_or_update_effect(&sound_id, &effect_id, !current);
             effect.data.active.store(!current, Ordering::Relaxed);
         }
     }
