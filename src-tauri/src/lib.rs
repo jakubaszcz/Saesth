@@ -23,10 +23,18 @@ fn init_sounds() {
         effects: vec![
             SoundEffect {
                 player: None,
-                path: "sounds/rain/effects".to_string(),
+                path: "sounds/rain/effects/thunder".to_string(),
                 data: utils::sound_stream::SoundEffectData {
                     id: "thunder".to_string(),
                     active: Arc::new(AtomicBool::new(get_effect_active("rain", "thunder"))),
+                }
+            },
+            SoundEffect {
+                player: None,
+                path: "sounds/rain/effects/triangle".to_string(),
+                data: utils::sound_stream::SoundEffectData {
+                    id: "triangle".to_string(),
+                    active: Arc::new(AtomicBool::new(get_effect_active("rain", "triangle"))),
                 }
             }
 
@@ -45,6 +53,63 @@ fn init_sounds() {
         }
     });
 
+    list.push(SoundStream {
+        effects: vec![
+            SoundEffect {
+                player: None,
+                path: "sounds/beach/effects/seagull".to_string(),
+                data: utils::sound_stream::SoundEffectData {
+                    id: "seagull".to_string(),
+                    active: Arc::new(AtomicBool::new(get_effect_active("beach", "seagull"))),
+                }
+            },
+        ],
+        handle: None,
+        player: None,
+        play: Arc::new(AtomicBool::new(false)),
+        volume: Arc::new(Mutex::new(database::database::get_volume("beach"))),
+        fade_volume: Arc::new(Mutex::new(1.0)),
+        drift_volume: Arc::new(Mutex::new(1.0)),
+        data: utils::sound_stream::SoundData {
+            id: "beach".to_string(),
+            play: false,
+            volume: database::database::get_volume("beach"),
+            path: "sounds/beach".to_string(),
+        }
+    });
+
+
+    list.push(SoundStream {
+        effects: vec![],
+        handle: None,
+        player: None,
+        play: Arc::new(AtomicBool::new(false)),
+        volume: Arc::new(Mutex::new(database::database::get_volume("waterfall"))),
+        fade_volume: Arc::new(Mutex::new(1.0)),
+        drift_volume: Arc::new(Mutex::new(1.0)),
+        data: utils::sound_stream::SoundData {
+            id: "waterfall".to_string(),
+            play: false,
+            volume: database::database::get_volume("waterfall"),
+            path: "sounds/waterfall".to_string(),
+        }
+    });
+
+    list.push(SoundStream {
+        effects: vec![],
+        handle: None,
+        player: None,
+        play: Arc::new(AtomicBool::new(false)),
+        volume: Arc::new(Mutex::new(database::database::get_volume("fire"))),
+        fade_volume: Arc::new(Mutex::new(1.0)),
+        drift_volume: Arc::new(Mutex::new(1.0)),
+        data: utils::sound_stream::SoundData {
+            id: "fire".to_string(),
+            play: false,
+            volume: database::database::get_volume("fire"),
+            path: "sounds/fire".to_string(),
+        }
+    });
 
 
     SOUND_LIST.get_or_init(|| Mutex::new(list));
@@ -171,7 +236,7 @@ pub fn run() {
 
     database::database::init_db();
 
-    let defaults = ["rain", "fire"];
+    let defaults = ["rain", "beach"];
     for default in defaults {
         database::database::create_if_missing(default);
     }

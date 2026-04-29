@@ -33,6 +33,8 @@
     ],
     "resources": [
       "sounds/rain/*",
+      "sounds/beach/*",
+      "sounds/waterfall/*",
       "sounds/fire/*"
     ]
   }
