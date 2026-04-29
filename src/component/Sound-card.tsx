@@ -8,7 +8,8 @@ import {getSoundEffectIcon} from "../sounds/EffectsIcon.tsx";
 interface SoundCardProps {
     id: string;
     data: SoundData;
-    effect: SoundEffect[] | undefined
+    effect: SoundEffect[] | undefined;
+    effects: SoundEffect[] | undefined;
     onClick: () => void;
     onOpen: () => void;
     onChanged?: (volume: number) => void;
@@ -18,10 +19,15 @@ export const SoundCard = ({
                               id,
                               data,
                               effect,
+                              effects,
                               onClick,
                               onOpen,
                               onChanged
                           }: SoundCardProps) => {
+
+    const hasAvailableEffects = effects && effects.length > 0;
+    const hasActiveEffects = effect && effect.length > 0;
+
 
     return (
         <div
@@ -53,23 +59,25 @@ export const SoundCard = ({
 
                 <div className="flex items-center gap-2">
 
-                    <button
-                        onClick={onOpen}
-                        className="
-          w-11 h-11
-          rounded-xl
-          flex items-center justify-center
-          bg-white/10
-          border border-white/10
-          text-[var(--primary-100)]
-          transition-all duration-300
-          hover:bg-white/20
-          hover:scale-105
-          active:scale-95
+                    {hasAvailableEffects && (
+                        <button
+                            onClick={onOpen}
+                            className="
+            w-11 h-11
+            rounded-xl
+            flex items-center justify-center
+            bg-white/10
+            border border-white/10
+            text-[var(--primary-100)]
+            transition-all duration-300
+            hover:bg-white/20
+            hover:scale-105
+            active:scale-95
         "
-                    >
-                        <Sparkle size={20}/>
-                    </button>
+                        >
+                            <Sparkle size={20}/>
+                        </button>
+                    )}
 
                     <button
                         onClick={onClick}
@@ -96,7 +104,23 @@ export const SoundCard = ({
                 </div>
             </div>
 
-            {effect && effect.length > 0 ? (
+            {!hasAvailableEffects ? (
+                <div
+                    className="
+            rounded-lg
+            bg-white/5
+            border border-white/10
+            backdrop-blur-md
+            px-3 py-2
+            text-center
+            text-sm text-[var(--primary-100)]/70
+        "
+                >
+                    There is no effect available for this sound.
+                </div>
+
+            ) : hasActiveEffects ? (
+
                 <div
                     className="
             flex items-center gap-2
@@ -107,40 +131,55 @@ export const SoundCard = ({
             px-3 py-2
             shadow-[0_8px_24px_rgba(0,0,0,0.14)]
             overflow-hidden
-            text-center
-
         "
                 >
                     {effect.slice(0, 10).map((item) => (
                         <div
                             key={item.id}
                             title={item.id}
-                            className="text-[var(--primary-100)] shrink-0"
+                            className="
+                    text-[var(--primary-100)]
+                    shrink-0
+                    flex items-center justify-center
+                "
                         >
                             {getSoundEffectIcon(data.id, item.id, 20)}
                         </div>
                     ))}
 
                     {effect.length > 10 && (
-                        <p className="text-[var(--primary-100)]">+{effect.length - 10}</p>
+                        <div
+                            className="
+                    text-[var(--primary-100)]
+                    text-sm
+                    px-2
+                    py-0.5
+                    rounded-md
+                    bg-white/10
+                    border border-white/10
+                "
+                        >
+                            +{effect.length - 10}
+                        </div>
                     )}
                 </div>
+
             ) : (
+
                 <div
                     className="
-            rounded-xl
+            rounded-lg
             bg-white/5
             border border-white/10
             backdrop-blur-md
             px-3 py-2
             text-center
-            text-sm text-[var(--primary-100)]
+            text-sm text-[var(--primary-100)]/80
         "
                 >
                     No effect selected.
                 </div>
             )}
-
             <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between text-sm uppercase tracking-wide text-[var(--primary-100)]">
                     <span>Volume</span>

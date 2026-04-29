@@ -68,6 +68,7 @@ export function DrawHome() {
                         id={data.data.id}
                         data={data.data}
                         effect={data.effects.filter((effect) => effect.active)}
+                        effects={data.effects}
                         onClick={() => handleTogglePlay(data.data.id)}
                         onOpen={() => setOpen(data)}
                         onChanged={(volume) => handleVolumeChange(data.data.id, volume)}
