@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-    <Product Id="*" Name="Saesth" Version="1.0.0"
+    <Product Id="*" Name="Saesth" Version="1.2.0"
              Manufacturer="Toi" Language="1033"
              UpgradeCode="be2c1fd9-c47c-44c8-9c23-ee7f459c17e6">
 
@@ -9,12 +9,29 @@
                  InstallScope="perUser"
                  InstallPrivileges="limited" />
 
+        <MajorUpgrade
+            DowngradeErrorMessage="A newer version of Saesth is already installed." />
+
         <MediaTemplate EmbedCab="yes"/>
 
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="LocalAppDataFolder">
                 <Directory Id="INSTALLDIR" Name="Saesth">
-                    <Directory Id="SoundsDir" Name="sounds" />
+                    <Directory Id="SoundsDir" Name="sounds">
+                        <Directory Id="BeachSoundsDir" Name="beach">
+                            <Directory Id="BeachEffectsDir" Name="effects">
+                                <Directory Id="BeachSeagullDir" Name="seagull" />
+                            </Directory>
+                        </Directory>
+                        <Directory Id="FireSoundsDir" Name="fire" />
+                        <Directory Id="RainSoundsDir" Name="rain">
+                            <Directory Id="RainEffectsDir" Name="effects">
+                                <Directory Id="RainThunderDir" Name="thunder" />
+                                <Directory Id="RainTriangleDir" Name="triangle" />
+                            </Directory>
+                        </Directory>
+                        <Directory Id="WaterfallSoundsDir" Name="waterfall" />
+                    </Directory>
                 </Directory>
             </Directory>
 
@@ -22,6 +39,7 @@
             <Directory Id="ProgramMenuFolder" Name="Programs" />
         </Directory>
 
+        <!-- Main executable + shortcuts -->
         <DirectoryRef Id="INSTALLDIR">
             <Component Id="SaesthComponent" Guid="8af092ce-98ea-49cc-93ca-aaf6d23113ad">
                 <File Id="SaesthExe" Source="saesth.exe" />
@@ -53,20 +71,149 @@
             </Component>
         </DirectoryRef>
 
+        <!-- Sounds dir cleanup -->
         <DirectoryRef Id="SoundsDir">
-            <Component Id="SoundsComponent" Guid="f3a5b6c7-d8e9-40a1-b2c3-d4e5f6a7b8c9">
-                <File Id="BirdMp3" Source="src-tauri\sounds\bird.mp3" />
-                <File Id="FireMp3" Source="src-tauri\sounds\fire.mp3" />
-                <File Id="WindMp3" Source="src-tauri\sounds\wind.mp3" />
-                <File Id="RainWav" Source="src-tauri\sounds\rain.wav" />
-                <RemoveFolder Id="RemoveSoundsDir" On="uninstall" />
-                <RegistryValue Root="HKCU" Key="Software\Saesth\Sounds" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+            <Component Id="SoundsDirCleanupComponent" Guid="8FDBC8E4-BD29-408C-9A8E-9CD6AFF9A184">
+                <RemoveFolder Id="RemoveSoundsDir" Directory="SoundsDir" On="uninstall" />
+                <RegistryValue Root="HKCU"
+                               Key="Software\Saesth\Sounds"
+                               Name="Installed"
+                               Type="integer"
+                               Value="1"
+                               KeyPath="yes" />
+            </Component>
+        </DirectoryRef>
+
+        <!-- Beach dir cleanup (registry only, no file) -->
+        <DirectoryRef Id="BeachSoundsDir">
+            <Component Id="BeachDirCleanupComponent" Guid="9E02DA8C-4B59-4F7B-9941-A5B3BA5316DB">
+                <RemoveFolder Id="RemoveBeachSeagullDir" Directory="BeachSeagullDir" On="uninstall" />
+                <RemoveFolder Id="RemoveBeachEffectsDir" Directory="BeachEffectsDir" On="uninstall" />
+                <RemoveFolder Id="RemoveBeachSoundsDir" Directory="BeachSoundsDir" On="uninstall" />
+                <RegistryValue Root="HKCU"
+                               Key="Software\Saesth\Sounds\Beach"
+                               Name="Installed"
+                               Type="integer"
+                               Value="1"
+                               KeyPath="yes" />
+            </Component>
+            <!-- File only, no registry -->
+            <Component Id="BeachDefaultMp3Component" Guid="55285EA0-54AC-43AE-B0D0-E8AB9EF79319">
+                <File Id="BeachDefaultMp3" Source="src-tauri\sounds\beach\default.mp3" KeyPath="yes" />
+            </Component>
+        </DirectoryRef>
+
+        <DirectoryRef Id="BeachSeagullDir">
+            <Component Id="BeachSeagull001Mp3Component" Guid="84D34580-39F8-4D18-8791-BB4B559FF0A2">
+                <File Id="BeachSeagull001Mp3" Source="src-tauri\sounds\beach\effects\seagull\001.mp3" KeyPath="yes" />
+            </Component>
+            <Component Id="BeachSeagull002Mp3Component" Guid="30D3B713-E571-49B3-8BCB-7C68508DD07F">
+                <File Id="BeachSeagull002Mp3" Source="src-tauri\sounds\beach\effects\seagull\002.mp3" KeyPath="yes" />
+            </Component>
+            <Component Id="BeachSeagull003Mp3Component" Guid="356D037B-CE31-42C8-8DBD-930B0EF98769">
+                <File Id="BeachSeagull003Mp3" Source="src-tauri\sounds\beach\effects\seagull\003.mp3" KeyPath="yes" />
+            </Component>
+        </DirectoryRef>
+
+        <!-- Fire dir cleanup -->
+        <DirectoryRef Id="FireSoundsDir">
+            <Component Id="FireDirCleanupComponent" Guid="69ABA2B9-DD21-4179-A1B6-AFC51B2261FE">
+                <RemoveFolder Id="RemoveFireSoundsDir" Directory="FireSoundsDir" On="uninstall" />
+                <RegistryValue Root="HKCU"
+                               Key="Software\Saesth\Sounds\Fire"
+                               Name="Installed"
+                               Type="integer"
+                               Value="1"
+                               KeyPath="yes" />
+            </Component>
+            <Component Id="FireDefaultMp3Component" Guid="D15C0840-D995-4B40-9E22-A758D700CC8E">
+                <File Id="FireDefaultMp3" Source="src-tauri\sounds\fire\default.mp3" KeyPath="yes" />
+            </Component>
+        </DirectoryRef>
+
+        <!-- Rain dir cleanup -->
+        <DirectoryRef Id="RainSoundsDir">
+            <Component Id="RainDirCleanupComponent" Guid="0AF68DD9-D804-4589-B59D-0BC7733766C5">
+                <RemoveFolder Id="RemoveRainTriangleDir" Directory="RainTriangleDir" On="uninstall" />
+                <RemoveFolder Id="RemoveRainThunderDir" Directory="RainThunderDir" On="uninstall" />
+                <RemoveFolder Id="RemoveRainEffectsDir" Directory="RainEffectsDir" On="uninstall" />
+                <RemoveFolder Id="RemoveRainSoundsDir" Directory="RainSoundsDir" On="uninstall" />
+                <RegistryValue Root="HKCU"
+                               Key="Software\Saesth\Sounds\Rain"
+                               Name="Installed"
+                               Type="integer"
+                               Value="1"
+                               KeyPath="yes" />
+            </Component>
+            <Component Id="RainDefaultMp3Component" Guid="BBBD6BFF-6BC3-43D8-B7A9-8164940DF67B">
+                <File Id="RainDefaultMp3" Source="src-tauri\sounds\rain\default.mp3" KeyPath="yes" />
+            </Component>
+        </DirectoryRef>
+
+        <DirectoryRef Id="RainThunderDir">
+            <Component Id="RainThunder001Mp3Component" Guid="254A0A63-67FD-4697-B180-3E152619AE7B">
+                <File Id="RainThunder001Mp3" Source="src-tauri\sounds\rain\effects\thunder\001.mp3" KeyPath="yes" />
+            </Component>
+            <Component Id="RainThunder002Mp3Component" Guid="1BD21D24-1CE4-43FF-B490-734683ABEE1B">
+                <File Id="RainThunder002Mp3" Source="src-tauri\sounds\rain\effects\thunder\002.mp3" KeyPath="yes" />
+            </Component>
+            <Component Id="RainThunder003Mp3Component" Guid="B3BAABF9-444D-43CF-BE12-9D0312B5238B">
+                <File Id="RainThunder003Mp3" Source="src-tauri\sounds\rain\effects\thunder\003.mp3" KeyPath="yes" />
+            </Component>
+        </DirectoryRef>
+
+        <DirectoryRef Id="RainTriangleDir">
+            <Component Id="RainTriangle001Mp3Component" Guid="09A57069-D102-42D2-B582-6A25A6A715B3">
+                <File Id="RainTriangle001Mp3" Source="src-tauri\sounds\rain\effects\triangle\001.mp3" KeyPath="yes" />
+            </Component>
+            <Component Id="RainTriangle002Mp3Component" Guid="87129B65-CFB2-4EE7-AEA7-9E1FD41E92F0">
+                <File Id="RainTriangle002Mp3" Source="src-tauri\sounds\rain\effects\triangle\002.mp3" KeyPath="yes" />
+            </Component>
+            <Component Id="RainTriangle003Mp3Component" Guid="2CEC84FC-5558-423C-AF54-A6B97AB926A5">
+                <File Id="RainTriangle003Mp3" Source="src-tauri\sounds\rain\effects\triangle\003.mp3" KeyPath="yes" />
+            </Component>
+        </DirectoryRef>
+
+        <!-- Waterfall dir cleanup -->
+        <DirectoryRef Id="WaterfallSoundsDir">
+            <Component Id="WaterfallDirCleanupComponent" Guid="F1AB51F4-14DD-418C-BC7B-E58D71EB214C">
+                <RemoveFolder Id="RemoveWaterfallSoundsDir" Directory="WaterfallSoundsDir" On="uninstall" />
+                <RegistryValue Root="HKCU"
+                               Key="Software\Saesth\Sounds\Waterfall"
+                               Name="Installed"
+                               Type="integer"
+                               Value="1"
+                               KeyPath="yes" />
+            </Component>
+            <Component Id="WaterfallDefaultMp3Component" Guid="10A2A894-AC86-4775-B1C2-DC0C297C71B2">
+                <File Id="WaterfallDefaultMp3" Source="src-tauri\sounds\waterfall\default.mp3" KeyPath="yes" />
             </Component>
         </DirectoryRef>
 
         <Feature Id="MainFeature" Level="1">
             <ComponentRef Id="SaesthComponent"/>
-            <ComponentRef Id="SoundsComponent"/>
+            <ComponentRef Id="SoundsDirCleanupComponent"/>
+
+            <ComponentRef Id="BeachDirCleanupComponent"/>
+            <ComponentRef Id="BeachDefaultMp3Component"/>
+            <ComponentRef Id="BeachSeagull001Mp3Component"/>
+            <ComponentRef Id="BeachSeagull002Mp3Component"/>
+            <ComponentRef Id="BeachSeagull003Mp3Component"/>
+
+            <ComponentRef Id="FireDirCleanupComponent"/>
+            <ComponentRef Id="FireDefaultMp3Component"/>
+
+            <ComponentRef Id="RainDirCleanupComponent"/>
+            <ComponentRef Id="RainDefaultMp3Component"/>
+            <ComponentRef Id="RainThunder001Mp3Component"/>
+            <ComponentRef Id="RainThunder002Mp3Component"/>
+            <ComponentRef Id="RainThunder003Mp3Component"/>
+            <ComponentRef Id="RainTriangle001Mp3Component"/>
+            <ComponentRef Id="RainTriangle002Mp3Component"/>
+            <ComponentRef Id="RainTriangle003Mp3Component"/>
+
+            <ComponentRef Id="WaterfallDirCleanupComponent"/>
+            <ComponentRef Id="WaterfallDefaultMp3Component"/>
         </Feature>
 
     </Product>

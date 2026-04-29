@@ -75,7 +75,14 @@ export function DrawHome() {
                     />
                 ))}
             </div>
-            <SoundModal data={open} onClose={() => setOpen(null)} isClose={!open} onToggleEffect={handleToggleEffect}/>
+            {open && (
+                <SoundModal
+                    data={open}
+                    onClose={() => setOpen(null)}
+                    isClose={false}
+                    onToggleEffect={handleToggleEffect}
+                />
+            )}
         </div>
     )
 }
