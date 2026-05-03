@@ -118,6 +118,7 @@ fn init_sounds() {
 #[tauri::command]
 fn get_sounds() -> Vec<SoundFront> {
 
+    print!("get_sounds");
 
     let list = SOUND_LIST.get().unwrap().lock().unwrap();
     list.iter()
@@ -244,6 +245,8 @@ pub fn run() {
     database::database::init_database_settings();
 
     init_sounds();
+
+    sounds::setup::setup::setup();
 
     tauri::Builder::default()
         .setup(|app| {
