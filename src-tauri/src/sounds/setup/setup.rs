@@ -1,11 +1,14 @@
 use std::num::{NonZeroU16, NonZeroU32};
 use std::sync::{Arc, Mutex, OnceLock};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use rdev::{listen, Event, EventType};
 use rodio::{DeviceSinkBuilder, MixerDeviceSink, Player};
 use rodio::buffer::SamplesBuffer;
 use crate::sounds::random_sound;
 use crate::utils;
+
+static TOGGLE_SETUP: AtomicBool = AtomicBool::new(true);
 
 enum Type {
     Keys,
@@ -14,18 +17,6 @@ enum Type {
     LMB,
     RMB,
 }
-
-fn convert_type(key: &Type) -> Option<String> {
-    match key {
-        Type::Keys => Some("keys".to_string()),
-        Type::Space => Some("space".to_string()),
-        Type::Delete => Some("delete".to_string()),
-        Type::LMB => Some("left_mouse_button".to_string()),
-        Type::RMB => Some("right_mouse_button".to_string()),
-        _ => None
-    }
-}
-
 fn generate_sound(kind: &Type, sample: f32) -> Vec<f32> {
     let sample_rate = sample;
     let duration = match kind {
@@ -115,31 +106,35 @@ fn play_sound(kind: Type, player: &Arc<Mutex<Player>>) {
 }
 
 pub fn setup() {
-
-    let handle = DeviceSinkBuilder::open_default_sink()
-        .expect("failed to open default audio device");
-
-    let player = Arc::new(Mutex::new(
-        Player::connect_new(&handle.mixer())
-    ));
-
-    let player_clone = player.clone();
-
     thread::spawn(move || {
-        listen(move |event: Event| {
-            match event.event_type {
-                EventType::KeyPress(key ) => {
 
+        let handle = DeviceSinkBuilder::open_default_sink()
+            .expect("failed to open default audio device");
+
+        let player = Arc::new(Mutex::new(
+            Player::connect_new(&handle.mixer())
+        ));
+
+        let player_clone = player.clone();
+
+        listen(move |event: Event| {
+
+            if !TOGGLE_SETUP.load(std::sync::atomic::Ordering::Relaxed) {
+                return;
+            }
+
+            match event.event_type {
+                EventType::KeyPress(key) => {
                     match key {
                         rdev::Key::Space => {
                             play_sound(Type::Space, &player_clone);
-                            println!("space");
                         }
                         rdev::Key::Delete => {
                             play_sound(Type::Delete, &player_clone);
-                            println!("delete");
                         }
-                        _ => { play_sound(Type::Keys, &player_clone); }
+                        _ => {
+                            play_sound(Type::Keys, &player_clone);
+                        }
                     }
                 }
 
@@ -151,14 +146,18 @@ pub fn setup() {
                         rdev::Button::Right => {
                             play_sound(Type::RMB, &player_clone);
                         }
-                        _ => { }
+                        _ => {}
                     }
                 }
-                _ => {}
 
+                _ => {}
             }
         }).unwrap();
-
         drop(handle);
     });
+}
+
+pub fn toggle_setup() {
+    let current = TOGGLE_SETUP.load(Ordering::Relaxed);
+    TOGGLE_SETUP.store(!current, Ordering::Relaxed);
 }

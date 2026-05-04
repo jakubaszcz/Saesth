@@ -132,7 +132,7 @@ fn get_sounds() -> Vec<SoundFront> {
 }
 #[tauri::command]
 fn toggle_effect(sound_id: String, effect_id: String) -> Vec<SoundFront> {
-    let mut list = SOUND_LIST.get().unwrap().lock().unwrap();
+        let mut list = SOUND_LIST.get().unwrap().lock().unwrap();
 
     if let Some(sound) = list.iter_mut().find(|s| s.data.id == sound_id) {
         if let Some(effect) = sound.effects.iter_mut().find(|e| e.data.id == effect_id) {
@@ -212,8 +212,6 @@ fn toggle_play(id: String) -> Vec<SoundFront> {
         }
     }
 
-    print!("toggle play");
-
     list.iter()
         .map(|sound| SoundFront {
             data: sound.data.clone(),
@@ -226,6 +224,11 @@ fn toggle_play(id: String) -> Vec<SoundFront> {
                 .collect(),
         })
         .collect()
+}
+
+#[tauri::command]
+fn toggle_setup() {
+    sounds::setup::setup::toggle_setup()
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -292,6 +295,7 @@ pub fn run() {
             change_volume,
             get_settings,
             set_settings,
+            toggle_setup
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
