@@ -41,6 +41,14 @@ export function DrawHome() {
         }
     };
 
+    const handleToggleSetup = async () => {
+        try {
+            await invoke<SoundFront[]>("toggle_setup");
+        } catch (error) {
+            console.error("Failed to toggle setup:", error);
+        }
+    }
+
     const handleTogglePlay = async (id: string) => {
         try {
             const updatedSounds = await invoke<SoundFront[]>("toggle_play", { id });
@@ -75,6 +83,7 @@ export function DrawHome() {
                     />
                 ))}
             </div>
+            <button onClick={handleToggleSetup}>Press here</button>
             {open && (
                 <SoundModal
                     data={open}
