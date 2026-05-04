@@ -6,12 +6,28 @@ use crate::sounds::random_sound;
 use crate::utils;
 
 enum Type {
-    Keybind,
-    Mouse,
+    Keys,
+    Space,
+    Delete,
+    LMB,
+    RMB,
 }
 
-fn play_sound(player: &Arc<Mutex<Player>>) {
-    let path = random_sound::random_sound("sounds/setup/keyboard");
+fn convert_type(key: &Type) -> Option<String> {
+    match key {
+        Type::Keys => Some("keys".to_string()),
+        Type::Space => Some("space".to_string()),
+        Type::Delete => Some("delete".to_string()),
+        Type::LMB => Some("left_mouse_button".to_string()),
+        Type::RMB => Some("right_mouse_button".to_string()),
+        _ => None
+    }
+}
+
+fn play_sound(key: Type, player: &Arc<Mutex<Player>>) {
+    let path = random_sound::random_sound(
+        &format!("sounds/setup/{}", convert_type(&key).unwrap())
+    );
 
     let Ok(file) = std::fs::File::open(&path) else {
         return;
@@ -42,8 +58,30 @@ pub fn setup() {
         listen(move |event: Event| {
             match event.event_type {
                 EventType::KeyPress(key ) => {
-                    println!("{:?}", key);
-                    play_sound(&player_clone);
+
+                    match key {
+                        rdev::Key::Space => {
+                            play_sound(Type::Space, &player_clone);
+                            println!("space");
+                        }
+                        rdev::Key::Delete => {
+                            play_sound(Type::Delete, &player_clone);
+                            println!("delete");
+                        }
+                        _ => { play_sound(Type::Keys, &player_clone); }
+                    }
+                }
+
+                EventType::ButtonPress(button) => {
+                    match button {
+                        rdev::Button::Left => {
+                            play_sound(Type::LMB, &player_clone);
+                        }
+                        rdev::Button::Right => {
+                            play_sound(Type::RMB, &player_clone);
+                        }
+                        _ => { }
+                    }
                 }
                 _ => {}
             }

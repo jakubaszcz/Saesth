@@ -1,12 +1,8 @@
 use std::sync::atomic::Ordering;
-use std::fs::File;
-use std::io::Repeat;
 use std::sync::{Arc, Mutex, OnceLock};
 use std::sync::atomic::AtomicBool;
 use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Player, Source};
-use tauri::async_runtime::handle;
 use tauri::{menu::{Menu, MenuItem}, tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}, utils as other_utils, App, AppHandle, Emitter, Manager};
-use tauri::image::Image;
 use crate::database::database::{create_or_update_effect, get_effect_active};
 use crate::utils::init_tray::init_tray;
 use crate::utils::sound_stream::{SoundEffect, SoundEffectFront, SoundFront, SoundStream};
