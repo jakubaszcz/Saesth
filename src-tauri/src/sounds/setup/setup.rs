@@ -8,15 +8,31 @@ use rodio::buffer::SamplesBuffer;
 use crate::sounds::random_sound;
 use crate::utils;
 
+#[derive(Debug, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SetupUtilities {
+    Setup,
+    Keyboard,
+    Mouse,
+}
+
 struct Setup {
     toggle: Arc<AtomicBool>,
-    volume: Arc<Mutex<f32>>
+    volume: Arc<Mutex<f32>>,
+    keyboard_toggle: Arc<AtomicBool>,
+    keyboard_volume: Arc<Mutex<f32>>,
+    mouse_toggle: Arc<AtomicBool>,
+    mouse_volume: Arc<Mutex<f32>>,
 }
 
 #[derive(serde::Serialize)]
 pub struct SetupDTO {
     pub toggle: bool,
     pub volume: f32,
+    pub keyboard_toggle: bool,
+    pub keyboard_volume: f32,
+    pub mouse_toggle: bool,
+    pub mouse_volume: f32,
 }
 
 impl From<&Setup> for SetupDTO {
@@ -24,6 +40,10 @@ impl From<&Setup> for SetupDTO {
         Self {
             toggle: setup.toggle.load(Ordering::Relaxed),
             volume: *setup.volume.lock().unwrap(),
+            keyboard_toggle: setup.keyboard_toggle.load(Ordering::Relaxed),
+            keyboard_volume: *setup.keyboard_volume.lock().unwrap(),
+            mouse_toggle: setup.mouse_toggle.load(Ordering::Relaxed),
+            mouse_volume: *setup.mouse_volume.lock().unwrap(),
         }
     }
 }
@@ -130,6 +150,10 @@ fn init_setup() {
         Mutex::new(Setup {
             toggle: Arc::new(AtomicBool::new(true)),
             volume: Arc::new(Mutex::new(0.5)),
+            keyboard_toggle: Arc::new(AtomicBool::new(true)),
+            keyboard_volume: Arc::new(Mutex::new(0.5)),
+            mouse_toggle: Arc::new(AtomicBool::new(true)),
+            mouse_volume: Arc::new(Mutex::new(0.5)),
         })
     });
 }
@@ -153,34 +177,43 @@ pub fn setup() {
 
         listen(move |event: Event| {
 
-            if !structure.lock().unwrap().toggle.load(std::sync::atomic::Ordering::Relaxed) {
+            let setup = structure.lock().unwrap();
+
+            if !setup.toggle.load(std::sync::atomic::Ordering::Relaxed) {
                 return;
             }
 
             match event.event_type {
+
                 EventType::KeyPress(key) => {
-                    match key {
-                        rdev::Key::Space => {
-                            play_sound(Type::Space, &player_clone);
-                        }
-                        rdev::Key::Delete => {
-                            play_sound(Type::Delete, &player_clone);
-                        }
-                        _ => {
-                            play_sound(Type::Keys, &player_clone);
+                    if setup.keyboard_toggle.load(std::sync::atomic::Ordering::Relaxed) {
+                        match key {
+                            rdev::Key::Space => {
+                                play_sound(Type::Space, &player_clone);
+                            }
+                            rdev::Key::Delete => {
+                                play_sound(Type::Delete, &player_clone);
+                            }
+                            _ => {
+                                play_sound(Type::Keys, &player_clone);
+                            }
                         }
                     }
+
                 }
 
                 EventType::ButtonPress(button) => {
-                    match button {
-                        rdev::Button::Left => {
-                            play_sound(Type::LMB, &player_clone);
+
+                    if setup.mouse_toggle.load(std::sync::atomic::Ordering::Relaxed) {
+                        match button {
+                            rdev::Button::Left => {
+                                play_sound(Type::LMB, &player_clone);
+                            }
+                            rdev::Button::Right => {
+                                play_sound(Type::RMB, &player_clone);
+                            }
+                            _ => {}
                         }
-                        rdev::Button::Right => {
-                            play_sound(Type::RMB, &player_clone);
-                        }
-                        _ => {}
                     }
                 }
 
@@ -200,10 +233,43 @@ pub fn fetch_setup() -> SetupDTO {
 
     SetupDTO::from(&*setup)
 }
-pub fn toggle_setup() {
 
+
+pub fn volume_setup(utils: SetupUtilities, volume: f32) {
     let setup = SETUP.get().unwrap();
 
-    let current = setup.lock().unwrap().toggle.load(Ordering::Relaxed);
-    setup.lock().unwrap().toggle.store(!current, Ordering::Relaxed);
+    match utils {
+        SetupUtilities::Setup => {
+            let mut setup = setup.lock().unwrap();
+            *setup.volume.lock().unwrap() = volume;
+        },
+        SetupUtilities::Keyboard => {
+            let mut setup = setup.lock().unwrap();
+            *setup.keyboard_volume.lock().unwrap() = volume;
+        },
+        SetupUtilities::Mouse => {
+            let mut setup = setup.lock().unwrap();
+            *setup.mouse_volume.lock().unwrap() = volume;
+        }
+    }
+}
+
+pub fn toggle_setup(utils: SetupUtilities) {
+    let setup = SETUP.get().unwrap();
+
+    match utils {
+        SetupUtilities::Setup => {
+            println!("toggled");
+            let mut setup = setup.lock().unwrap();
+            setup.toggle.store(!setup.toggle.load(Ordering::Relaxed), Ordering::Relaxed);
+        },
+        SetupUtilities::Keyboard => {
+            let mut setup = setup.lock().unwrap();
+            setup.keyboard_toggle.store(!setup.keyboard_toggle.load(Ordering::Relaxed), Ordering::Relaxed);
+        },
+        SetupUtilities::Mouse => {
+            let mut setup = setup.lock().unwrap();
+            setup.mouse_toggle.store(!setup.mouse_toggle.load(Ordering::Relaxed), Ordering::Relaxed);
+        }
+    }
 }

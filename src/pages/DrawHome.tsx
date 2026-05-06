@@ -1,13 +1,13 @@
 import {SoundCard} from "../component/Sound-card.tsx";
 import {useEffect, useState} from "react";
-import {Setup, SoundFront} from "../interface/structures.ts";
+import {Setup, SetupUtilities, SoundFront} from "../interface/structures.ts";
 import {invoke} from "@tauri-apps/api/core";
 import {SoundModal} from "../component/SoundModal.tsx";
 
 export function DrawHome() {
 
     const [sounds, setSounds] = useState<SoundFront[]>([]);
-    const [setup, setSetup] = useState<Setup>();
+    const [setup, setSetup] = useState<Setup>(null as unknown as Setup);
     const [open, setOpen] = useState<SoundFront | null>(null);
 
     useEffect(() => {
@@ -53,11 +53,19 @@ export function DrawHome() {
         }
     };
 
-    const handleToggleSetup = async () => {
+    const handleToggleSetup = async (utils: SetupUtilities) => {
         try {
-            await invoke<SoundFront[]>("toggle_setup");
+            await invoke<SoundFront[]>("toggle_setup", { toggle: utils});
         } catch (error) {
             console.error("Failed to toggle setup:", error);
+        }
+    }
+
+    const handleVolumeSetupChange = async (utils: SetupUtilities, volume: number) => {
+        try {
+            await invoke<SoundFront[]>("volume_setup", { toggle: utils, volume: volume });
+        } catch (error) {
+            console.error("Failed to change setup volume:", error);
         }
     }
 
@@ -95,9 +103,46 @@ export function DrawHome() {
                     />
                 ))}
             </div>
-            <button onClick={handleToggleSetup}>Press here</button>
-            {setup?.toggle && <p>Setup : {setup?.toggle ? "ON" : "OFF"}</p>}
-            <p>Sound : {setup?.volume}</p>
+
+            <div>
+                <h1>Setup</h1>
+                <button onClick={() => handleToggleSetup(SetupUtilities.SETUP)}>Toggle setup</button>
+                <p>Volume</p>
+                <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={setup?.volume * 100}
+                    onChange={(e) => handleVolumeSetupChange(SetupUtilities.SETUP, parseFloat(e.target.value) / 100)}
+                />
+
+                <h1>Keyboard Setup</h1>
+                <button onClick={() => handleToggleSetup(SetupUtilities.KEYBOARD)}>Toggle keyboard</button>
+                <p>Volume</p>
+                <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={setup?.keyboard_volume * 100}
+                    onChange={(e) => handleVolumeSetupChange(SetupUtilities.KEYBOARD, parseFloat(e.target.value) / 100)}
+
+                />
+
+                <h1>Mouse Setup</h1>
+                <button onClick={() => handleToggleSetup(SetupUtilities.MOUSE)}>Toggle Mouse</button>
+                <p>Volume</p>
+                <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={setup?.keyboard_volume * 100}
+                    onChange={(e) => handleVolumeSetupChange(SetupUtilities.MOUSE, parseFloat(e.target.value) / 100)}
+                />
+
+            </div>
             {open && (
                 <SoundModal
                     data={open}

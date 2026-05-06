@@ -227,8 +227,13 @@ fn toggle_play(id: String) -> Vec<SoundFront> {
 }
 
 #[tauri::command]
-fn toggle_setup() {
-    sounds::setup::setup::toggle_setup()
+fn toggle_setup(utils: sounds::setup::setup::SetupUtilities) {
+    sounds::setup::setup::toggle_setup(utils);
+}
+
+#[tauri::command]
+fn volume_setup(utils: sounds::setup::setup::SetupUtilities, volume: f32) {
+    sounds::setup::setup::volume_setup(utils, volume);
 }
 
 #[tauri::command]
@@ -301,7 +306,8 @@ pub fn run() {
             get_settings,
             set_settings,
             fetch_setup,
-            toggle_setup
+            toggle_setup,
+            volume_setup,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

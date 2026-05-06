@@ -18,4 +18,14 @@ export interface SoundEffect {
 export interface Setup {
     toggle: boolean;
     volume: number;
+    keyboard_toggle: boolean;
+    keyboard_volume: number;
+    mouse_toggle: boolean;
+    mouse_volume: number;
+}
+
+export enum SetupUtilities {
+    SETUP = "setup",
+    KEYBOARD = "keyboard",
+    MOUSE = "mouse",
 }
