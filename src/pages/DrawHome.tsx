@@ -1,6 +1,6 @@
 import {SoundCard} from "../component/Sound-card.tsx";
 import {useEffect, useState} from "react";
-import {Setup, SetupUtilities, SoundFront} from "../interface/structures.ts";
+import {Setup, SetupKeys, SoundFront} from "../interface/structures.ts";
 import {invoke} from "@tauri-apps/api/core";
 import {SoundModal} from "../component/SoundModal.tsx";
 
@@ -29,8 +29,8 @@ export function DrawHome() {
             }
         }
 
-        fetchSounds();
-        fetchSetup();
+        fetchSounds().catch();
+        fetchSetup().catch();
     }, []);
 
     const handleToggleEffect = async (id: string, effect_id: string) => {
@@ -53,19 +53,31 @@ export function DrawHome() {
         }
     };
 
-    const handleToggleSetup = async (utils: SetupUtilities) => {
+    const handleToggleSetup = async (key: keyof Setup) => {
         try {
-            await invoke<SoundFront[]>("toggle_setup", { toggle: utils});
+            await invoke("toggle_setup", { key: key});
+
+            setSetup({
+                ...setup,
+                [key]: !setup[key],
+            })
+
         } catch (error) {
             console.error("Failed to toggle setup:", error);
         }
     }
 
-    const handleVolumeSetupChange = async (utils: SetupUtilities, volume: number) => {
+    const handeVolumeSetup = async (key: keyof Setup, value: number) => {
         try {
-            await invoke<SoundFront[]>("volume_setup", { toggle: utils, volume: volume });
+            await invoke("volume_setup", { key: key, value: value})
+
+            setSetup({
+                ...setup,
+                [key]: value,
+            })
+
         } catch (error) {
-            console.error("Failed to change setup volume:", error);
+            console.error("Failed to toggle setup:", error);
         }
     }
 
@@ -106,41 +118,43 @@ export function DrawHome() {
 
             <div>
                 <h1>Setup</h1>
-                <button onClick={() => handleToggleSetup(SetupUtilities.SETUP)}>Toggle setup</button>
+                <button onClick={() => handleToggleSetup(SetupKeys.SETUP_GLOBAL_TOGGLE)}>Toggle setup</button>
+                <p>Toggle : {setup?.setup_global_toggle ? "On" : "Off"}</p>
                 <p>Volume</p>
                 <input
                     type="range"
                     min={0}
                     max={100}
                     step={1}
-                    value={setup?.volume * 100}
-                    onChange={(e) => handleVolumeSetupChange(SetupUtilities.SETUP, parseFloat(e.target.value) / 100)}
-                />
+                    value={setup?.setup_global_volume * 100}
+                    onChange={(e) => handeVolumeSetup(SetupKeys.SETUP_GLOBAL_VOLUME, parseFloat(e.target.value) / 100)
+                    }/>
 
-                <h1>Keyboard Setup</h1>
-                <button onClick={() => handleToggleSetup(SetupUtilities.KEYBOARD)}>Toggle keyboard</button>
+                <h1>Keyboard</h1>
+                <button onClick={() => handleToggleSetup(SetupKeys.SETUP_KEYBOARD_TOGGLE)}>Toggle setup</button>
+                <p>Toggle : {setup?.setup_keyboard_toggle ? "On" : "Off"}</p>
                 <p>Volume</p>
                 <input
                     type="range"
                     min={0}
                     max={100}
                     step={1}
-                    value={setup?.keyboard_volume * 100}
-                    onChange={(e) => handleVolumeSetupChange(SetupUtilities.KEYBOARD, parseFloat(e.target.value) / 100)}
+                    value={setup?.setup_keyboard_volume * 100}
+                    onChange={(e) => handeVolumeSetup(SetupKeys.SETUP_KEYBOARD_VOLUME, parseFloat(e.target.value) / 100)
+                    }/>
 
-                />
-
-                <h1>Mouse Setup</h1>
-                <button onClick={() => handleToggleSetup(SetupUtilities.MOUSE)}>Toggle Mouse</button>
+                <h1>Mouse</h1>
+                <button onClick={() => handleToggleSetup(SetupKeys.SETUP_MOUSE_TOGGLE)}>Toggle setup</button>
+                <p>Toggle : {setup?.setup_mouse_toggle ? "On" : "Off"}</p>
                 <p>Volume</p>
                 <input
                     type="range"
                     min={0}
                     max={100}
                     step={1}
-                    value={setup?.keyboard_volume * 100}
-                    onChange={(e) => handleVolumeSetupChange(SetupUtilities.MOUSE, parseFloat(e.target.value) / 100)}
-                />
+                    value={setup?.setup_mouse_volume * 100}
+                    onChange={(e) => handeVolumeSetup(SetupKeys.SETUP_MOUSE_VOLUME, parseFloat(e.target.value) / 100)
+                    }/>
 
             </div>
             {open && (

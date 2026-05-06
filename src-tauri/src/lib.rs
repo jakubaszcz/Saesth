@@ -227,13 +227,13 @@ fn toggle_play(id: String) -> Vec<SoundFront> {
 }
 
 #[tauri::command]
-fn toggle_setup(utils: sounds::setup::setup::SetupUtilities) {
-    sounds::setup::setup::toggle_setup(utils);
+fn toggle_setup(key: sounds::setup::setup::SetupKeys) {
+    sounds::setup::setup::toggle_setup(key)
 }
 
 #[tauri::command]
-fn volume_setup(utils: sounds::setup::setup::SetupUtilities, volume: f32) {
-    sounds::setup::setup::volume_setup(utils, volume);
+fn volume_setup(key: sounds::setup::setup::SetupKeys, value: f32) {
+    sounds::setup::setup::volume_setup(key, value);
 }
 
 #[tauri::command]
