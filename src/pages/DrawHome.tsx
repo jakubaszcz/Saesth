@@ -1,12 +1,13 @@
 import {SoundCard} from "../component/Sound-card.tsx";
 import {useEffect, useState} from "react";
-import {SoundFront} from "../interface/sound-data.ts";
+import {Setup, SoundFront} from "../interface/structures.ts";
 import {invoke} from "@tauri-apps/api/core";
 import {SoundModal} from "../component/SoundModal.tsx";
 
 export function DrawHome() {
 
     const [sounds, setSounds] = useState<SoundFront[]>([]);
+    const [setup, setSetup] = useState<Setup>();
     const [open, setOpen] = useState<SoundFront | null>(null);
 
     useEffect(() => {
@@ -18,7 +19,18 @@ export function DrawHome() {
                 console.error("Failed loading songs :", error);
             }
         }
+
+        async function fetchSetup() {
+            try {
+                const fetchedSetup = await invoke<Setup>("fetch_setup");
+                setSetup(fetchedSetup);
+            } catch (error) {
+                console.error("Failed loading setup :", error);
+            }
+        }
+
         fetchSounds();
+        fetchSetup();
     }, []);
 
     const handleToggleEffect = async (id: string, effect_id: string) => {
@@ -84,6 +96,8 @@ export function DrawHome() {
                 ))}
             </div>
             <button onClick={handleToggleSetup}>Press here</button>
+            {setup?.toggle && <p>Setup : {setup?.toggle ? "ON" : "OFF"}</p>}
+            <p>Sound : {setup?.volume}</p>
             {open && (
                 <SoundModal
                     data={open}

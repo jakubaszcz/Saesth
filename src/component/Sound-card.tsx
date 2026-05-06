@@ -1,4 +1,4 @@
-import {SoundData, SoundEffect} from "../interface/sound-data.ts";
+import {Structures, SoundEffect} from "../interface/structures.ts";
 import {
     Play, Pause, Sparkle
 } from "lucide-react";
@@ -7,7 +7,7 @@ import {getSoundEffectIcon} from "../sounds/EffectsIcon.tsx";
 
 interface SoundCardProps {
     id: string;
-    data: SoundData;
+    data: Structures;
     effect: SoundEffect[] | undefined;
     effects: SoundEffect[] | undefined;
     onClick: () => void;

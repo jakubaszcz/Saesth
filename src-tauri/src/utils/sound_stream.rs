@@ -4,7 +4,7 @@ use rodio::{MixerDeviceSink, Player};
 use rodio::cpal::Data;
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
-pub struct SoundData {
+pub struct Structures {
     pub id: String,
     pub play: bool,
     pub path: String,
@@ -14,7 +14,7 @@ pub struct SoundData {
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct SoundFront {
-    pub data: SoundData,
+    pub data: Structures,
     pub effects: Vec<SoundEffectFront>,
 }
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
@@ -34,7 +34,7 @@ pub struct SoundStream {
     pub volume: Arc<Mutex<f32>>,
     pub fade_volume: Arc<Mutex<f32>>,
     pub drift_volume: Arc<Mutex<f32>>,
-    pub data: SoundData
+    pub data: Structures
 }
 
 #[derive(Clone)]

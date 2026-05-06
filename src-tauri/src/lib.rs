@@ -41,7 +41,7 @@ fn init_sounds() {
         volume: Arc::new(Mutex::new(database::database::get_volume("rain"))),
         fade_volume: Arc::new(Mutex::new(1.0)),
         drift_volume: Arc::new(Mutex::new(1.0)),
-        data: utils::sound_stream::SoundData {
+        data: utils::sound_stream::Structures {
             id: "rain".to_string(),
             play: false,
             volume: database::database::get_volume("rain"),
@@ -66,7 +66,7 @@ fn init_sounds() {
         volume: Arc::new(Mutex::new(database::database::get_volume("beach"))),
         fade_volume: Arc::new(Mutex::new(1.0)),
         drift_volume: Arc::new(Mutex::new(1.0)),
-        data: utils::sound_stream::SoundData {
+        data: utils::sound_stream::Structures {
             id: "beach".to_string(),
             play: false,
             volume: database::database::get_volume("beach"),
@@ -83,7 +83,7 @@ fn init_sounds() {
         volume: Arc::new(Mutex::new(database::database::get_volume("waterfall"))),
         fade_volume: Arc::new(Mutex::new(1.0)),
         drift_volume: Arc::new(Mutex::new(1.0)),
-        data: utils::sound_stream::SoundData {
+        data: utils::sound_stream::Structures {
             id: "waterfall".to_string(),
             play: false,
             volume: database::database::get_volume("waterfall"),
@@ -99,7 +99,7 @@ fn init_sounds() {
         volume: Arc::new(Mutex::new(database::database::get_volume("fire"))),
         fade_volume: Arc::new(Mutex::new(1.0)),
         drift_volume: Arc::new(Mutex::new(1.0)),
-        data: utils::sound_stream::SoundData {
+        data: utils::sound_stream::Structures {
             id: "fire".to_string(),
             play: false,
             volume: database::database::get_volume("fire"),
@@ -231,6 +231,11 @@ fn toggle_setup() {
     sounds::setup::setup::toggle_setup()
 }
 
+#[tauri::command]
+fn fetch_setup() -> sounds::setup::setup::SetupDTO {
+    sounds::setup::setup::fetch_setup()
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
 
@@ -295,6 +300,7 @@ pub fn run() {
             change_volume,
             get_settings,
             set_settings,
+            fetch_setup,
             toggle_setup
         ])
         .run(tauri::generate_context!())

@@ -1,4 +1,4 @@
-export interface SoundData {
+export interface Structures {
     id: string;
     play: boolean;
     path: string;
@@ -6,11 +6,16 @@ export interface SoundData {
 }
 
 export interface SoundFront {
-    data: SoundData;
+    data: Structures;
     effects: SoundEffect[];
 }
 
 export interface SoundEffect {
     id: string;
     active: boolean;
+}
+
+export interface Setup {
+    toggle: boolean;
+    volume: number;
 }

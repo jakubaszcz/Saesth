@@ -8,7 +8,27 @@ use rodio::buffer::SamplesBuffer;
 use crate::sounds::random_sound;
 use crate::utils;
 
-static TOGGLE_SETUP: AtomicBool = AtomicBool::new(true);
+struct Setup {
+    toggle: Arc<AtomicBool>,
+    volume: Arc<Mutex<f32>>
+}
+
+#[derive(serde::Serialize)]
+pub struct SetupDTO {
+    pub toggle: bool,
+    pub volume: f32,
+}
+
+impl From<&Setup> for SetupDTO {
+    fn from(setup: &Setup) -> Self {
+        Self {
+            toggle: setup.toggle.load(Ordering::Relaxed),
+            volume: *setup.volume.lock().unwrap(),
+        }
+    }
+}
+
+static SETUP: OnceLock<Mutex<Setup>> = OnceLock::new();
 
 enum Type {
     Keys,
@@ -105,7 +125,19 @@ fn play_sound(kind: Type, player: &Arc<Mutex<Player>>) {
     player.play();
 }
 
+fn init_setup() {
+    SETUP.get_or_init(|| {
+        Mutex::new(Setup {
+            toggle: Arc::new(AtomicBool::new(true)),
+            volume: Arc::new(Mutex::new(0.5)),
+        })
+    });
+}
+
 pub fn setup() {
+
+    init_setup();
+
     thread::spawn(move || {
 
         let handle = DeviceSinkBuilder::open_default_sink()
@@ -117,9 +149,11 @@ pub fn setup() {
 
         let player_clone = player.clone();
 
+        let structure = SETUP.get().unwrap();
+
         listen(move |event: Event| {
 
-            if !TOGGLE_SETUP.load(std::sync::atomic::Ordering::Relaxed) {
+            if !structure.lock().unwrap().toggle.load(std::sync::atomic::Ordering::Relaxed) {
                 return;
             }
 
@@ -157,7 +191,19 @@ pub fn setup() {
     });
 }
 
+pub fn fetch_setup() -> SetupDTO {
+    let setup = SETUP
+        .get()
+        .expect("SETUP is not initialized")
+        .lock()
+        .unwrap();
+
+    SetupDTO::from(&*setup)
+}
 pub fn toggle_setup() {
-    let current = TOGGLE_SETUP.load(Ordering::Relaxed);
-    TOGGLE_SETUP.store(!current, Ordering::Relaxed);
+
+    let setup = SETUP.get().unwrap();
+
+    let current = setup.lock().unwrap().toggle.load(Ordering::Relaxed);
+    setup.lock().unwrap().toggle.store(!current, Ordering::Relaxed);
 }
