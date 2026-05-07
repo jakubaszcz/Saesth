@@ -19,7 +19,7 @@ pub enum SetupKeys {
     SetupMouseVolume,
 }
 
-struct Setup {
+struct ComponentSetup {
     setup_global_toggle: Arc<AtomicBool>,
     setup_global_volume: Arc<Mutex<f32>>,
     setup_keyboard_toggle: Arc<AtomicBool>,
@@ -38,8 +38,8 @@ pub struct SetupDTO {
     pub setup_mouse_volume: f32,
 }
 
-impl From<&Setup> for SetupDTO {
-    fn from(setup: &Setup) -> Self {
+impl From<&ComponentSetup> for SetupDTO {
+    fn from(setup: &ComponentSetup) -> Self {
         Self {
             setup_global_toggle: setup.setup_global_toggle.load(Ordering::Relaxed),
             setup_global_volume: *setup.setup_global_volume.lock().unwrap(),
@@ -51,7 +51,7 @@ impl From<&Setup> for SetupDTO {
     }
 }
 
-static SETUP: OnceLock<Mutex<Setup>> = OnceLock::new();
+static SETUP: OnceLock<Mutex<ComponentSetup>> = OnceLock::new();
 
 enum Type {
     Keys,
@@ -60,7 +60,7 @@ enum Type {
     LMB,
     RMB,
 }
-fn generate_sound(kind: &Type, sample: f32, setup: &Setup) -> Vec<f32> {
+fn generate_sound(kind: &Type, sample: f32, setup: &ComponentSetup) -> Vec<f32> {
 
     let sample_rate = sample;
     let duration = match kind {
@@ -124,7 +124,7 @@ fn generate_sound(kind: &Type, sample: f32, setup: &Setup) -> Vec<f32> {
     samples
 }
 
-fn play_sound(kind: Type, player: &Arc<Mutex<Player>>, setup: &Setup) {
+fn play_sound(kind: Type, player: &Arc<Mutex<Player>>, setup: &ComponentSetup) {
 
 
     let volume = match kind {
@@ -151,7 +151,7 @@ fn play_sound(kind: Type, player: &Arc<Mutex<Player>>, setup: &Setup) {
 
 fn init_setup() {
     SETUP.get_or_init(|| {
-        Mutex::new(Setup {
+        Mutex::new(ComponentSetup {
             setup_global_toggle: Arc::new(AtomicBool::new(true)),
             setup_global_volume: Arc::new(Mutex::new(0.5)),
             setup_keyboard_toggle: Arc::new(AtomicBool::new(true)),
