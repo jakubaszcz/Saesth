@@ -7,8 +7,6 @@ use rodio::{DeviceSinkBuilder, MixerDeviceSink, Player};
 use rodio::buffer::SamplesBuffer;
 use crate::types::setup::type_setup::{Setup, SetupDTO, SetupKeys};
 use crate::inits::setup::init_setup::init;
-use crate::sounds::random_sound;
-use crate::utils;
 
 static SETUP: OnceLock<Mutex<Setup>> = OnceLock::new();
 

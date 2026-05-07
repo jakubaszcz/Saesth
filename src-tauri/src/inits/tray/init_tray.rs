@@ -1,5 +1,5 @@
 use tauri::{menu::{Menu, MenuItem}, tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}, App, Manager};
-pub fn init_tray(app: &mut App) {
+pub fn init(app: &mut App) {
 
     let quit = MenuItem::with_id(app, "quit", "Close", true, None::<&str>).unwrap();
     let show = MenuItem::with_id(app, "open", "Open", true, None::<&str>).unwrap();

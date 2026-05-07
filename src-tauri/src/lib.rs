@@ -1,12 +1,9 @@
-use crate::inits::sounds::init_sound::init;
 use crate::types::sounds::type_sounds::Sound;
-use crate::utils::init_tray::init_tray;
 use rodio::Source;
 use std::sync::{Mutex, OnceLock};
 use tauri::{Emitter, Manager};
 
 mod database;
-mod utils;
 mod sounds;
 mod inits;
 mod types;
@@ -91,16 +88,6 @@ fn change_volume(id: String, volume: f32) -> Vec<SoundFront> {
 }
 
 #[tauri::command]
-fn set_settings(id: String, value: String) {
-    database::database::set_setting(&*id, &*value);
-}
-
-#[tauri::command]
-fn get_settings(id: String) -> String {
-    database::database::get_setting(id.as_str())
-}
-
-#[tauri::command]
 fn toggle_play(id: String) -> Vec<SoundFront> {
     let mut list = SOUND_LIST.get().unwrap().lock().unwrap();
 
@@ -127,6 +114,16 @@ fn toggle_play(id: String) -> Vec<SoundFront> {
         .collect()
 }
 */
+
+#[tauri::command]
+fn set_settings(id: String, value: String) {
+    database::database::set_setting(&*id, &*value);
+}
+
+#[tauri::command]
+fn get_settings(id: String) -> String {
+    database::database::get_setting(id.as_str())
+}
 #[tauri::command]
 fn toggle_setup(key: types::setup::type_setup::SetupKeys) {
     sounds::setup::setup::toggle_setup(key)
@@ -149,7 +146,7 @@ pub fn run() {
 
     database::database::init_database_settings();
 
-    SOUND_LIST.get_or_init(|| Mutex::new(init()));
+    SOUND_LIST.get_or_init(|| Mutex::new(inits::sounds::init_sound::init()));
 
     sounds::setup::setup::setup();
 
@@ -159,7 +156,7 @@ pub fn run() {
             let handle = app.handle().clone();
 
             // Tray
-            init_tray(app);
+            inits::tray::init_tray::init(app);
 
             // Focus on opening
             window.set_focus().unwrap();
@@ -195,6 +192,8 @@ pub fn run() {
         })
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
+            set_settings,
+            get_settings,
             fetch_setup,
             toggle_setup,
             volume_setup,
