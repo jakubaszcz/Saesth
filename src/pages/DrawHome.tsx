@@ -1,13 +1,13 @@
 import {SoundCard} from "../component/Sound-card.tsx";
 import {useEffect, useState} from "react";
-import {Setup, SetupKeys, SoundFront} from "../interface/structures.ts";
+import {SoundFront} from "../interface/structures.ts";
 import {invoke} from "@tauri-apps/api/core";
 import {SoundModal} from "../component/SoundModal.tsx";
+import { ComponentSetup } from "../features/setup/ComponentSetup.tsx";
 
 export function DrawHome() {
 
     const [sounds, setSounds] = useState<SoundFront[]>([]);
-    const [setup, setSetup] = useState<Setup>(null as unknown as Setup);
     const [open, setOpen] = useState<SoundFront | null>(null);
 
     useEffect(() => {
@@ -20,17 +20,7 @@ export function DrawHome() {
             }
         }
 
-        async function fetchSetup() {
-            try {
-                const fetchedSetup = await invoke<Setup>("fetch_setup");
-                setSetup(fetchedSetup);
-            } catch (error) {
-                console.error("Failed loading setup :", error);
-            }
-        }
-
         fetchSounds().catch();
-        fetchSetup().catch();
     }, []);
 
     const handleToggleEffect = async (id: string, effect_id: string) => {
@@ -52,34 +42,6 @@ export function DrawHome() {
             console.error("Failed to toggle effect:", error);
         }
     };
-
-    const handleToggleSetup = async (key: keyof Setup) => {
-        try {
-            await invoke("toggle_setup", { key: key});
-
-            setSetup({
-                ...setup,
-                [key]: !setup[key],
-            })
-
-        } catch (error) {
-            console.error("Failed to toggle setup:", error);
-        }
-    }
-
-    const handeVolumeSetup = async (key: keyof Setup, value: number) => {
-        try {
-            await invoke("volume_setup", { key: key, value: value})
-
-            setSetup({
-                ...setup,
-                [key]: value,
-            })
-
-        } catch (error) {
-            console.error("Failed to toggle setup:", error);
-        }
-    }
 
     const handleTogglePlay = async (id: string) => {
         try {
@@ -115,48 +77,7 @@ export function DrawHome() {
                     />
                 ))}
             </div>
-
-            <div>
-                <h1>Setup</h1>
-                <button onClick={() => handleToggleSetup(SetupKeys.SETUP_GLOBAL_TOGGLE)}>Toggle setup</button>
-                <p>Toggle : {setup?.setup_global_toggle ? "On" : "Off"}</p>
-                <p>Volume</p>
-                <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    step={1}
-                    value={setup?.setup_global_volume * 100}
-                    onChange={(e) => handeVolumeSetup(SetupKeys.SETUP_GLOBAL_VOLUME, parseFloat(e.target.value) / 100)
-                    }/>
-
-                <h1>Keyboard</h1>
-                <button onClick={() => handleToggleSetup(SetupKeys.SETUP_KEYBOARD_TOGGLE)}>Toggle setup</button>
-                <p>Toggle : {setup?.setup_keyboard_toggle ? "On" : "Off"}</p>
-                <p>Volume</p>
-                <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    step={1}
-                    value={setup?.setup_keyboard_volume * 100}
-                    onChange={(e) => handeVolumeSetup(SetupKeys.SETUP_KEYBOARD_VOLUME, parseFloat(e.target.value) / 100)
-                    }/>
-
-                <h1>Mouse</h1>
-                <button onClick={() => handleToggleSetup(SetupKeys.SETUP_MOUSE_TOGGLE)}>Toggle setup</button>
-                <p>Toggle : {setup?.setup_mouse_toggle ? "On" : "Off"}</p>
-                <p>Volume</p>
-                <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    step={1}
-                    value={setup?.setup_mouse_volume * 100}
-                    onChange={(e) => handeVolumeSetup(SetupKeys.SETUP_MOUSE_VOLUME, parseFloat(e.target.value) / 100)
-                    }/>
-
-            </div>
+            <ComponentSetup/>
             {open && (
                 <SoundModal
                     data={open}
