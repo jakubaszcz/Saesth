@@ -1,115 +1,18 @@
-use std::sync::atomic::Ordering;
-use std::sync::{Arc, Mutex, OnceLock};
-use std::sync::atomic::AtomicBool;
-use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Player, Source};
-use tauri::{menu::{Menu, MenuItem}, tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}, utils as other_utils, App, AppHandle, Emitter, Manager};
-use crate::database::database::{create_or_update_effect, get_effect_active};
+use crate::inits::sounds::init_sound::init;
+use crate::types::sounds::type_sounds::Sound;
 use crate::utils::init_tray::init_tray;
-use crate::utils::sound_stream::{SoundEffect, SoundEffectFront, SoundFront, SoundStream};
+use rodio::Source;
+use std::sync::{Mutex, OnceLock};
+use tauri::{Emitter, Manager};
 
 mod database;
 mod utils;
 mod sounds;
+mod inits;
+mod types;
+mod global;
 
-static SOUND_LIST: OnceLock<Mutex<utils::sound_stream::SoundList>> = OnceLock::new();
-
-fn init_sounds() {
-    let mut list = Vec::new();
-    list.push(SoundStream {
-        effects: vec![
-            SoundEffect {
-                player: None,
-                path: "sounds/rain/effects/thunder".to_string(),
-                data: utils::sound_stream::SoundEffectData {
-                    id: "thunder".to_string(),
-                    active: Arc::new(AtomicBool::new(get_effect_active("rain", "thunder"))),
-                }
-            },
-            SoundEffect {
-                player: None,
-                path: "sounds/rain/effects/triangle".to_string(),
-                data: utils::sound_stream::SoundEffectData {
-                    id: "triangle".to_string(),
-                    active: Arc::new(AtomicBool::new(get_effect_active("rain", "triangle"))),
-                }
-            }
-
-        ],
-        handle: None,
-        player: None,
-        play: Arc::new(AtomicBool::new(false)),
-        volume: Arc::new(Mutex::new(database::database::get_volume("rain"))),
-        fade_volume: Arc::new(Mutex::new(1.0)),
-        drift_volume: Arc::new(Mutex::new(1.0)),
-        data: utils::sound_stream::Structures {
-            id: "rain".to_string(),
-            play: false,
-            volume: database::database::get_volume("rain"),
-            path: "sounds/rain".to_string(),
-        }
-    });
-
-    list.push(SoundStream {
-        effects: vec![
-            SoundEffect {
-                player: None,
-                path: "sounds/beach/effects/seagull".to_string(),
-                data: utils::sound_stream::SoundEffectData {
-                    id: "seagull".to_string(),
-                    active: Arc::new(AtomicBool::new(get_effect_active("beach", "seagull"))),
-                }
-            },
-        ],
-        handle: None,
-        player: None,
-        play: Arc::new(AtomicBool::new(false)),
-        volume: Arc::new(Mutex::new(database::database::get_volume("beach"))),
-        fade_volume: Arc::new(Mutex::new(1.0)),
-        drift_volume: Arc::new(Mutex::new(1.0)),
-        data: utils::sound_stream::Structures {
-            id: "beach".to_string(),
-            play: false,
-            volume: database::database::get_volume("beach"),
-            path: "sounds/beach".to_string(),
-        }
-    });
-
-
-    list.push(SoundStream {
-        effects: vec![],
-        handle: None,
-        player: None,
-        play: Arc::new(AtomicBool::new(false)),
-        volume: Arc::new(Mutex::new(database::database::get_volume("waterfall"))),
-        fade_volume: Arc::new(Mutex::new(1.0)),
-        drift_volume: Arc::new(Mutex::new(1.0)),
-        data: utils::sound_stream::Structures {
-            id: "waterfall".to_string(),
-            play: false,
-            volume: database::database::get_volume("waterfall"),
-            path: "sounds/waterfall".to_string(),
-        }
-    });
-
-    list.push(SoundStream {
-        effects: vec![],
-        handle: None,
-        player: None,
-        play: Arc::new(AtomicBool::new(false)),
-        volume: Arc::new(Mutex::new(database::database::get_volume("fire"))),
-        fade_volume: Arc::new(Mutex::new(1.0)),
-        drift_volume: Arc::new(Mutex::new(1.0)),
-        data: utils::sound_stream::Structures {
-            id: "fire".to_string(),
-            play: false,
-            volume: database::database::get_volume("fire"),
-            path: "sounds/fire".to_string(),
-        }
-    });
-
-
-    SOUND_LIST.get_or_init(|| Mutex::new(list));
-}
+static SOUND_LIST: OnceLock<Mutex<Vec<Sound>>> = OnceLock::new();
 
 #[tauri::command]
 fn get_sounds() -> Vec<SoundFront> {
@@ -132,7 +35,7 @@ fn get_sounds() -> Vec<SoundFront> {
 }
 #[tauri::command]
 fn toggle_effect(sound_id: String, effect_id: String) -> Vec<SoundFront> {
-        let mut list = SOUND_LIST.get().unwrap().lock().unwrap();
+    let mut list = SOUND_LIST.get().unwrap().lock().unwrap();
 
     if let Some(sound) = list.iter_mut().find(|s| s.data.id == sound_id) {
         if let Some(effect) = sound.effects.iter_mut().find(|e| e.data.id == effect_id) {
@@ -246,14 +149,9 @@ pub fn run() {
 
     database::database::init_db();
 
-    let defaults = ["rain", "beach"];
-    for default in defaults {
-        database::database::create_if_missing(default);
-    }
-
     database::database::init_database_settings();
 
-    init_sounds();
+    SOUND_LIST.get_or_init(|| Mutex::new(init()));
 
     sounds::setup::setup::setup();
 

@@ -55,12 +55,6 @@ pub fn init_db() {
     let path = get_database_path();
     let conn = Connection::open(path).unwrap();
 
-    conn.execute("CREATE TABLE IF NOT EXISTS sounds (
-            id TEXT PRIMARY KEY,
-            volume REAL
-        )
-        ",[]).unwrap();
-
     conn.execute("CREATE TABLE IF NOT EXISTS settings (
             id TEXT PRIMARY KEY,
             value TEXT
@@ -69,7 +63,17 @@ pub fn init_db() {
     DATABASE.set(Mutex::new(conn)).unwrap();
 }
 
-pub fn create_if_missing_effect() {
+pub fn database_create_sound_table_if_missing() {
+    let conn = db();
+
+    conn.execute("CREATE TABLE IF NOT EXISTS sounds (
+            id TEXT PRIMARY KEY,
+            volume REAL
+        )
+        ",[]).unwrap();
+}
+
+pub fn database_create_sound_effect_table_if_missing() {
     let conn = db();
 
     conn.execute(
@@ -86,19 +90,31 @@ pub fn create_if_missing_effect() {
     ).unwrap();
 }
 
-pub fn create_or_update_effect(sound: &str, effect: &str, active: bool) {
+pub fn database_create_sound_effect_if_missing(sound: &str, effect: &str) {
 
-    create_if_missing_effect();
+    database_create_sound_effect_table_if_missing();
 
     let conn = db();
 
     conn.execute(
-        "INSERT INTO effects (effect, sound, active)
-            VALUES (?1, ?2, ?3)
-            ON CONFLICT(effect, sound)
-            DO UPDATE SET active = excluded.active",
-        rusqlite::params![effect, sound, active as i32],
+        "INSERT OR IGNORE INTO effects (effect, sound, active) VALUES (?1, ?2, 0)",
+        rusqlite::params![effect, sound],
     ).unwrap();
+}
+
+pub fn database_sync_sound_effect(expected_effects: &[(&str, &str)]) {
+    let conn = db();
+
+    let expected_effects_list = expected_effects
+        .iter()
+        .map(|(sound, effect)| format!("('{}', '{}')", sound, effect))
+        .collect::<Vec<_>>()
+        .join(", ");
+
+    conn.execute_batch(&format!(
+        "DELETE FROM effects WHERE (sound, effect) NOT IN ({})",
+        expected_effects_list
+    )).unwrap();
 }
 
 pub fn get_effect_active(sound: &str, effect: &str) -> bool {
@@ -115,13 +131,31 @@ pub fn get_effect_active(sound: &str, effect: &str) -> bool {
     ).unwrap_or(false)
 }
 
-pub fn create_if_missing(sound: &str) {
+pub fn database_create_sound_if_missing(sound: &str) {
+    database_create_sound_table_if_missing();
+
     let conn = db();
 
     conn.execute(
         "INSERT OR IGNORE INTO sounds (id, volume) VALUES (?1, 0.5)",
         [sound],
     ).unwrap();
+}
+
+pub fn database_sync_sound(expected_sounds: &[&str]) {
+
+    let conn = db();
+
+    let expected_sounds_list = expected_sounds
+        .iter()
+        .map(|s| format!("'{}'", s))
+        .collect::<Vec<_>>()
+        .join(", ");
+
+    conn.execute_batch(&format!(
+        "DELETE FROM sounds WHERE id NOT IN ({})",
+        expected_sounds_list
+    )).unwrap();
 }
 
 pub fn create_setting_if_missing(key: &str, value: &str) {

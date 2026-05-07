@@ -1,0 +1,18 @@
+[
+  {
+    "id": "rain",
+    "effects": ["thunder", "triangle"]
+  },
+  {
+    "id": "beach",
+    "effects": ["seagull"]
+  },
+  {
+    "id": "waterfall",
+    "effects": []
+  },
+  {
+    "id": "fire",
+    "effects": []
+  }
+]
