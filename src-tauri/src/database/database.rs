@@ -63,6 +63,8 @@ pub fn init_db() {
     DATABASE.set(Mutex::new(conn)).unwrap();
 }
 
+// Sounds
+
 pub fn database_create_sound_table_if_missing() {
     let conn = db();
 
@@ -72,6 +74,57 @@ pub fn database_create_sound_table_if_missing() {
         )
         ",[]).unwrap();
 }
+
+pub fn database_create_sound_if_missing(sound: &str) {
+    database_create_sound_table_if_missing();
+
+    let conn = db();
+
+    conn.execute(
+        "INSERT OR IGNORE INTO sounds (id, volume) VALUES (?1, 0.5)",
+        [sound],
+    ).unwrap();
+}
+
+pub fn database_sync_sound(expected_sounds: &[&str]) {
+    let conn = db();
+
+    let expected_sounds_list = expected_sounds
+        .iter()
+        .map(|s| format!("'{}'", s))
+        .collect::<Vec<_>>()
+        .join(", ");
+
+    conn.execute_batch(&format!(
+        "DELETE FROM sounds WHERE id NOT IN ({})",
+        expected_sounds_list
+    )).unwrap();
+}
+
+pub fn database_get_sound_volume(sound: &str) -> f32 {
+    let conn = db();
+
+    conn.query_row(
+        "SELECT volume FROM sounds WHERE id = ?1",
+        [sound],
+        |row| row.get(0),
+    ).unwrap_or(0.5)
+}
+
+pub fn database_set_sound_volume(sound: &str, volume: f32) {
+    let conn = db();
+
+    conn.execute(
+        "UPDATE sounds SET volume = ?1 WHERE id = ?2",
+        rusqlite::params![volume, sound],
+    ).unwrap();
+}
+
+
+
+
+
+
 
 pub fn database_create_sound_effect_table_if_missing() {
     let conn = db();
@@ -117,7 +170,7 @@ pub fn database_sync_sound_effect(expected_effects: &[(&str, &str)]) {
     )).unwrap();
 }
 
-pub fn get_effect_active(sound: &str, effect: &str) -> bool {
+pub fn database_get_sound_effect_active(sound: &str, effect: &str) -> bool {
     let conn = db();
 
     conn.query_row(
@@ -131,57 +184,11 @@ pub fn get_effect_active(sound: &str, effect: &str) -> bool {
     ).unwrap_or(false)
 }
 
-pub fn database_create_sound_if_missing(sound: &str) {
-    database_create_sound_table_if_missing();
-
-    let conn = db();
-
-    conn.execute(
-        "INSERT OR IGNORE INTO sounds (id, volume) VALUES (?1, 0.5)",
-        [sound],
-    ).unwrap();
-}
-
-pub fn database_sync_sound(expected_sounds: &[&str]) {
-
-    let conn = db();
-
-    let expected_sounds_list = expected_sounds
-        .iter()
-        .map(|s| format!("'{}'", s))
-        .collect::<Vec<_>>()
-        .join(", ");
-
-    conn.execute_batch(&format!(
-        "DELETE FROM sounds WHERE id NOT IN ({})",
-        expected_sounds_list
-    )).unwrap();
-}
-
 pub fn create_setting_if_missing(key: &str, value: &str) {
     let conn = db();
 
     conn.execute(
         "INSERT OR IGNORE INTO settings (id, value) VALUES (?1, ?2)",
         rusqlite::params![key, value],
-    ).unwrap();
-}
-
-pub fn get_volume(sound: &str) -> f32 {
-    let conn = db();
-
-    conn.query_row(
-        "SELECT volume FROM sounds WHERE id = ?1",
-        [sound],
-        |row| row.get(0),
-    ).unwrap_or(0.5)
-}
-
-pub fn set_volume(sound: &str, volume: f32) {
-    let conn = db();
-
-    conn.execute(
-        "UPDATE sounds SET volume = ?1 WHERE id = ?2",
-        rusqlite::params![volume, sound],
     ).unwrap();
 }

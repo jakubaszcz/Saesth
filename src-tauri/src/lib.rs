@@ -14,7 +14,7 @@ mod global;
 
 static SOUND_LIST: OnceLock<Mutex<Vec<Sound>>> = OnceLock::new();
 
-#[tauri::command]
+/*#[tauri::command]
 fn get_sounds() -> Vec<SoundFront> {
 
     print!("get_sounds");
@@ -76,8 +76,6 @@ fn change_volume(id: String, volume: f32) -> Vec<SoundFront> {
         }
     }
 
-    print!("volume changerd");
-
     list.iter()
         .map(|sound| SoundFront {
             data: sound.data.clone(),
@@ -128,19 +126,19 @@ fn toggle_play(id: String) -> Vec<SoundFront> {
         })
         .collect()
 }
-
+*/
 #[tauri::command]
-fn toggle_setup(key: sounds::setup::setup::SetupKeys) {
+fn toggle_setup(key: types::setup::type_setup::SetupKeys) {
     sounds::setup::setup::toggle_setup(key)
 }
 
 #[tauri::command]
-fn volume_setup(key: sounds::setup::setup::SetupKeys, value: f32) {
+fn volume_setup(key: types::setup::type_setup::SetupKeys, value: f32) {
     sounds::setup::setup::volume_setup(key, value);
 }
 
 #[tauri::command]
-fn fetch_setup() -> sounds::setup::setup::SetupDTO {
+fn fetch_setup() -> types::setup::type_setup::SetupDTO {
     sounds::setup::setup::fetch_setup()
 }
 
@@ -197,12 +195,6 @@ pub fn run() {
         })
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
-            toggle_effect,
-            get_sounds,
-            toggle_play,
-            change_volume,
-            get_settings,
-            set_settings,
             fetch_setup,
             toggle_setup,
             volume_setup,

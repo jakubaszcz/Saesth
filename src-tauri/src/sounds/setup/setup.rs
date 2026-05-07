@@ -5,53 +5,12 @@ use std::thread;
 use rdev::{listen, Event, EventType};
 use rodio::{DeviceSinkBuilder, MixerDeviceSink, Player};
 use rodio::buffer::SamplesBuffer;
+use crate::types::setup::type_setup::{Setup, SetupDTO, SetupKeys};
+use crate::inits::setup::init_setup::init;
 use crate::sounds::random_sound;
 use crate::utils;
 
-#[derive(Debug, serde::Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum SetupKeys {
-    SetupGlobalToggle,
-    SetupGlobalVolume,
-    SetupKeyboardToggle,
-    SetupKeyboardVolume,
-    SetupMouseToggle,
-    SetupMouseVolume,
-}
-
-struct ComponentSetup {
-    setup_global_toggle: Arc<AtomicBool>,
-    setup_global_volume: Arc<Mutex<f32>>,
-    setup_keyboard_toggle: Arc<AtomicBool>,
-    setup_keyboard_volume: Arc<Mutex<f32>>,
-    setup_mouse_toggle: Arc<AtomicBool>,
-    setup_mouse_volume: Arc<Mutex<f32>>,
-}
-
-#[derive(serde::Serialize)]
-pub struct SetupDTO {
-    pub setup_global_toggle: bool,
-    pub setup_global_volume: f32,
-    pub setup_keyboard_toggle: bool,
-    pub setup_keyboard_volume: f32,
-    pub setup_mouse_toggle: bool,
-    pub setup_mouse_volume: f32,
-}
-
-impl From<&ComponentSetup> for SetupDTO {
-    fn from(setup: &ComponentSetup) -> Self {
-        Self {
-            setup_global_toggle: setup.setup_global_toggle.load(Ordering::Relaxed),
-            setup_global_volume: *setup.setup_global_volume.lock().unwrap(),
-            setup_keyboard_toggle: setup.setup_keyboard_toggle.load(Ordering::Relaxed),
-            setup_keyboard_volume: *setup.setup_keyboard_volume.lock().unwrap(),
-            setup_mouse_toggle: setup.setup_mouse_toggle.load(Ordering::Relaxed),
-            setup_mouse_volume: *setup.setup_mouse_volume.lock().unwrap(),
-        }
-    }
-}
-
-static SETUP: OnceLock<Mutex<ComponentSetup>> = OnceLock::new();
+static SETUP: OnceLock<Mutex<Setup>> = OnceLock::new();
 
 enum Type {
     Keys,
@@ -60,7 +19,7 @@ enum Type {
     LMB,
     RMB,
 }
-fn generate_sound(kind: &Type, sample: f32, setup: &ComponentSetup) -> Vec<f32> {
+fn generate_sound(kind: &Type, sample: f32, setup: &Setup) -> Vec<f32> {
 
     let sample_rate = sample;
     let duration = match kind {
@@ -124,7 +83,7 @@ fn generate_sound(kind: &Type, sample: f32, setup: &ComponentSetup) -> Vec<f32> 
     samples
 }
 
-fn play_sound(kind: Type, player: &Arc<Mutex<Player>>, setup: &ComponentSetup) {
+fn play_sound(kind: Type, player: &Arc<Mutex<Player>>, setup: &Setup) {
 
 
     let volume = match kind {
@@ -149,22 +108,9 @@ fn play_sound(kind: Type, player: &Arc<Mutex<Player>>, setup: &ComponentSetup) {
     player.play();
 }
 
-fn init_setup() {
-    SETUP.get_or_init(|| {
-        Mutex::new(ComponentSetup {
-            setup_global_toggle: Arc::new(AtomicBool::new(true)),
-            setup_global_volume: Arc::new(Mutex::new(0.5)),
-            setup_keyboard_toggle: Arc::new(AtomicBool::new(true)),
-            setup_keyboard_volume: Arc::new(Mutex::new(0.5)),
-            setup_mouse_toggle: Arc::new(AtomicBool::new(true)),
-            setup_mouse_volume: Arc::new(Mutex::new(0.5)),
-        })
-    });
-}
-
 pub fn setup() {
 
-    init_setup();
+    SETUP.get_or_init(|| Mutex::new(init()));
 
     thread::spawn(move || {
 

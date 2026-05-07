@@ -3,7 +3,7 @@ use std::sync::atomic::AtomicBool;
 use rusqlite::fallible_iterator::FallibleIterator;
 use serde::Deserialize;
 use crate::global::global::{PREFIX_FOR_SOUND, PREFIX_FOR_SOUND_EFFECT};
-use crate::database::database::{get_effect_active, get_volume};
+use crate::database::database::{database_get_sound_effect_active, database_get_sound_volume};
 use crate::inits::sounds::init_tables_sound::init_tables;
 use crate::types::sounds::type_sounds::{Sound, Effect};
 
@@ -22,10 +22,10 @@ fn make_stream(id: &str, effects: Vec<Effect>) -> Sound {
         handle: None,
         player: None,
         play: Arc::new(AtomicBool::new(false)),
-        volume: Arc::new(Mutex::new(get_volume(&sound_id.clone()))),
+        volume: Arc::new(Mutex::new(database_get_sound_volume(&sound_id.clone()))),
         fade_volume: Arc::new(Mutex::new(1.0)),
         drift_volume: Arc::new(Mutex::new(1.0)),
-        effects: effects
+        effects
     }
 }
 
@@ -36,7 +36,7 @@ fn make_effect(sound_id: &str, id: &str) -> Effect {
     Effect {
         effect_id: effect_id.clone(),
         active: Arc::new(AtomicBool::new(
-            get_effect_active(format!("{}_{}", PREFIX_FOR_SOUND, sound_id).as_str(), effect_id.clone().as_str()))
+            database_get_sound_effect_active(format!("{}_{}", PREFIX_FOR_SOUND, sound_id).as_str(), effect_id.clone().as_str()))
         ),
     }
 }

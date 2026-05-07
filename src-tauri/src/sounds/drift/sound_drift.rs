@@ -1,4 +1,4 @@
-use std::sync::atomic::Ordering;
+/*use std::sync::atomic::Ordering;
 use std::thread;
 use std::time::Duration;
 use rand::RngExt;
@@ -75,4 +75,4 @@ pub(crate) fn song_drift(sound: &mut crate::utils::sound_stream::SoundStream) {
             }
         }
     });
-}
+}*/
