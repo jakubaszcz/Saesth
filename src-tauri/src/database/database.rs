@@ -4,43 +4,12 @@ use std::path::PathBuf;
 use rusqlite::Connection;
 use rusqlite::fallible_iterator::FallibleIterator;
 use std::sync::{Mutex, OnceLock};
-
-static DATABASE: OnceLock<Mutex<Connection>> = OnceLock::new();
-
-fn db() -> std::sync::MutexGuard<'static, Connection> {
-    DATABASE
-        .get()
-        .unwrap()
-        .lock()
-        .unwrap()
-}
-
-fn get_database_path() -> PathBuf {
-    let directory = ProjectDirs::from("com", "saesth", "saesth").unwrap();
-
-    let local = directory.data_dir();
-    fs::create_dir_all(local).unwrap();
-
-
-    local.join("database.db")
-}
-
-pub fn init_db() {
-    let path = get_database_path();
-    let conn = Connection::open(path).unwrap();
-
-    conn.execute("CREATE TABLE IF NOT EXISTS settings.json (
-            id TEXT PRIMARY KEY,
-            value TEXT
-        )", []).unwrap();
-
-    DATABASE.set(Mutex::new(conn)).unwrap();
-}
+use crate::global::global::global_database_get;
 
 // Settings
 
 pub fn database_create_settings_table_if_missing() {
-    let conn = db();
+    let conn = global_database_get();
 
     conn.execute("CREATE TABLE IF NOT EXISTS settings (
             id TEXT PRIMARY KEY,
@@ -51,7 +20,7 @@ pub fn database_create_settings_table_if_missing() {
 pub fn database_create_setting_if_missing(setting: &str) {
     database_create_settings_table_if_missing();
 
-    let conn = db();
+    let conn = global_database_get();
 
     conn.execute(
         "INSERT OR IGNORE INTO settings (id, active) VALUES (?1, 0)",
@@ -61,7 +30,7 @@ pub fn database_create_setting_if_missing(setting: &str) {
 }
 
 pub fn database_sync_setting(expected_settings: &[&str]) {
-    let conn = db();
+    let conn = global_database_get();
 
     let expected_sounds_list = expected_settings
         .iter()
@@ -76,7 +45,7 @@ pub fn database_sync_setting(expected_settings: &[&str]) {
 }
 
 pub fn database_get_setting_active(setting: &str) -> bool {
-    let conn = db();
+    let conn = global_database_get();
 
     conn.query_row(
         "SELECT active FROM settings WHERE id = ?1",
@@ -91,7 +60,7 @@ pub fn database_get_setting_active(setting: &str) -> bool {
 // Sounds
 
 pub fn database_create_sound_table_if_missing() {
-    let conn = db();
+    let conn = global_database_get();
 
     conn.execute("CREATE TABLE IF NOT EXISTS sounds (
             id TEXT PRIMARY KEY,
@@ -103,7 +72,7 @@ pub fn database_create_sound_table_if_missing() {
 pub fn database_create_sound_if_missing(sound: &str) {
     database_create_sound_table_if_missing();
 
-    let conn = db();
+    let conn = global_database_get();
 
     conn.execute(
         "INSERT OR IGNORE INTO sounds (id, volume) VALUES (?1, 0.5)",
@@ -112,7 +81,7 @@ pub fn database_create_sound_if_missing(sound: &str) {
 }
 
 pub fn database_sync_sound(expected_sounds: &[&str]) {
-    let conn = db();
+    let conn = global_database_get();
 
     let expected_sounds_list = expected_sounds
         .iter()
@@ -127,7 +96,7 @@ pub fn database_sync_sound(expected_sounds: &[&str]) {
 }
 
 pub fn database_get_sound_volume(sound: &str) -> f32 {
-    let conn = db();
+    let conn = global_database_get();
 
     conn.query_row(
         "SELECT volume FROM sounds WHERE id = ?1",
@@ -137,7 +106,7 @@ pub fn database_get_sound_volume(sound: &str) -> f32 {
 }
 
 pub fn database_set_sound_volume(sound: &str, volume: f32) {
-    let conn = db();
+    let conn = global_database_get();
 
     conn.execute(
         "UPDATE sounds SET volume = ?1 WHERE id = ?2",
@@ -152,7 +121,7 @@ pub fn database_set_sound_volume(sound: &str, volume: f32) {
 
 
 pub fn database_create_sound_effect_table_if_missing() {
-    let conn = db();
+    let conn = global_database_get();
 
     conn.execute(
        "CREATE TABLE IF NOT EXISTS effects (
@@ -172,7 +141,7 @@ pub fn database_create_sound_effect_if_missing(sound: &str, effect: &str) {
 
     database_create_sound_effect_table_if_missing();
 
-    let conn = db();
+    let conn = global_database_get();
 
     conn.execute(
         "INSERT OR IGNORE INTO effects (effect, sound, active) VALUES (?1, ?2, 0)",
@@ -181,7 +150,7 @@ pub fn database_create_sound_effect_if_missing(sound: &str, effect: &str) {
 }
 
 pub fn database_sync_sound_effect(expected_effects: &[(&str, &str)]) {
-    let conn = db();
+    let conn = global_database_get();
 
     let expected_effects_list = expected_effects
         .iter()
@@ -196,7 +165,7 @@ pub fn database_sync_sound_effect(expected_effects: &[(&str, &str)]) {
 }
 
 pub fn database_get_sound_effect_active(sound: &str, effect: &str) -> bool {
-    let conn = db();
+    let conn = global_database_get();
 
     conn.query_row(
         "SELECT active FROM effects
@@ -210,7 +179,7 @@ pub fn database_get_sound_effect_active(sound: &str, effect: &str) -> bool {
 }
 
 pub fn create_setting_if_missing(key: &str, value: &str) {
-    let conn = db();
+    let conn = global_database_get();
 
     conn.execute(
         "INSERT OR IGNORE INTO settings.json (id, value) VALUES (?1, ?2)",

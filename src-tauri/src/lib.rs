@@ -143,9 +143,6 @@ fn fetch_setup() -> types::setup::type_setup::SetupDTO {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-
-    database::database::init_db();
-
     inits::inits::inits();
 
     sounds::setup::setup::setup();
