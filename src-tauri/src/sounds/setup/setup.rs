@@ -107,9 +107,6 @@ fn play_sound(kind: Type, player: &Arc<Mutex<Player>>, setup: &Setup) {
 }
 
 pub fn setup() {
-
-    SETUP.get_or_init(|| Mutex::new(init()));
-
     thread::spawn(move || {
 
         let handle = DeviceSinkBuilder::open_default_sink()

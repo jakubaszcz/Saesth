@@ -1,6 +1,7 @@
 use std::sync::{Mutex, OnceLock};
 use rusqlite::Connection;
 use crate::types::settings::type_settings::Setting;
+use crate::types::setup::type_setup::Setup;
 use crate::types::sounds::type_sounds::Sound;
 
 pub static PREFIX_FOR_SOUND: &str = "sound";
@@ -17,4 +18,5 @@ pub fn global_database_get() -> std::sync::MutexGuard<'static, Connection> {
         .unwrap()
 }
 pub static SOUNDS: OnceLock<Mutex<Vec<Sound>>> = OnceLock::new();
+pub static SETUP: OnceLock<Mutex<Setup>> = OnceLock::new();
 pub static SETTINGS: OnceLock<Mutex<Vec<Setting>>> = OnceLock::new();

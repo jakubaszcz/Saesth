@@ -10,9 +10,6 @@ mod inits;
 mod types;
 mod global;
 
-static SOUND_LIST: OnceLock<Mutex<Vec<Sound>>> = OnceLock::new();
-static SETTING_LIST: OnceLock<Mutex<Vec<Setting>>> = OnceLock::new();
-
 /*#[tauri::command]
 fn get_sounds() -> Vec<SoundFront> {
 
