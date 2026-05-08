@@ -15,32 +15,6 @@ fn db() -> std::sync::MutexGuard<'static, Connection> {
         .unwrap()
 }
 
-pub fn init_database_settings() {
-    create_setting_if_missing("close_to_tray", "true");
-}
-
-pub fn set_setting(key: &str, value: &str) {
-    let conn = db();
-
-    conn.execute(
-        "INSERT INTO settings (id, value)
-         VALUES (?1, ?2)
-         ON CONFLICT(id)
-         DO UPDATE SET value = excluded.value",
-        rusqlite::params![key, value],
-    ).unwrap();
-}
-
-pub fn get_setting(key: &str) -> String {
-    let conn = db();
-
-    conn.query_row(
-        "SELECT value FROM settings WHERE id = ?1",
-        [key],
-        |row| row.get(0),
-    ).unwrap_or_else(|_| "".to_string())
-}
-
 fn get_database_path() -> PathBuf {
     let directory = ProjectDirs::from("com", "saesth", "saesth").unwrap();
 
@@ -55,12 +29,63 @@ pub fn init_db() {
     let path = get_database_path();
     let conn = Connection::open(path).unwrap();
 
-    conn.execute("CREATE TABLE IF NOT EXISTS settings (
+    conn.execute("CREATE TABLE IF NOT EXISTS settings.json (
             id TEXT PRIMARY KEY,
             value TEXT
         )", []).unwrap();
 
     DATABASE.set(Mutex::new(conn)).unwrap();
+}
+
+// Settings
+
+pub fn database_create_settings_table_if_missing() {
+    let conn = db();
+
+    conn.execute("CREATE TABLE IF NOT EXISTS settings (
+            id TEXT PRIMARY KEY,
+            active  INTEGER NOT NULL DEFAULT 0
+    ", []).unwrap();
+}
+
+pub fn database_create_setting_if_missing(setting: &str) {
+    database_create_settings_table_if_missing();
+
+    let conn = db();
+
+    conn.execute(
+        "INSERT OR IGNORE INTO settings (id, active) VALUES (?1, 0)",
+        [setting],
+    ).unwrap();
+
+}
+
+pub fn database_sync_setting(expected_settings: &[&str]) {
+    let conn = db();
+
+    let expected_sounds_list = expected_settings
+        .iter()
+        .map(|s| format!("'{}'", s))
+        .collect::<Vec<_>>()
+        .join(", ");
+
+    conn.execute_batch(&format!(
+        "DELETE FROM settings WHERE id NOT IN ({})",
+        expected_sounds_list
+    )).unwrap();
+}
+
+pub fn database_get_setting_active(setting: &str) -> bool {
+    let conn = db();
+
+    conn.query_row(
+        "SELECT active FROM settings WHERE id = ?1",
+        [setting],
+        |row| {
+            let active: i32 = row.get(0)?;
+            Ok(active == 1)
+        },
+    ).unwrap_or(false)
 }
 
 // Sounds
@@ -188,7 +213,7 @@ pub fn create_setting_if_missing(key: &str, value: &str) {
     let conn = db();
 
     conn.execute(
-        "INSERT OR IGNORE INTO settings (id, value) VALUES (?1, ?2)",
+        "INSERT OR IGNORE INTO settings.json (id, value) VALUES (?1, ?2)",
         rusqlite::params![key, value],
     ).unwrap();
 }

@@ -2,6 +2,7 @@ use crate::types::sounds::type_sounds::Sound;
 use rodio::Source;
 use std::sync::{Mutex, OnceLock};
 use tauri::{Emitter, Manager};
+use crate::types::settings::type_settings::Setting;
 
 mod database;
 mod sounds;
@@ -10,6 +11,7 @@ mod types;
 mod global;
 
 static SOUND_LIST: OnceLock<Mutex<Vec<Sound>>> = OnceLock::new();
+static SETTING_LIST: OnceLock<Mutex<Vec<Setting>>> = OnceLock::new();
 
 /*#[tauri::command]
 fn get_sounds() -> Vec<SoundFront> {
