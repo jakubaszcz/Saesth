@@ -21,7 +21,7 @@ fn make_setting(id: &str) -> Setting {
         value: Arc::new(AtomicBool::new(database_get_setting_active(setting_id.as_str()))),
     }
 }
-fn init() -> Vec<Setting> {
+pub fn init() -> Vec<Setting> {
 
     {
         init_tables()

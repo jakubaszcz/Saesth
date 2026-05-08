@@ -146,9 +146,7 @@ pub fn run() {
 
     database::database::init_db();
 
-    database::database::init_database_settings();
-
-    SOUND_LIST.get_or_init(|| Mutex::new(inits::sounds::init_sound::init()));
+    inits::inits::inits();
 
     sounds::setup::setup::setup();
 
