@@ -1,4 +1,4 @@
-use crate::types::sounds::type_sounds::Sound;
+use crate::types::sounds::type_sounds::{Sound, SoundDTO};
 use rodio::Source;
 use std::sync::{Mutex, OnceLock};
 use tauri::{Emitter, Manager};
@@ -10,25 +10,19 @@ mod inits;
 mod types;
 mod global;
 
-/*#[tauri::command]
-fn get_sounds() -> Vec<SoundFront> {
+mod commands;
 
-    print!("get_sounds");
-
-    let list = SOUND_LIST.get().unwrap().lock().unwrap();
-    list.iter()
-        .map(|sound| SoundFront {
-            data: sound.data.clone(),
-            effects: sound.effects
-                .iter()
-                .map(|effect| SoundEffectFront {
-                    id: effect.data.id.clone(),
-                    active: effect.data.active.load(Ordering::Relaxed),
-                })
-                .collect(),
-        })
-        .collect()
+#[tauri::command]
+fn fetch_sounds() -> Vec<SoundDTO> {
+    commands::sounds::commands_sounds::commands_sounds_fetch_sounds()
 }
+
+#[tauri::command]
+fn toggle_sound(sound_id: String) -> bool {
+    commands::sounds::commands_sounds::commands_sounds_toggle_sound(sound_id)
+}
+
+/*
 #[tauri::command]
 fn toggle_effect(sound_id: String, effect_id: String) -> Vec<SoundFront> {
     let mut list = SOUND_LIST.get().unwrap().lock().unwrap();
@@ -114,7 +108,7 @@ fn toggle_play(id: String) -> Vec<SoundFront> {
 }
 */
 
-#[tauri::command]
+/*#[tauri::command]
 fn set_settings(id: String, value: String) {
     database::database::set_setting(&*id, &*value);
 }
@@ -123,7 +117,7 @@ fn set_settings(id: String, value: String) {
 fn get_settings(id: String) -> String {
     database::database::get_setting(id.as_str())
 }
-#[tauri::command]
+#[tauri::command]*/
 fn toggle_setup(key: types::setup::type_setup::SetupKeys) {
     sounds::setup::setup::toggle_setup(key)
 }
@@ -177,19 +171,18 @@ pub fn run() {
             Ok(())
         })
         .on_window_event(|window, event| {
-            if database::database::get_setting("close_to_tray") == "true" {
+            /*if database::database::get_setting("close_to_tray") == "true" {
                 if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                     api.prevent_close();
                     window.hide().unwrap();
                 }
-            }
+            }*/
         })
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
-            set_settings,
-            get_settings,
+            fetch_sounds,
+            toggle_sound,
             fetch_setup,
-            toggle_setup,
             volume_setup,
         ])
         .run(tauri::generate_context!())
