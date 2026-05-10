@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use serde::Deserialize;
-use crate::database::settings::database_settings::database_get_setting_active;
+use crate::database::settings::database_settings::{database_settings_get_active_setting};
 use crate::global::global::PREFIX_FOR_SETTING;
 use crate::inits::settings::init_tables_settings::init_tables;
 use crate::types::settings::type_settings::Setting;
@@ -18,7 +18,7 @@ fn make_setting(id: &str) -> Setting {
 
     Setting {
         setting_id: setting_id.clone(),
-        value: Arc::new(AtomicBool::new(database_get_setting_active(setting_id.as_str()))),
+        value: Arc::new(AtomicBool::new(database_settings_get_active_setting(setting_id.as_str()))),
     }
 }
 pub fn init() -> Vec<Setting> {

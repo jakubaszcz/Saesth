@@ -12,3 +12,17 @@ pub struct Setting {
     pub setting_id: String,
     pub value: Arc<AtomicBool>,
 }
+
+pub struct SettingDTO {
+    pub setting_id: String,
+    pub value: bool,
+}
+
+impl From<&Setting> for SettingDTO {
+    fn from(setting: &Setting) -> Self {
+        Self {
+            setting_id: setting.setting_id.clone(),
+            value: setting.value.load(std::sync::atomic::Ordering::Relaxed),
+        }
+    }   
+}

@@ -2,7 +2,7 @@ use crate::types::sounds::type_sounds::{Sound, SoundDTO};
 use rodio::Source;
 use std::sync::{Mutex, OnceLock};
 use tauri::{Emitter, Manager};
-use crate::types::settings::type_settings::Setting;
+use crate::types::settings::type_settings::{Setting, SettingDTO};
 use crate::types::setup::type_setup::{SetupDTO, SetupKeys};
 
 mod database;
@@ -33,21 +33,21 @@ fn volume_sound(sound_id: String, volume: f32) -> f32 {
     commands::sounds::commands_sounds::commands_sounds_volume_sound(sound_id, volume)
 }
 
-/*#[tauri::command]
-fn set_settings(id: String, value: String) {
-    database::database::set_setting(&*id, &*value);
+#[tauri::command]
+fn fetch_settings() -> Vec<SettingDTO> {
+    commands::settings::commands_settings::commands_settings_fetch_settings()
 }
 
 #[tauri::command]
-fn get_settings(id: String) -> String {
-    database::database::get_setting(id.as_str())
+fn toggle_setting(setting_id: String, value: bool) -> bool {
+    commands::settings::commands_settings::commands_settings_toggle_setting(setting_id, value)
 }
-#[tauri::command]*/
 
 #[tauri::command]
 fn fetch_setup() -> SetupDTO {
     commands::setup::commands_setup::commands_setup_fetch_setup()
 }
+
 #[tauri::command]
 fn toggle_setup(key: SetupKeys) {
     commands::setup::commands_setup::commands_setup_toggle_setup(key);
@@ -113,6 +113,8 @@ pub fn run() {
             fetch_setup,
             toggle_setup,
             volume_setup,
+            fetch_settings,
+            toggle_setting,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

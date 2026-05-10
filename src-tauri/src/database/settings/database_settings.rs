@@ -36,15 +36,22 @@ pub fn database_sync_setting(expected_settings: &[&str]) {
     )).unwrap();
 }
 
-pub fn database_get_setting_active(setting: &str) -> bool {
+pub fn database_settings_get_active_setting(setting: &str) -> bool {
     let conn = global_database_get();
 
     conn.query_row(
         "SELECT active FROM settings WHERE id = ?1",
         [setting],
-        |row| {
-            let active: i32 = row.get(0)?;
-            Ok(active == 1)
-        },
-    ).unwrap_or(false)
+        |row| row.get::<_, bool>(0),
+    )
+        .unwrap_or(false)
+}
+
+pub fn database_settings_set_active_setting(setting: &str, active: bool) {
+    let conn = global_database_get();
+
+    conn.execute(
+        "UPDATE settings SET active = ?1 WHERE id = ?2",
+        rusqlite::params![active, setting],
+    ).unwrap();
 }

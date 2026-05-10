@@ -55,12 +55,6 @@ pub fn database_set_sound_volume(sound: &str, volume: f32) {
     ).unwrap();
 }
 
-
-
-
-
-
-
 pub fn database_create_sound_effect_table_if_missing() {
     let conn = global_database_get();
 
@@ -117,4 +111,13 @@ pub fn database_get_sound_effect_active(sound: &str, effect: &str) -> bool {
             Ok(active == 1)
         },
     ).unwrap_or(false)
+}
+
+pub fn database_set_sound_effect_active(sound: &str, effect: &str, active: bool) {
+    let conn = global_database_get();
+
+    conn.execute(
+        "UPDATE effects SET active = ?1 WHERE sound = ?2 AND effect = ?3",
+        rusqlite::params![active as i32, sound, effect],
+    ).unwrap();
 }

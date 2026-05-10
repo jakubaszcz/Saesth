@@ -1,4 +1,5 @@
 use std::sync::atomic::Ordering;
+use crate::database::sounds::database_sounds::{database_set_sound_effect_active, database_set_sound_volume};
 use crate::global::global::SOUNDS;
 use crate::types::sounds::type_sounds::SoundDTO;
 
@@ -23,6 +24,23 @@ pub fn commands_sounds_toggle_sound(sound_id: String) -> bool {
         .unwrap_or(false)
 }
 
+pub fn commands_sounds_volume_sound(sound_id: String, volume: f32) -> f32 {
+    let list = SOUNDS.get().unwrap().lock().unwrap();
+
+    list.iter()
+        .find(|s| s.sound_id == sound_id)
+        .map(|s| {
+            *s.volume.lock().unwrap() = volume;
+
+            {
+                database_set_sound_volume(sound_id.as_str(), volume);
+            }
+
+            volume
+        })
+        .unwrap_or(0.5)
+}
+
 pub fn commands_sounds_toggle_sound_effect(sound_id: String, effect_id: String) -> bool {
     let list = SOUNDS.get().unwrap().lock().unwrap();
 
@@ -34,20 +52,13 @@ pub fn commands_sounds_toggle_sound_effect(sound_id: String, effect_id: String) 
                 .map(|e| {
                     let new_val = !e.active.load(Ordering::Relaxed);
                     e.active.store(new_val, Ordering::Relaxed);
+
+                    {
+                        database_set_sound_effect_active(sound_id.as_str(), effect_id.as_str(), new_val)
+                    }
+
                     new_val
                 })
         })
         .unwrap_or(false)
-}
-
-pub fn commands_sounds_volume_sound(sound_id: String, volume: f32) -> f32 {
-    let list = SOUNDS.get().unwrap().lock().unwrap();
-
-    list.iter()
-        .find(|s| s.sound_id == sound_id)
-        .map(|s| {
-            *s.volume.lock().unwrap() = volume;
-            volume
-        })
-        .unwrap_or(0.5)
 }

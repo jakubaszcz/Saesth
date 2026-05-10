@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use crate::database::settings::database_settings::{database_create_setting_if_missing, database_get_setting_active, database_sync_setting};
+use crate::database::settings::database_settings::{database_create_setting_if_missing, database_settings_get_active_setting, database_sync_setting};
 use crate::global::global::{PREFIX_FOR_SETTING, PREFIX_FOR_SOUND, PREFIX_FOR_SOUND_EFFECT};
 use crate::types::settings::type_settings::SettingKeys;
 
@@ -12,13 +12,13 @@ const RESOURCES: &str = include_str!("../../ressources/settings.json");
 fn sync_tables() {
     let config: Vec<Config> = serde_json::from_str(RESOURCES).unwrap();
 
-    let expected_sounds: Vec<String> = config
+    let expected_settings: Vec<String> = config
         .iter()
-        .map(|s| format!("{}_{}", PREFIX_FOR_SOUND, s.id))
+        .map(|s| format!("{}_{}", PREFIX_FOR_SETTING, s.id))
         .collect();
 
 
-    let expected_sounds_ref: Vec<&str> = expected_sounds.iter().map(|s| s.as_str()).collect();
+    let expected_sounds_ref: Vec<&str> = expected_settings.iter().map(|s| s.as_str()).collect();
 
     database_sync_setting(&expected_sounds_ref);
 }
@@ -32,7 +32,7 @@ pub fn init_tables() {
     }
 
     // Delete unused sounds & effects data
-    if database_get_setting_active(format!("{}_{:?}", PREFIX_FOR_SETTING, SettingKeys::SyncLocalDatabase).as_str()) {
+    if database_settings_get_active_setting(format!("{}_{:?}", PREFIX_FOR_SETTING, SettingKeys::SyncLocalDatabase).as_str()) {
         sync_tables();
     }
 }
