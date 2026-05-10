@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use serde::Deserialize;
-use crate::database::database::database_get_setting_active;
+use crate::database::settings::database_settings::database_get_setting_active;
 use crate::global::global::PREFIX_FOR_SETTING;
 use crate::inits::settings::init_tables_settings::init_tables;
 use crate::types::settings::type_settings::Setting;

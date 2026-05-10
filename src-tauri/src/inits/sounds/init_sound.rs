@@ -3,7 +3,7 @@ use std::sync::atomic::AtomicBool;
 use rusqlite::fallible_iterator::FallibleIterator;
 use serde::Deserialize;
 use crate::global::global::{PREFIX_FOR_SOUND, PREFIX_FOR_SOUND_EFFECT};
-use crate::database::database::{database_get_sound_effect_active, database_get_sound_volume};
+use crate::database::sounds::database_sounds::{database_get_sound_effect_active, database_get_sound_volume};
 use crate::inits::sounds::init_tables_sound::init_tables;
 use crate::types::sounds::type_sounds::{Sound, Effect};
 

@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use crate::database::database::{database_create_sound_if_missing, database_create_sound_effect_if_missing, database_sync_sound, database_sync_sound_effect, database_create_settings_table_if_missing, database_create_setting_if_missing, database_sync_setting, database_get_setting_active};
+use crate::database::settings::database_settings::{database_create_setting_if_missing, database_get_setting_active, database_sync_setting};
 use crate::global::global::{PREFIX_FOR_SETTING, PREFIX_FOR_SOUND, PREFIX_FOR_SOUND_EFFECT};
 use crate::types::settings::type_settings::SettingKeys;
 

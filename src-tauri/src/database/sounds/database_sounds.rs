@@ -1,63 +1,4 @@
-use directories::ProjectDirs;
-use std::fs;
-use std::path::PathBuf;
-use rusqlite::Connection;
-use rusqlite::fallible_iterator::FallibleIterator;
-use std::sync::{Mutex, OnceLock};
 use crate::global::global::global_database_get;
-
-// Settings
-
-pub fn database_create_settings_table_if_missing() {
-    let conn = global_database_get();
-
-    conn.execute("CREATE TABLE IF NOT EXISTS settings (
-            id TEXT PRIMARY KEY,
-            active  INTEGER NOT NULL DEFAULT 0
-    ", []).unwrap();
-}
-
-pub fn database_create_setting_if_missing(setting: &str) {
-    database_create_settings_table_if_missing();
-
-    let conn = global_database_get();
-
-    conn.execute(
-        "INSERT OR IGNORE INTO settings (id, active) VALUES (?1, 0)",
-        [setting],
-    ).unwrap();
-
-}
-
-pub fn database_sync_setting(expected_settings: &[&str]) {
-    let conn = global_database_get();
-
-    let expected_sounds_list = expected_settings
-        .iter()
-        .map(|s| format!("'{}'", s))
-        .collect::<Vec<_>>()
-        .join(", ");
-
-    conn.execute_batch(&format!(
-        "DELETE FROM settings WHERE id NOT IN ({})",
-        expected_sounds_list
-    )).unwrap();
-}
-
-pub fn database_get_setting_active(setting: &str) -> bool {
-    let conn = global_database_get();
-
-    conn.query_row(
-        "SELECT active FROM settings WHERE id = ?1",
-        [setting],
-        |row| {
-            let active: i32 = row.get(0)?;
-            Ok(active == 1)
-        },
-    ).unwrap_or(false)
-}
-
-// Sounds
 
 pub fn database_create_sound_table_if_missing() {
     let conn = global_database_get();
@@ -124,7 +65,7 @@ pub fn database_create_sound_effect_table_if_missing() {
     let conn = global_database_get();
 
     conn.execute(
-       "CREATE TABLE IF NOT EXISTS effects (
+        "CREATE TABLE IF NOT EXISTS effects (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             effect TEXT NOT NULL,
             sound TEXT KEY NOT NULL,
@@ -133,7 +74,7 @@ pub fn database_create_sound_effect_table_if_missing() {
             FOREIGN KEY (sound) REFERENCES sounds(id) ON DELETE CASCADE,
             UNIQUE (effect, sound)
         )",
-       []
+        []
     ).unwrap();
 }
 
@@ -176,13 +117,4 @@ pub fn database_get_sound_effect_active(sound: &str, effect: &str) -> bool {
             Ok(active == 1)
         },
     ).unwrap_or(false)
-}
-
-pub fn create_setting_if_missing(key: &str, value: &str) {
-    let conn = global_database_get();
-
-    conn.execute(
-        "INSERT OR IGNORE INTO settings.json (id, value) VALUES (?1, ?2)",
-        rusqlite::params![key, value],
-    ).unwrap();
 }
