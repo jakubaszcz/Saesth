@@ -34,7 +34,7 @@ export const SoundCard = ({
         >
             <p>Name : { sound.sound_id}</p>
             <div className="flex items-start justify-between gap-4">
-                {/*<div className="flex items-center gap-3">
+                <div className="flex items-center gap-3">
                     <div className="text-[var(--primary-100)]">
                         {getSoundIcon(sound.sound_id)}
                     </div>
@@ -44,10 +44,10 @@ export const SoundCard = ({
                             {sound.sound_id}
                         </h3>
                     </div>
-                </div>*/}
+                </div>
 
-                {/*<div className="flex items-center gap-2">
-                    <button
+                <div className="flex items-center gap-2">
+                    {/*<button
                         onClick={onClick}
                         className="
           w-11 h-11
@@ -67,9 +67,9 @@ export const SoundCard = ({
                         ) : (
                             <Play size={20} />
                         )}
-                    </button>
+                    </button>*/}
 
-                </div>*/}
+                </div>
             </div>
 {/*            <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between text-sm uppercase tracking-wide text-[var(--primary-100)]">

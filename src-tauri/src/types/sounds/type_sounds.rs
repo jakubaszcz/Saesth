@@ -25,7 +25,7 @@ pub struct Effect {
 
 #[derive(serde::Serialize)]
 pub struct SoundDTO {
-    sounds_id: String,
+    sound_id: String,
     play: bool,
     volume: f32,
     effects: Vec<EffectDTO>,
@@ -40,7 +40,7 @@ pub struct EffectDTO {
 impl From<&Sound> for SoundDTO {
     fn from(sound: &Sound) -> Self {
         Self {
-            sounds_id: sound.sound_id.clone(),
+            sound_id: sound.sound_id.clone(),
             play: sound.play.load(Ordering::Relaxed),
             volume: *sound.volume.lock().unwrap(),
             effects: sound.effects.iter().map(|effect| EffectDTO {
