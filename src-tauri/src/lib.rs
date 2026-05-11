@@ -2,7 +2,7 @@ use crate::types::sounds::type_sounds::{Sound, SoundDTO};
 use rodio::Source;
 use std::sync::{Mutex, OnceLock};
 use tauri::{Emitter, Manager};
-use crate::types::settings::type_settings::{Setting, SettingDTO};
+use crate::types::settings::type_settings::{Setting, SettingDTO, SettingKeys};
 use crate::types::setup::type_setup::{SetupDTO, SetupKeys};
 
 mod database;
@@ -39,7 +39,7 @@ fn fetch_settings() -> Vec<SettingDTO> {
 }
 
 #[tauri::command]
-fn toggle_setting(setting_id: String, value: bool) -> bool {
+fn toggle_setting(setting_id: SettingKeys, value: bool) -> bool {
     commands::settings::commands_settings::commands_settings_toggle_setting(setting_id, value)
 }
 

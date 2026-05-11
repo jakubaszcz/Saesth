@@ -1,32 +1,20 @@
-import {Structures, SoundEffect} from "../interface/structures.ts";
 import {
-    Play, Pause, Sparkle
+    Play, Pause
 } from "lucide-react";
 import {getSoundIcon} from "../sounds/SoundsIcon.tsx";
-import {getSoundEffectIcon} from "../sounds/EffectsIcon.tsx";
+import {Sound} from "../interfaces/sounds/interface_sounds.ts";
 
 interface SoundCardProps {
-    id: string;
-    data: Structures;
-    effect: SoundEffect[] | undefined;
-    effects: SoundEffect[] | undefined;
-    onClick: () => void;
-    onOpen: () => void;
+    sound: Sound;
+    onClick?: () => void;
+    onOpen?: () => void;
     onChanged?: (volume: number) => void;
 }
 
 export const SoundCard = ({
-                              id,
-                              data,
-                              effect,
-                              effects,
-                              onClick,
-                              onOpen,
-                              onChanged
+                              sound,
                           }: SoundCardProps) => {
 
-    const hasAvailableEffects = effects && effects.length > 0;
-    const hasActiveEffects = effect && effect.length > 0;
 
 
     return (
@@ -44,41 +32,21 @@ export const SoundCard = ({
       hover:shadow-[0_14px_44px_rgba(0,0,0,0.24)]
     "
         >
+            <p>Name : { sound.sound_id}</p>
             <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
+                {/*<div className="flex items-center gap-3">
                     <div className="text-[var(--primary-100)]">
-                        {getSoundIcon(id)}
+                        {getSoundIcon(sound.sound_id)}
                     </div>
 
                     <div className="flex flex-col">
                         <h3 className="text-[var(--primary-100)] font-semibold text-xl capitalize">
-                            {id}
+                            {sound.sound_id}
                         </h3>
                     </div>
-                </div>
+                </div>*/}
 
-                <div className="flex items-center gap-2">
-
-                    {hasAvailableEffects && (
-                        <button
-                            onClick={onOpen}
-                            className="
-            w-11 h-11
-            rounded-xl
-            flex items-center justify-center
-            bg-white/10
-            border border-white/10
-            text-[var(--primary-100)]
-            transition-all duration-300
-            hover:bg-white/20
-            hover:scale-105
-            active:scale-95
-        "
-                        >
-                            <Sparkle size={20}/>
-                        </button>
-                    )}
-
+                {/*<div className="flex items-center gap-2">
                     <button
                         onClick={onClick}
                         className="
@@ -94,96 +62,19 @@ export const SoundCard = ({
           active:scale-95
         "
                     >
-                        {data.play ? (
+                        {sound.play ? (
                             <Pause size={20} />
                         ) : (
                             <Play size={20} />
                         )}
                     </button>
 
-                </div>
+                </div>*/}
             </div>
-
-            {!hasAvailableEffects ? (
-                <div
-                    className="
-            rounded-lg
-            bg-white/5
-            border border-white/10
-            backdrop-blur-md
-            px-3 py-2
-            text-center
-            text-sm text-[var(--primary-100)]/70
-        "
-                >
-                    There is no effect available for this sound.
-                </div>
-
-            ) : hasActiveEffects ? (
-
-                <div
-                    className="
-            flex items-center gap-2
-            rounded-lg
-            bg-white/5
-            border border-white/10
-            backdrop-blur-md
-            px-3 py-2
-            shadow-[0_8px_24px_rgba(0,0,0,0.14)]
-            overflow-hidden
-        "
-                >
-                    {effect.slice(0, 10).map((item) => (
-                        <div
-                            key={item.id}
-                            title={item.id}
-                            className="
-                    text-[var(--primary-100)]
-                    shrink-0
-                    flex items-center justify-center
-                "
-                        >
-                            {getSoundEffectIcon(data.id, item.id, 20)}
-                        </div>
-                    ))}
-
-                    {effect.length > 10 && (
-                        <div
-                            className="
-                    text-[var(--primary-100)]
-                    text-sm
-                    px-2
-                    py-0.5
-                    rounded-md
-                    bg-white/10
-                    border border-white/10
-                "
-                        >
-                            +{effect.length - 10}
-                        </div>
-                    )}
-                </div>
-
-            ) : (
-
-                <div
-                    className="
-            rounded-lg
-            bg-white/5
-            border border-white/10
-            backdrop-blur-md
-            px-3 py-2
-            text-center
-            text-sm text-[var(--primary-100)]/80
-        "
-                >
-                    No effect selected.
-                </div>
-            )}
-            <div className="flex flex-col gap-2">
+{/*            <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between text-sm uppercase tracking-wide text-[var(--primary-100)]">
                     <span>Volume</span>
-                    <span>{Math.round(data.volume * 100)}%</span>
+                    <span>{Math.round(sound.volume * 100)}%</span>
                 </div>
 
                 <input
@@ -191,7 +82,7 @@ export const SoundCard = ({
                     min={0}
                     max={100}
                     step={1}
-                    value={data.volume * 100}
+                    value={sound.volume * 100}
                     onChange={(e) =>
                         onChanged?.(parseFloat(e.target.value) / 100)
                     }
@@ -229,7 +120,7 @@ export const SoundCard = ({
     [&::-moz-range-thumb]:bg-[var(--primary-100)]
   "
                 />
-            </div>
+            </div>*/}
         </div>
     );
 };

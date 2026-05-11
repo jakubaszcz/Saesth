@@ -1,19 +1,19 @@
 import {SoundCard} from "../component/Sound-card.tsx";
 import {useEffect, useState} from "react";
-import {SoundFront} from "../interface/structures.ts";
 import {invoke} from "@tauri-apps/api/core";
-import {SoundModal} from "../component/SoundModal.tsx";
+/*import {SoundModal} from "../component/SoundModal.tsx";*/
 import { ComponentSetup } from "../features/setup/ComponentSetup.tsx";
+import {Sound} from "../interfaces/sounds/interface_sounds.ts";
 
 export function DrawHome() {
 
-    const [sounds, setSounds] = useState<SoundFront[]>([]);
-    const [open, setOpen] = useState<SoundFront | null>(null);
+    const [sounds, setSounds] = useState<Sound[]>([]);
+    /*const [open, setOpen] = useState<SoundFront | null>(null);*/
 
     useEffect(() => {
         async function fetchSounds() {
             try {
-                const fetchedSounds = await invoke<SoundFront[]>("get_sounds");
+                const fetchedSounds = await invoke<Sound[]>("fetch_sounds");
                 setSounds(fetchedSounds);
             } catch (error) {
                 console.error("Failed loading songs :", error);
@@ -23,7 +23,7 @@ export function DrawHome() {
         fetchSounds().catch();
     }, []);
 
-    const handleToggleEffect = async (id: string, effect_id: string) => {
+    /*const handleToggleEffect = async (id: string, effect_id: string) => {
         try {
             const updatedSounds = await invoke<SoundFront[]>("toggle_effect", {
                 soundId: id,
@@ -59,33 +59,26 @@ export function DrawHome() {
         } catch (error) {
             console.error("Failed to change volume:", error);
         }
-    }
+    }*/
 
     return (
         <div>
             <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-4 font-manrope">
                 {sounds.map((data) => (
                     <SoundCard
-                        key={data.data.id}
-                        id={data.data.id}
-                        data={data.data}
-                        effect={data.effects.filter((effect) => effect.active)}
-                        effects={data.effects}
-                        onClick={() => handleTogglePlay(data.data.id)}
-                        onOpen={() => setOpen(data)}
-                        onChanged={(volume) => handleVolumeChange(data.data.id, volume)}
+                        sound={data}
                     />
                 ))}
             </div>
             <ComponentSetup/>
-            {open && (
+            {/*{open && (
                 <SoundModal
                     data={open}
                     onClose={() => setOpen(null)}
                     isClose={false}
                     onToggleEffect={handleToggleEffect}
                 />
-            )}
+            )}*/}
         </div>
     )
 }

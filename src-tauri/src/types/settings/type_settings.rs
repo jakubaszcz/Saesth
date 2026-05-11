@@ -13,6 +13,8 @@ pub struct Setting {
     pub value: Arc<AtomicBool>,
 }
 
+#[derive(serde::Serialize)]
+
 pub struct SettingDTO {
     pub setting_id: String,
     pub value: bool,
@@ -24,5 +26,5 @@ impl From<&Setting> for SettingDTO {
             setting_id: setting.setting_id.clone(),
             value: setting.value.load(std::sync::atomic::Ordering::Relaxed),
         }
-    }   
+    }
 }

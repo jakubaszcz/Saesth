@@ -5,7 +5,7 @@ pub fn database_create_settings_table_if_missing() {
 
     conn.execute("CREATE TABLE IF NOT EXISTS settings (
             id TEXT PRIMARY KEY,
-            active  INTEGER NOT NULL DEFAULT 0
+            active INTEGER NOT NULL DEFAULT 0)
     ", []).unwrap();
 }
 
@@ -18,7 +18,6 @@ pub fn database_create_setting_if_missing(setting: &str) {
         "INSERT OR IGNORE INTO settings (id, active) VALUES (?1, 0)",
         [setting],
     ).unwrap();
-
 }
 
 pub fn database_sync_setting(expected_settings: &[&str]) {
