@@ -8,6 +8,8 @@ pub static PREFIX_FOR_SOUND: &str = "sound";
 pub static PREFIX_FOR_SOUND_EFFECT: &str = "sound_effect";
 pub static PREFIX_FOR_SETTING: &str = "setting";
 
+pub static PREFIXES: [&str; 3] = [PREFIX_FOR_SOUND, PREFIX_FOR_SOUND_EFFECT, PREFIX_FOR_SETTING];
+
 pub static DATABASE: OnceLock<Mutex<Connection>> = OnceLock::new();
 
 pub fn global_database_get() -> std::sync::MutexGuard<'static, Connection> {

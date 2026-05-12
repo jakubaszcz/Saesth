@@ -10,6 +10,7 @@ mod sounds;
 mod inits;
 mod types;
 mod global;
+mod utils;
 
 mod commands;
 

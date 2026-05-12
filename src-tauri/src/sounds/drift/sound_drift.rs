@@ -3,12 +3,13 @@ use std::thread;
 use std::time::Duration;
 use rand::RngExt;
 use crate::sounds::apply_sound::apply_sound;
+use crate::types::sounds::type_sounds::Sound;
 
 pub const DRIFT_STEP_MS: u64 = 50;
 const DRIFT_DURATION_MS: u64 = 4500;
 
-pub(crate) fn song_drift(sound: &mut crate::utils::sound_stream::SoundStream) {
-    if !sound.data.play {
+pub(crate) fn song_drift(sound: &mut Sound) {
+    if !sound.play.load(Ordering::Relaxed) {
         return;
     }
 

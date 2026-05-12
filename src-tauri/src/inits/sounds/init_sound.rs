@@ -6,6 +6,7 @@ use crate::global::global::{PREFIX_FOR_SOUND, PREFIX_FOR_SOUND_EFFECT};
 use crate::database::sounds::database_sounds::{database_get_sound_effect_active, database_get_sound_volume};
 use crate::inits::sounds::init_tables_sound::init_tables;
 use crate::types::sounds::type_sounds::{Sound, Effect};
+use crate::utils::prefix::util_prefix::util_prefix_remove_prefix;
 
 #[derive(Deserialize)]
 struct Config {
@@ -17,6 +18,9 @@ fn make_stream(id: &str, effects: Vec<Effect>) -> Sound {
 
     let sound_id = format!("{}_{}", PREFIX_FOR_SOUND, id);
 
+    println!("Tag : {}", sound_id);
+    println!("Without Tag : {}", util_prefix_remove_prefix(&sound_id));
+
     Sound {
         sound_id: sound_id.clone(),
         handle: None,
@@ -27,6 +31,7 @@ fn make_stream(id: &str, effects: Vec<Effect>) -> Sound {
         drift_volume: Arc::new(Mutex::new(1.0)),
         effects
     }
+
 }
 
 fn make_effect(sound_id: &str, id: &str) -> Effect {
