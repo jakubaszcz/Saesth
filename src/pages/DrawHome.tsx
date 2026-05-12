@@ -13,8 +13,8 @@ export function DrawHome() {
     useEffect(() => {
         async function fetchSounds() {
             try {
-                const fetchedSounds = await invoke<Sound[]>("fetch_sounds");
-                setSounds(fetchedSounds);
+                const response = await invoke<Sound[]>("fetch_sounds");
+                setSounds(response);
             } catch (error) {
                 console.error("Failed loading songs :", error);
             }
@@ -22,6 +22,40 @@ export function DrawHome() {
 
         fetchSounds().catch();
     }, []);
+
+    const toggleSound = async (sound_id: string) => {
+        try {
+            const response = await invoke<boolean>("toggle_sound", { sound_id });
+
+            setSounds((prev) =>
+                prev.map((sound) =>
+                    sound.sound_id === sound_id
+                        ? { ...sound, play: response }
+                        : sound
+                )
+            );
+        } catch (error) {
+            console.error("Failed to toggle play:", error);
+        }
+    };
+
+    const volumeSound = async (sound_id: string, volume: number) => {
+        try {
+            const response = await invoke<number>("change_volume", { sound_id, volume });
+
+            setSounds((prev) =>
+                prev.map((sound) =>
+                    sound.sound_id === sound_id
+                    ? { ...sound, volume: response }
+                    : sound
+
+                )
+            )
+
+        } catch (error) {
+            console.error("Failed to change volume:", error);
+        }
+    }
 
     /*const handleToggleEffect = async (id: string, effect_id: string) => {
         try {
@@ -42,24 +76,7 @@ export function DrawHome() {
             console.error("Failed to toggle effect:", error);
         }
     };
-
-    const handleTogglePlay = async (id: string) => {
-        try {
-            const updatedSounds = await invoke<SoundFront[]>("toggle_play", { id });
-            setSounds(   updatedSounds);
-        } catch (error) {
-            console.error("Failed to toggle play:", error);
-        }
-    };
-
-    const handleVolumeChange = async (id: string, volume: number) => {
-        try {
-            const updatedSounds = await invoke<SoundFront[]>("change_volume", { id, volume });
-            setSounds(updatedSounds);
-        } catch (error) {
-            console.error("Failed to change volume:", error);
-        }
-    }*/
+*/
 
     return (
         <div>
