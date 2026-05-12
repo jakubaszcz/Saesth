@@ -7,8 +7,9 @@ use crate::types::sounds::type_sounds::Sound;
 pub static PREFIX_FOR_SOUND: &str = "sound";
 pub static PREFIX_FOR_SOUND_EFFECT: &str = "sound_effect";
 pub static PREFIX_FOR_SETTING: &str = "setting";
+pub static PREFIX_FOR_SETUP: &str = "setup";
 
-pub static PREFIXES: [&str; 3] = [PREFIX_FOR_SOUND, PREFIX_FOR_SOUND_EFFECT, PREFIX_FOR_SETTING];
+pub static PREFIXES: [&str; 4] = [PREFIX_FOR_SOUND, PREFIX_FOR_SOUND_EFFECT, PREFIX_FOR_SETTING, PREFIX_FOR_SETUP];
 
 pub static DATABASE: OnceLock<Mutex<Connection>> = OnceLock::new();
 
@@ -20,5 +21,5 @@ pub fn global_database_get() -> std::sync::MutexGuard<'static, Connection> {
         .unwrap()
 }
 pub static SOUNDS: OnceLock<Mutex<Vec<Sound>>> = OnceLock::new();
-pub static SETUP: OnceLock<Mutex<Setup>> = OnceLock::new();
+pub static SETUP: OnceLock<Mutex<Vec<Setup>>> = OnceLock::new();
 pub static SETTINGS: OnceLock<Mutex<Vec<Setting>>> = OnceLock::new();

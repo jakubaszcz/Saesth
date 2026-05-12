@@ -18,9 +18,6 @@ fn make_stream(id: &str, effects: Vec<Effect>) -> Sound {
 
     let sound_id = format!("{}_{}", PREFIX_FOR_SOUND, id);
 
-    println!("Tag : {}", sound_id);
-    println!("Without Tag : {}", util_prefix_remove_prefix(&sound_id));
-
     Sound {
         sound_id: sound_id.clone(),
         handle: None,
