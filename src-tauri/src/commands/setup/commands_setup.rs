@@ -1,44 +1,47 @@
 use std::sync::atomic::Ordering;
+use crate::database::setup::database_setup::{database_set_setup_toggle, database_set_setup_volume};
 use crate::global::global::SETUP;
-use crate::types::setup::type_setup::{SetupDTO, SetupKeys};
+use crate::types::setup::type_setup::{SetupDTO};
 
-pub fn commands_setup_fetch_setup() -> SetupDTO {
+pub fn commands_setup_fetch_setup() -> Vec<SetupDTO> {
     let setup = SETUP.get().unwrap().lock().unwrap();
 
-    SetupDTO::from(&*setup)
+    setup.iter()
+        .map(|setup| SetupDTO::from(setup))
+        .collect()
 }
 
 
-pub fn commands_setup_volume_setup(key: SetupKeys, value: f32) {
+pub fn commands_setup_volume_setup(setup_id: String, volume: f32) -> f32{
     let setup = SETUP.get().unwrap().lock().unwrap();
 
-    match key {
-        SetupKeys::SetupGlobalVolume => {
-            *setup.setup_global_volume.lock().unwrap() = value;
-        },
-        SetupKeys::SetupKeyboardVolume => {
-            *setup.setup_keyboard_volume.lock().unwrap() = value;
-        },
-        SetupKeys::SetupMouseVolume => {
-            *setup.setup_mouse_volume.lock().unwrap() = value;
-        },
-        SetupKeys::SetupGlobalToggle | SetupKeys::SetupKeyboardToggle | SetupKeys::SetupMouseToggle => todo!()
-    }
+    setup.iter()
+        .find(|setup| setup.setup_id == setup_id)
+        .map(|setup| {
+            *setup.volume.lock().unwrap() = volume;
+
+            {
+                database_set_setup_volume(setup_id.as_str(), volume);
+            }
+
+            volume
+        })
+        .unwrap_or(0.5)
 }
 
-pub fn commands_setup_toggle_setup(key: SetupKeys) {
+pub fn commands_setup_toggle_setup(setup_id: String) -> bool {
     let setup = SETUP.get().unwrap().lock().unwrap();
 
-    match key {
-        SetupKeys::SetupGlobalToggle => {
-            setup.setup_global_toggle.store(!setup.setup_global_toggle.load(Ordering::Relaxed), Ordering::Relaxed);
-        },
-        SetupKeys::SetupKeyboardToggle => {
-            setup.setup_keyboard_toggle.store(!setup.setup_keyboard_toggle.load(Ordering::Relaxed), Ordering::Relaxed);
-        },
-        SetupKeys::SetupMouseToggle => {
-            setup.setup_mouse_toggle.store(!setup.setup_mouse_toggle.load(Ordering::Relaxed), Ordering::Relaxed);
-        },
-        SetupKeys::SetupGlobalVolume | SetupKeys::SetupKeyboardVolume | SetupKeys::SetupMouseVolume => todo!()
-    }
+    setup.iter()
+        .find(|setup| setup.setup_id == setup_id)
+        .map(|setup| {
+            let new_val = !setup.toggle.load(Ordering::Relaxed);
+            setup.toggle.store(new_val, Ordering::Relaxed);
+
+            {
+                database_set_setup_toggle(setup_id.as_str(), new_val)
+            }
+
+            new_val
+        }).unwrap_or(false)
 }

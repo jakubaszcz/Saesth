@@ -5,8 +5,8 @@ pub fn database_create_setup_table_if_missing() {
 
     conn.execute("CREATE TABLE IF NOT EXISTS setup (
             id TEXT PRIMARY KEY,
-            toggle INTEGER NOT NULL DEFAULT 0
-            volume INTEGER NOT NULL DEFAULT 0
+            toggle INTEGER NOT NULL DEFAULT 0,
+            volume REAL
             )
     ", []).unwrap();
 }
@@ -37,6 +37,15 @@ pub fn database_sync_setup(expected_setup: &[&str]) {
     )).unwrap();
 }
 
+pub fn database_set_setup_volume(setting: &str, volume: f32) {
+    let conn = global_database_get();
+
+    conn.execute(
+        "UPDATE setup SET volume = ?1 WHERE id = ?2",
+        rusqlite::params![volume, setting],
+    ).unwrap();
+}
+
 pub fn database_get_setup_toggle(setting: &str) -> bool {
     let conn = global_database_get();
 
@@ -48,6 +57,15 @@ pub fn database_get_setup_toggle(setting: &str) -> bool {
             Ok(toggle == 1)
         },
     ).unwrap_or(false)
+}
+
+pub fn database_set_setup_toggle(setting: &str, toggle: bool) {
+    let conn = global_database_get();
+
+    conn.execute(
+        "UPDATE setup SET toggle = ?1 WHERE id = ?2",
+        rusqlite::params![toggle as i32, setting],
+    ).unwrap();
 }
 
 pub fn database_get_setup_volume(setting: &str) -> f32 {

@@ -2,8 +2,8 @@ use crate::types::sounds::type_sounds::{Sound, SoundDTO};
 use rodio::Source;
 use std::sync::{Mutex, OnceLock};
 use tauri::{Emitter, Manager};
-use crate::types::settings::type_settings::{Setting, SettingDTO, SettingKeys};
-use crate::types::setup::type_setup::{SetupDTO, SetupKeys};
+use crate::types::settings::type_settings::{SettingDTO, SettingKeys};
+use crate::types::setup::type_setup::{SetupDTO};
 
 mod database;
 mod sounds;
@@ -45,25 +45,23 @@ fn toggle_setting(setting_id: SettingKeys, value: bool) -> bool {
 }
 
 #[tauri::command]
-fn fetch_setup() -> SetupDTO {
+fn fetch_setup() -> Vec<SetupDTO> {
     commands::setup::commands_setup::commands_setup_fetch_setup()
 }
 
 #[tauri::command]
-fn toggle_setup(key: SetupKeys) {
-    commands::setup::commands_setup::commands_setup_toggle_setup(key);
+fn toggle_setup(setup_id: String) -> bool {
+    commands::setup::commands_setup::commands_setup_toggle_setup(setup_id)
 }
 
 #[tauri::command]
-fn volume_setup(key: SetupKeys, value: f32) {
-    commands::setup::commands_setup::commands_setup_volume_setup(key, value);
+fn volume_setup(setup_id: String, value: f32) -> f32 {
+    commands::setup::commands_setup::commands_setup_volume_setup(setup_id, value)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     inits::inits::inits();
-
-    sounds::setup::setup::setup();
 
     tauri::Builder::default()
         .setup(|app| {
