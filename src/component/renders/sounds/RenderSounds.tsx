@@ -1,8 +1,5 @@
-import {SoundCard} from "../component/Sound-card.tsx";
-import {useEffect, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
-import {Sound} from "../../../interfaces/sounds/interface_sounds.ts";
 import {useSounds} from "../../../hooks/sounds/useSounds.ts";
+import {CardSound} from "../../cards/sounds/CardSound.tsx";
 
 export function RenderSounds() {
     const {
@@ -36,14 +33,16 @@ export function RenderSounds() {
         <div>
             <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-4 font-manrope">
                 {sounds.map((data,) => (
-                    <SoundCard
+                    <CardSound
                         key={data.sound_id}
                         sound={data}
+                        onClick={toggleSound}
+                        onChange={volumeSound}
                     />
                 ))}
             </div>
-            <ComponentSetup/>
-            {/*{open && (
+{/*            <ComponentSetup/>
+            {open && (
                 <SoundModal
                     data={open}
                     onClose={() => setOpen(null)}

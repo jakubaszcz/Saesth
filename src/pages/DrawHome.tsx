@@ -1,14 +1,10 @@
-import {SoundCard} from "../component/Sound-card.tsx";
-import {useEffect, useState} from "react";
-import {invoke} from "@tauri-apps/api/core";
-/*import {SoundModal} from "../component/SoundModal.tsx";*/
 import { ComponentSetup } from "../features/setup/ComponentSetup.tsx";
-import {Sound} from "../interfaces/sounds/interface_sounds.ts";
+import {RenderSounds} from "../component/renders/sounds/RenderSounds.tsx";
 
 export function DrawHome() {
 
-    const [sounds, setSounds] = useState<Sound[]>([]);
-    /*const [open, setOpen] = useState<SoundFront | null>(null);*/
+/*    const [sounds, setSounds] = useState<Sound[]>([]);
+    /!*const [open, setOpen] = useState<SoundFront | null>(null);*!/
 
     useEffect(() => {
         async function fetchSounds() {
@@ -57,7 +53,7 @@ export function DrawHome() {
         }
     }
 
-    /*const handleToggleEffect = async (id: string, effect_id: string) => {
+    /!*const handleToggleEffect = async (id: string, effect_id: string) => {
         try {
             const updatedSounds = await invoke<SoundFront[]>("toggle_effect", {
                 soundId: id,
@@ -76,18 +72,11 @@ export function DrawHome() {
             console.error("Failed to toggle effect:", error);
         }
     };
-*/
+*!/*/
 
     return (
         <div>
-            <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-4 font-manrope">
-                {sounds.map((data,) => (
-                    <SoundCard
-                        key={data.sound_id}
-                        sound={data}
-                    />
-                ))}
-            </div>
+            <RenderSounds/>
             <ComponentSetup/>
             {/*{open && (
                 <SoundModal

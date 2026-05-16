@@ -1,9 +1,9 @@
 import {
     Play, Pause
 } from "lucide-react";
-import {getSoundIcon} from ".//SoundsIcon.tsx";
 import { Props } from "./props.ts"
-export const CardSound = ({sound}: Props) => {
+import {getSoundIcon} from "../../../sounds/SoundsIcon.tsx";
+export const CardSound = ({sound, onClick, onChange}: Props) => {
     return (
         <div
             className="
@@ -34,8 +34,8 @@ export const CardSound = ({sound}: Props) => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {/*<button
-                        onClick={onClick}
+                    <button
+                        onClick={() => onClick(sound.sound_id)}
                         className="
           w-11 h-11
           rounded-xl
@@ -49,19 +49,19 @@ export const CardSound = ({sound}: Props) => {
           active:scale-95
         "
                     >
-                        {sounds.play ? (
+                        {sound.play ? (
                             <Pause size={20} />
                         ) : (
                             <Play size={20} />
                         )}
-                    </button>*/}
+                    </button>
 
                 </div>
             </div>
-            {/*            <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between text-sm uppercase tracking-wide text-[var(--primary-100)]">
                     <span>Volume</span>
-                    <span>{Math.round(sounds.volume * 100)}%</span>
+                    <span>{Math.round(sound.volume * 100)}%</span>
                 </div>
 
                 <input
@@ -69,9 +69,9 @@ export const CardSound = ({sound}: Props) => {
                     min={0}
                     max={100}
                     step={1}
-                    value={sounds.volume * 100}
+                    value={sound.volume * 100}
                     onChange={(e) =>
-                        onChanged?.(parseFloat(e.target.value) / 100)
+                        onChange(sound.sound_id, parseFloat(e.target.value) / 100)
                     }
                     className="
     w-full
@@ -107,7 +107,7 @@ export const CardSound = ({sound}: Props) => {
     [&::-moz-range-thumb]:bg-[var(--primary-100)]
   "
                 />
-            </div>*/}
+            </div>
         </div>
     );
 };
