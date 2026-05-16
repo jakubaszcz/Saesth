@@ -8,8 +8,11 @@ export function ComponentSetup() {
     const [setup, setSetup] = useState<Setup[]>([]);
 
     const toggleSetup = async (setup_id: string) => {
+
+        console.log("toggle setup : ", setup_id)
         try {
-            const response = await invoke<boolean>("toggle_setup", { setup_id });
+            const response = await invoke<boolean>("toggle_setup", { setupId: setup_id });
+
 
             setSetup((prev) => (
                 prev.map((setup) =>
@@ -25,7 +28,7 @@ export function ComponentSetup() {
 
     const volumeSetup = async (setup_id: string, volume: number) => {
         try {
-            const response = await invoke<number>("volume_setup", { setup_id, volume });
+            const response = await invoke<number>("volume_setup", { setupId: setup_id, value: volume });
 
             setSetup((prev) => (
                 prev.map((setup) =>
@@ -60,7 +63,7 @@ export function ComponentSetup() {
                     <h1>{s.setup_id}</h1>
 
                     <button onClick={() => toggleSetup(s.setup_id)}>
-                        Toggle setup
+                        Toggle setup here
                     </button>
 
                     <p>Toggle : {s.toggle ? "On" : "Off"}</p>

@@ -6,7 +6,7 @@ use rdev::{listen, Event, EventType};
 use rodio::{DeviceSinkBuilder, MixerDeviceSink, Player};
 use rodio::buffer::SamplesBuffer;
 use crate::global::global::SETUP;
-use crate::types::setup::type_setup::{Setup, SetupDTO, SetupKeys};
+use crate::types::setup::type_setup::{Setup};
 use crate::inits::setup::init_setup::init;
 
 enum Type {

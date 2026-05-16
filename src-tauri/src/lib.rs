@@ -2,6 +2,7 @@ use crate::types::sounds::type_sounds::{Sound, SoundDTO};
 use rodio::Source;
 use std::sync::{Mutex, OnceLock};
 use tauri::{Emitter, Manager};
+use crate::functions::functions::functions;
 use crate::types::settings::type_settings::{SettingDTO, SettingKeys};
 use crate::types::setup::type_setup::{SetupDTO};
 
@@ -11,6 +12,8 @@ mod inits;
 mod types;
 mod global;
 mod utils;
+
+mod functions;
 
 mod commands;
 
@@ -62,6 +65,8 @@ fn volume_setup(setup_id: String, value: f32) -> f32 {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     inits::inits::inits();
+
+    functions();
 
     tauri::Builder::default()
         .setup(|app| {

@@ -1,11 +1,11 @@
 [
   {
-    "id": "setup_global"
+    "id": "global"
   },
   {
-    "id": "setup_keyboard"
+    "id": "keyboard"
   },
   {
-    "id": "setup_mouse"
+    "id": "mouse"
   }
 ]

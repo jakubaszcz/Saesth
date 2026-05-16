@@ -26,13 +26,13 @@ pub fn init_tables() {
     let config: Vec<Config> = serde_json::from_str(RESOURCES).unwrap();
 
     for setup in config {
-        let setup_id = format!("{}_{}", PREFIX_FOR_SOUND, setup.id);
+        let setup_id = format!("{}_{}", PREFIX_FOR_SETUP, setup.id);
 
         database_create_setup_if_missing(&setup_id);
     }
 
     // Delete unused sounds & effects data
-    if database_settings_get_active_setting(format!("{}_{:?}", PREFIX_FOR_SETTING, SettingKeys::SyncLocalDatabase).as_str()) {
+    if database_settings_get_active_setting(format!("{}_{:?}", PREFIX_FOR_SETUP, SettingKeys::SyncLocalDatabase).as_str()) {
         sync_tables();
     }
 }

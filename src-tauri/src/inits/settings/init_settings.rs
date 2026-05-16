@@ -18,7 +18,7 @@ fn make_setting(id: &str) -> Setting {
 
     Setting {
         setting_id: setting_id.clone(),
-        value: Arc::new(AtomicBool::new(database_settings_get_active_setting(setting_id.as_str()))),
+        value: Arc::new(AtomicBool::new(true)),
     }
 }
 pub fn init() -> Vec<Setting> {
