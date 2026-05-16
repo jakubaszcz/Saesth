@@ -1,7 +1,7 @@
 import {getCurrentWindow} from "@tauri-apps/api/window";
 import {BoltIcon, X, House, Minus, Maximize2, Minimize2} from "lucide-react";
 import {Pages} from "../pages/pages.ts";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 
 type Props = {
   tab: Pages;
