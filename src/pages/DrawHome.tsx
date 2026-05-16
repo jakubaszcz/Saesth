@@ -67,7 +67,7 @@ export function DrawHome() {
             setSounds(updatedSounds);
 
             const updatedOpen = updatedSounds.find(
-                (sound) => sound.data.id === id
+                (sounds) => sounds.data.id === id
             );
 
             setOpen(updatedOpen ?? null);

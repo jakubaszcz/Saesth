@@ -1,23 +1,9 @@
-/*
 import {
     Play, Pause
 } from "lucide-react";
-import {getSoundIcon} from "../sounds/SoundsIcon.tsx";
-import {Sound} from "../interfaces/sounds/interface_sounds.ts";
-
-interface SoundCardProps {
-    sounds: Sound;
-    onClick?: () => void;
-    onOpen?: () => void;
-    onChanged?: (volume: number) => void;
-}
-
-export const SoundCard = ({
-                              sounds,
-                          }: SoundCardProps) => {
-
-
-
+import {getSoundIcon} from ".//SoundsIcon.tsx";
+import { Props } from "./props.ts"
+export const CardSound = ({sound}: Props) => {
     return (
         <div
             className="
@@ -33,22 +19,22 @@ export const SoundCard = ({
       hover:shadow-[0_14px_44px_rgba(0,0,0,0.24)]
     "
         >
-            <p>Name : { sounds.sound_id}</p>
+            <p>Name : { sound.sound_id}</p>
             <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <div className="text-[var(--primary-100)]">
-                        {getSoundIcon(sounds.sound_id)}
+                        {getSoundIcon(sound.sound_id)}
                     </div>
 
                     <div className="flex flex-col">
                         <h3 className="text-[var(--primary-100)] font-semibold text-xl capitalize">
-                            {sounds.sound_id}
+                            {sound.sound_id}
                         </h3>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {/!*<button
+                    {/*<button
                         onClick={onClick}
                         className="
           w-11 h-11
@@ -68,11 +54,11 @@ export const SoundCard = ({
                         ) : (
                             <Play size={20} />
                         )}
-                    </button>*!/}
+                    </button>*/}
 
                 </div>
             </div>
-{/!*            <div className="flex flex-col gap-2">
+            {/*            <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between text-sm uppercase tracking-wide text-[var(--primary-100)]">
                     <span>Volume</span>
                     <span>{Math.round(sounds.volume * 100)}%</span>
@@ -121,7 +107,7 @@ export const SoundCard = ({
     [&::-moz-range-thumb]:bg-[var(--primary-100)]
   "
                 />
-            </div>*!/}
+            </div>*/}
         </div>
     );
-};*/
+};
