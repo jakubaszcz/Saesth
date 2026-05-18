@@ -12,6 +12,7 @@ pub fn function_sound_play(sound: &mut Sound) {
         return;
     }
 
+
     let path = format!(
         "{}/{}/{}.mp3",
         PATH,
@@ -40,9 +41,9 @@ pub fn function_sound_play(sound: &mut Sound) {
 
     let clone_player = player.clone();
     let play_flag = sound.play.clone();
-    {
-        *fade_volume.lock().unwrap() = 0.0;
-    }
+    
+    // REMOVED: *fade_volume.lock().unwrap() = 0.0;
+    // We let it start from whatever it is (e.g. if it was already partially faded in or out)
 
     function_sound_fade(
         play_flag,
@@ -54,6 +55,7 @@ pub fn function_sound_play(sound: &mut Sound) {
 
     sound.player = Some(player);
     sound.handle = Some(handle);
+
     sound.play.store(true, Ordering::Relaxed);
 
 }

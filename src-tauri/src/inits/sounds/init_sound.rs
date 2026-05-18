@@ -24,7 +24,7 @@ fn make_stream(id: &str, effects: Vec<Effect>) -> Sound {
         player: None,
         play: Arc::new(AtomicBool::new(false)),
         volume: Arc::new(Mutex::new(database_get_sound_volume(&sound_id.clone()))),
-        fade_volume: Arc::new(Mutex::new(1.0)),
+        fade_volume: Arc::new(Mutex::new(0.0)),
         drift_volume: Arc::new(Mutex::new(1.0)),
         effects
     }

@@ -1,17 +1,20 @@
 use std::sync::{Arc, Mutex};
-use std::sync::atomic::AtomicBool;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
-use rodio::Player;
+use std::time::Duration;
+use rodio::{MixerDeviceSink, Player};
 use crate::functions::sounds::utils::function_sound_util_volume::function_sound_util_volume;
 
 const FADE_STEPS: u64 = 5;
 const FADE_DURATION_MS: u64 = 1500;
+
 pub fn function_sound_fade(
     flag: Arc<AtomicBool>,
     player: Arc<Mutex<Player>>,
     user_volume: Arc<Mutex<f32>>,
     fade_volume: Arc<Mutex<f32>>,
     drift_volume: Arc<Mutex<f32>>,
+    handle: MixerDeviceSink,
 ) {
     thread::spawn(move || {
         let start_volume = *fade_volume.lock().unwrap();
@@ -20,10 +23,10 @@ pub fn function_sound_fade(
         let steps = FADE_DURATION_MS / FADE_STEPS;
         let start_step = (start_t * steps as f32).round() as u64;
 
-        for step in start_step..=steps {
-            if !flag.load(std::sync::atomic::Ordering::Relaxed) {
+        for step in (0..=start_step).rev() {
+            if flag.load(Ordering::Relaxed) {
                 function_sound_util_volume(
-                    &player.clone(),
+                    &player,
                     &user_volume,
                     &fade_volume,
                     &drift_volume,
@@ -37,13 +40,24 @@ pub fn function_sound_fade(
             *fade_volume.lock().unwrap() = eased;
 
             function_sound_util_volume(
-                &player.clone(),
+                &player,
                 &user_volume,
                 &fade_volume,
                 &drift_volume,
             );
 
-            thread::sleep(std::time::Duration::from_millis(FADE_STEPS));
+            thread::sleep(Duration::from_millis(FADE_STEPS));
         }
+
+        *fade_volume.lock().unwrap() = 0.0;
+
+        function_sound_util_volume(
+            &player,
+            &user_volume,
+            &fade_volume,
+            &drift_volume,
+        );
+
+        drop(handle);
     });
 }
