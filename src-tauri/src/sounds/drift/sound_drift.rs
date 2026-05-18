@@ -1,7 +1,7 @@
 /*use std::sync::atomic::Ordering;
 use std::thread;
 use std::time::Duration;
-use rand::RngExt;
+use rand::Rng;
 use crate::sounds::apply_sound::apply_sound;
 use crate::types::sounds::type_sounds::Sound;
 

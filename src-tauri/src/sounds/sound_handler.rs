@@ -1,12 +1,10 @@
-/*use std::fs::File;
+use std::fs::File;
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::Ordering;
 use std::thread;
 use std::time::Duration;
 use rodio::{Decoder, DeviceSinkBuilder, Player, Source};
 use crate::sounds::apply_sound::apply_sound;
-use crate::sounds::drift::sound_drift::song_drift;
-use crate::utils::sound_stream::SoundStream;
 
 use crate::sounds::effects::effects::{effects_manager};
 use crate::types::sounds::type_sounds::Sound;
@@ -16,9 +14,15 @@ pub(crate) const FADE_STEPS: u64 = 5;
 const FADE_DURATION_MS: u64 = 1500;
 
 pub fn play_sound(sound: &mut Sound) {
+    if sound.player.is_some() {
+        return;
+    }
+
     sound.play.store(true, Ordering::Relaxed);
 
     let path = format!("{}/{}.mp3", util_prefix_remove_prefix(&sound.sound_id).as_str(), "default");
+
+    println!("{}", path);
 
     let handle = DeviceSinkBuilder::open_default_sink()
         .expect("failed to open default audio device");
@@ -78,13 +82,13 @@ pub fn play_sound(sound: &mut Sound) {
     sound.handle = Some(handle);
     sound.play.store(true, Ordering::Relaxed);
 
-    song_drift(sound);
+/*    song_drift(sound);
+*/
+/*    handle_effects(sound);
+*/}
 
-    handle_effects(sound);
-}
-
-fn handle_effects(sound: &mut Sound) {
-    let effects = sound.effects;
+/*fn handle_effects(sound: &mut Sound) {
+    let effects = &sound.effects;
 
     let Some(handle) = sound.handle.as_ref() else {
         return;
@@ -109,7 +113,7 @@ fn handle_effects(sound: &mut Sound) {
             );
         }
     });
-}
+}*/
 pub fn stop_sound(sound: &mut Sound) {
     sound.play.store(false, Ordering::Relaxed);
 
@@ -117,7 +121,7 @@ pub fn stop_sound(sound: &mut Sound) {
         return;
     };
     let Some(handle) = sound.handle.take() else {
-        return
+        return;
     };
 
     let fade_volume = sound.fade_volume.clone();
@@ -126,8 +130,6 @@ pub fn stop_sound(sound: &mut Sound) {
 
     let fade_player = player.clone();
     let play_flag = sound.play.clone();
-
-    sound.play.store(false, Ordering::Relaxed);
 
     thread::spawn(move || {
         let steps = FADE_DURATION_MS / FADE_STEPS;
@@ -155,4 +157,4 @@ pub fn stop_sound(sound: &mut Sound) {
         drop(player);
         drop(handle);
     });
-}*/
+}
