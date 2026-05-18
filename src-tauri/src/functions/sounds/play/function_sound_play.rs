@@ -1,8 +1,11 @@
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::Ordering;
 use rodio::{DeviceSinkBuilder, Player, Source};
+use crate::functions::sounds::play::fade::function_sound_fade::function_sound_fade;
 use crate::types::sounds::type_sounds::Sound;
 use crate::utils::prefix::util_prefix::util_prefix_remove_prefix;
+
+const PATH: &str = "./sounds";
 
 pub fn function_sound_play(sound: &mut Sound) {
     if sound.player.is_some() {
@@ -10,7 +13,8 @@ pub fn function_sound_play(sound: &mut Sound) {
     }
 
     let path = format!(
-        "{}/{}.mp3",
+        "{}/{}/{}.mp3",
+        PATH,
         util_prefix_remove_prefix(&sound.sound_id).as_str(),
         "default");
 
@@ -22,7 +26,7 @@ pub fn function_sound_play(sound: &mut Sound) {
         )
     );
 
-    let file = std::fs::File::open(format!("./sounds/{}", path)).unwrap();
+    let file = std::fs::File::open(path).unwrap();
 
     let source = rodio::Decoder::new(file).unwrap().repeat_infinite();
 
@@ -31,12 +35,22 @@ pub fn function_sound_play(sound: &mut Sound) {
     player.lock().unwrap().play();
 
     let fade_volume = sound.fade_volume.clone();
-/*    let user_volume = sound.volume.clone();
-    let drift_volume = sound.drift_volume.clone();*/
+    let user_volume = sound.volume.clone();
+    let drift_volume = sound.drift_volume.clone();
 
+    let clone_player = player.clone();
+    let play_flag = sound.play.clone();
     {
         *fade_volume.lock().unwrap() = 0.0;
     }
+
+    function_sound_fade(
+        play_flag,
+        clone_player,
+        user_volume,
+        fade_volume,
+        drift_volume,
+    );
 
     sound.player = Some(player);
     sound.handle = Some(handle);
