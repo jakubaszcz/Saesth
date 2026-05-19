@@ -4,7 +4,7 @@ import {
     APIChangeVolume
 } from "../../api/sounds/sounds.ts"
 import {useEffect, useState} from "react";
-import {Sound} from "../../interfaces/sounds/interface_sounds.ts";
+import {Sound} from "../../structures/sounds/sounds.ts";
 
 export function useSounds() {
     const [sounds, setSounds] = useState<Sound[]>([]);

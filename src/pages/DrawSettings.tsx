@@ -1,75 +1,36 @@
-import { invoke } from "@tauri-apps/api/core";
-import { useEffect, useState } from "react";
-import { Settings } from "../interface/settings.ts";
+import { useSettings } from "../hooks/settings/useSettings.ts";
+
+const SETTING_METADATA: Record<string, { title: string; description: string }> = {
+    "setting_minimize_to_tray": {
+        title: "Minimize to Tray",
+        description: "When closed, the application will continue to run in the system tray."
+    },
+    "setting_sync_local_database": {
+        title: "Sync Local Database",
+        description: "Automatically synchronize your local database with the cloud."
+    }
+};
 
 export function DrawSettings() {
-    const [values, setValues] = useState<Record<string, string>>({});
-    const [loading, setLoading] = useState<Record<string, boolean>>({});
-
-    const setSettings = async (id: string, value: string) => {
-        await invoke("set_settings", { id, value });
-    };
-
-    const toggleSetting = async (id: string) => {
-        const current = values[id] ?? "false";
-        const next = current === "true" ? "false" : "true";
-
-        setValues((prev) => ({
-            ...prev,
-            [id]: next,
-        }));
-
-        setLoading((prev) => ({
-            ...prev,
-            [id]: true,
-        }));
-
-        try {
-            await setSettings(id, next);
-        } catch (error) {
-            setValues((prev) => ({
-                ...prev,
-                [id]: current,
-            }));
-            console.error(`Failed to update setting "${id}"`, error);
-        } finally {
-            setLoading((prev) => ({
-                ...prev,
-                [id]: false,
-            }));
-        }
-    };
-
-    useEffect(() => {
-        const load = async () => {
-            const result: Record<string, string> = {};
-
-            for (const setting of Settings) {
-                try {
-                    result[setting.key] = await invoke<string>("get_settings", {
-                        id: setting.key,
-                    });
-                } catch (error) {
-                    console.error(`Failed to load setting "${setting.key}"`, error);
-                    result[setting.key] = "false";
-                }
-            }
-
-            setValues(result);
-        };
-
-        load();
-    }, []);
+    const {
+        settings,
+        loadingKeys,
+        toggleSetting,
+    } = useSettings();
 
     return (
         <div className="flex flex-col gap-4">
-            {Settings.map((setting) => {
-                const isEnabled = values[setting.key] === "true";
-                const isBusy = loading[setting.key] === true;
+            {settings.map((setting) => {
+                const metadata = SETTING_METADATA[setting.setting_id] || {
+                    title: setting.setting_id,
+                    description: "No description available."
+                };
+                const isEnabled = setting.toggle;
+                const isBusy = loadingKeys[setting.setting_id] === true;
 
                 return (
                     <div
-                        key={setting.key}
+                        key={setting.setting_id}
                         className="
                             rounded-lg
                             border border-white/10
@@ -85,11 +46,11 @@ export function DrawSettings() {
                         <div className="flex items-center justify-between gap-4">
                             <div className="min-w-0">
                                 <p className="font-inter text-base font-semibold text-[var(--primary-200)]">
-                                    {setting.title}
+                                    {metadata.title}
                                 </p>
 
                                 <p className="mt-1 text-sm leading-relaxed text-[var(--primary-100)]">
-                                    {setting.description}
+                                    {metadata.description}
                                 </p>
                             </div>
 
@@ -97,9 +58,9 @@ export function DrawSettings() {
                                 type="button"
                                 role="switch"
                                 aria-checked={isEnabled}
-                                aria-label={`Toggle ${setting.title}`}
+                                aria-label={`Toggle ${metadata.title}`}
                                 disabled={isBusy}
-                                onClick={() => toggleSetting(setting.key)}
+                                onClick={() => toggleSetting(setting.setting_id)}
                                 className={`
                                     relative h-8 w-14 shrink-0 rounded-full
                                     transition-all duration-300

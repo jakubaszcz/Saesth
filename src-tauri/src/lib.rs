@@ -43,8 +43,8 @@ fn fetch_settings() -> Vec<SettingDTO> {
 }
 
 #[tauri::command]
-fn toggle_setting(setting_id: SettingKeys, value: bool) -> bool {
-    commands::settings::commands_settings::commands_settings_toggle_setting(setting_id, value)
+fn toggle_setting(setting_id: String) -> bool {
+    commands::settings::commands_settings::commands_settings_toggle_setting(setting_id)
 }
 
 #[tauri::command]

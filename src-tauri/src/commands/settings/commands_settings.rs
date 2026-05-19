@@ -1,3 +1,4 @@
+use std::sync::atomic::Ordering;
 use crate::database::settings::database_settings::database_settings_set_active_setting;
 use crate::global::global::{PREFIX_FOR_SETTING, SETTINGS};
 use crate::types::settings::type_settings::{SettingDTO, SettingKeys};
@@ -10,21 +11,23 @@ pub fn commands_settings_fetch_settings() -> Vec<SettingDTO> {
         .collect()
 }
 
-pub fn commands_settings_toggle_setting(setting_id: SettingKeys, value: bool) -> bool {
+pub fn commands_settings_toggle_setting(setting_id: String) -> bool {
     let mut settings = SETTINGS.get().unwrap().lock().unwrap();
-
-    let setting_id = format!("{}_{:?}", PREFIX_FOR_SETTING, setting_id);
 
     settings.iter_mut()
         .find(|s| s.setting_id == setting_id)
         .map(|s| {
-            s.value.store(value, std::sync::atomic::Ordering::Relaxed);
+            let new_val = !s.value.load(Ordering::Relaxed);
+            println!("O {:?}", new_val);
+            println!("N {:?}", !new_val);
+
+            s.value.store(new_val, Ordering::Relaxed);
 
             {
-                database_settings_set_active_setting(&setting_id, value);
+                database_settings_set_active_setting(&setting_id, new_val);
             }
 
-            value
+            new_val
         })
         .unwrap_or(false)
 }
