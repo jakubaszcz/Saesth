@@ -1,4 +1,4 @@
-import { SoundFront } from "../interface/structures.ts";
+import { SoundFront } from "../structures/sounds/sounds.ts";
 import { X } from "lucide-react";
 import {getSoundIcon} from "../sounds/SoundsIcon.tsx";
 import {getSoundEffectIcon} from "../sounds/EffectsIcon.tsx";
