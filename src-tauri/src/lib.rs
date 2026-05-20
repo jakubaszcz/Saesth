@@ -67,6 +67,7 @@ fn volume_setup(setup_id: String, value: f32) -> f32 {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+
     inits::inits::inits();
 
     functions();
@@ -110,15 +111,22 @@ pub fn run() {
                     window.hide().unwrap();
                 }
             }
-
-            /*if database::database::get_setting("close_to_tray") == "true" {
-                if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-                    api.prevent_close();
-                    window.hide().unwrap();
-                }
-            }*/
         })
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+
+            let restore_existing_instance = true;
+
+            if !restore_existing_instance {
+                return;
+            }
+
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.show();
+                let _ = window.unminimize();
+                let _ = window.set_focus();
+            }
+        }))
         .invoke_handler(tauri::generate_handler![
             fetch_sounds,
             toggle_sound,

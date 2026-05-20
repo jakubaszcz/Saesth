@@ -1,5 +1,5 @@
-import {Sound} from "../../interfaces/sounds/interface_sounds.ts";
 import {invoke} from "@tauri-apps/api/core";
+import {Sound} from "../../structures/sounds/sounds.ts";
 
 export async function APIFetchSound(): Promise<Sound[]> {
     return await invoke<Sound[]>("fetch_sounds");

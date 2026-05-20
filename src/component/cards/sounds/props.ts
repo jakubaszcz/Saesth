@@ -1,4 +1,4 @@
-import {Sound} from "../../../interfaces/sounds/interface_sounds.ts";
+import {Sound} from "../../../structures/sounds/sounds.ts";
 
 export interface Props {
     sound: Sound;

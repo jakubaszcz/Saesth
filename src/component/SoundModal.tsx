@@ -1,3 +1,4 @@
+/*
 import { SoundFront } from "../structures/sounds/sounds.ts";
 import { X } from "lucide-react";
 import {getSoundIcon} from "../sounds/SoundsIcon.tsx";
@@ -140,4 +141,4 @@ export const SoundModal = ({
             </div>
         </div>
     );
-};
+};*/
