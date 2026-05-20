@@ -32,7 +32,7 @@ pub fn init_tables() {
     }
 
     // Delete unused sounds & effects data
-    if database_settings_get_active_setting(format!("{}_{:?}", PREFIX_FOR_SETUP, SettingKeys::SyncLocalDatabase).as_str()) {
+    if database_settings_get_active_setting(format!("{}_{}", PREFIX_FOR_SETTING, SettingKeys::SyncLocalDatabase.to_key()).as_str()) {
         sync_tables();
     }
 }

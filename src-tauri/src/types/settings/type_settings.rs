@@ -8,6 +8,15 @@ pub enum SettingKeys {
     SyncLocalDatabase,
 }
 
+impl SettingKeys {
+    pub fn to_key(&self) -> String {
+        match self {
+            SettingKeys::MinimizeToTray => "minimize_to_tray".to_string(),
+            SettingKeys::SyncLocalDatabase => "sync_local_database".to_string(),
+        }
+    }
+}
+
 pub struct Setting {
     pub setting_id: String,
     pub active: Arc<AtomicBool>,

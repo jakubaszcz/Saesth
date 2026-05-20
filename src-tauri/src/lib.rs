@@ -2,9 +2,12 @@ use crate::types::sounds::type_sounds::{Sound, SoundDTO};
 use rodio::Source;
 use std::sync::{Mutex, OnceLock};
 use tauri::{Emitter, Manager};
+use crate::database::settings::database_settings::database_settings_get_active_setting;
 use crate::functions::functions::functions;
+use crate::global::global::PREFIX_FOR_SETTING;
 use crate::types::settings::type_settings::{SettingDTO, SettingKeys};
 use crate::types::setup::type_setup::{SetupDTO};
+use crate::utils::prefix::util_prefix::util_prefix_add_prefix;
 
 mod database;
 mod sounds;
@@ -101,6 +104,13 @@ pub fn run() {
             Ok(())
         })
         .on_window_event(|window, event| {
+            if database_settings_get_active_setting(format!("{}_{}", PREFIX_FOR_SETTING, SettingKeys::MinimizeToTray.to_key()).as_str()) {
+                if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                    api.prevent_close();
+                    window.hide().unwrap();
+                }
+            }
+
             /*if database::database::get_setting("close_to_tray") == "true" {
                 if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                     api.prevent_close();
