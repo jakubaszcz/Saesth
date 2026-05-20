@@ -8,6 +8,10 @@ const SETTING_METADATA: Record<string, { title: string; description: string }> =
     "setting_sync_local_database": {
         title: "Sync Local Database",
         description: "Automatically synchronize your local database with the cloud."
+    },
+    "setting_single_instance": {
+        title: "Single Instance",
+        description: "Launching multiple instances of the application will result in only one instance running."
     }
 };
 

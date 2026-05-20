@@ -6,6 +6,7 @@ use std::sync::atomic::AtomicBool;
 pub enum SettingKeys {
     MinimizeToTray,
     SyncLocalDatabase,
+    SingleInstance,
 }
 
 impl SettingKeys {
@@ -13,6 +14,7 @@ impl SettingKeys {
         match self {
             SettingKeys::MinimizeToTray => "minimize_to_tray".to_string(),
             SettingKeys::SyncLocalDatabase => "sync_local_database".to_string(),
+            SettingKeys::SingleInstance => "single_instance".to_string(),
         }
     }
 }

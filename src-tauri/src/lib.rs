@@ -114,17 +114,12 @@ pub fn run() {
         })
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-
-            let restore_existing_instance = true;
-
-            if !restore_existing_instance {
-                return;
-            }
-
-            if let Some(window) = app.get_webview_window("main") {
-                let _ = window.show();
-                let _ = window.unminimize();
-                let _ = window.set_focus();
+            if database_settings_get_active_setting(format!("{}_{}", PREFIX_FOR_SETTING, SettingKeys::SingleInstance.to_key()).as_str()) {
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.unminimize();
+                    let _ = window.set_focus();
+                }
             }
         }))
         .invoke_handler(tauri::generate_handler![

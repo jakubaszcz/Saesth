@@ -4,5 +4,8 @@
   },
   {
     "id": "sync_local_database"
+  },
+  {
+    "id": "single_instance"
   }
 ]
