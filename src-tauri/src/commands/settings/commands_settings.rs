@@ -17,11 +17,9 @@ pub fn commands_settings_toggle_setting(setting_id: String) -> bool {
     settings.iter_mut()
         .find(|s| s.setting_id == setting_id)
         .map(|s| {
-            let new_val = !s.value.load(Ordering::Relaxed);
-            println!("O {:?}", new_val);
-            println!("N {:?}", !new_val);
+            let new_val = !s.active.load(Ordering::Relaxed);
 
-            s.value.store(new_val, Ordering::Relaxed);
+            s.active.store(new_val, Ordering::Relaxed);
 
             {
                 database_settings_set_active_setting(&setting_id, new_val);

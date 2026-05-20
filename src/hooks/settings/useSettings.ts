@@ -4,7 +4,6 @@ import {APIFetchSetting, APIToggleSetting} from "../../api/settings/settings.ts"
 
 export function useSettings() {
     const [settings, setSettings] = useState<Setting[]>([]);
-    const [loadingKeys, setLoadingKeys] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
         async function loadSettings() {
@@ -21,30 +20,23 @@ export function useSettings() {
     }, [])
 
     const toggleSetting = async (setting_id: string) => {
-        setLoadingKeys((prev) => ({ ...prev, [setting_id]: true }));
         try {
-            console.log("toggle setting : ", setting_id)
             const response = await APIToggleSetting(setting_id);
-
-            console.log("response : ", response)
 
             setSettings((prev) =>
                 prev.map((setting) =>
                     setting.setting_id === setting_id
-                        ? { ...setting, toggle: response }
+                        ? { ...setting, active: response }
                         : setting
                 )
             );
         } catch (error) {
             console.error("Failed to toggle setting:", error);
-        } finally {
-            setLoadingKeys((prev) => ({ ...prev, [setting_id]: false }));
         }
     };
 
     return {
         settings,
-        loadingKeys,
         toggleSetting,
     }
 }

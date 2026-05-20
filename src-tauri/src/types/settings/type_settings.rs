@@ -10,21 +10,21 @@ pub enum SettingKeys {
 
 pub struct Setting {
     pub setting_id: String,
-    pub value: Arc<AtomicBool>,
+    pub active: Arc<AtomicBool>,
 }
 
 #[derive(serde::Serialize)]
 
 pub struct SettingDTO {
     pub setting_id: String,
-    pub value: bool,
+    pub active: bool,
 }
 
 impl From<&Setting> for SettingDTO {
     fn from(setting: &Setting) -> Self {
         Self {
             setting_id: setting.setting_id.clone(),
-            value: setting.value.load(std::sync::atomic::Ordering::Relaxed),
+            active: setting.active.load(std::sync::atomic::Ordering::Relaxed),
         }
     }
 }
