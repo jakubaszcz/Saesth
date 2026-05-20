@@ -11,7 +11,7 @@ pub fn init(app: &mut App) {
         .icon(app.default_window_icon().unwrap().clone())
         .on_menu_event(|app, event| match event.id.as_ref() {
             "quit" => app.exit(0),
-            "show" => {
+            "open" => {
                 if let Some(w) = app.get_webview_window("main") {
                     w.show().unwrap();
                     w.set_focus().unwrap();
