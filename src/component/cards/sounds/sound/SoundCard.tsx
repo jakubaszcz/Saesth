@@ -34,7 +34,7 @@ export function SoundCard({
           flex items-center justify-center
           bg-white/10
           border border-white/10
-          text-[var(--primary-100)]
+          text-(--primary-100)
           transition-all duration-300
           hover:bg-white/20
           hover:scale-105

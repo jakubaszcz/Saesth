@@ -73,7 +73,7 @@ drop-shadow-sm
         </div>
       </div>
 
-      <div className="flex gap-2 text-[var(--primary-500)]">
+      <div className="flex gap-2 text-(--primary-500)">
         { tab === Pages.HOME && (
             <button
                 onClick={() => setTab(Pages.SETTINGS)}

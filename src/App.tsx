@@ -1,6 +1,6 @@
 import "./App.css";
 import {Header} from "./component/Header.tsx";
-import { DrawHome } from "./pages/DrawHome.tsx";
+import { PageHome } from "./pages/PageHome.tsx";
 import {useState} from "react";
 import {Pages} from "./pages/pages.ts";
 import {DrawSettings} from "./pages/DrawSettings.tsx";
@@ -25,7 +25,7 @@ function App() {
           </div>
 
           <div className="flex-1 w-full h-full overflow-y-auto hide-scrollbar p-6">
-              {tab === Pages.HOME && <DrawHome />}
+              {tab === Pages.HOME && <PageHome />}
               {tab === Pages.SETTINGS && <DrawSettings />}
           </div>
       </main>
