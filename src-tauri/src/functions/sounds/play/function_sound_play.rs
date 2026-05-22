@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::Ordering;
 use rodio::{DeviceSinkBuilder, Player, Source};
+use crate::functions::sounds::drift::function_sound_drift::function_sound_drift;
 use crate::functions::sounds::play::fade::function_sound_fade::function_sound_fade;
 use crate::types::sounds::type_sounds::Sound;
 use crate::utils::prefix::util_prefix::util_prefix_remove_prefix;
@@ -11,7 +12,6 @@ pub fn function_sound_play(sound: &mut Sound) {
     if sound.player.is_some() {
         return;
     }
-
 
     let path = format!(
         "{}/{}/{}.mp3",
@@ -58,4 +58,9 @@ pub fn function_sound_play(sound: &mut Sound) {
 
     sound.play.store(true, Ordering::Relaxed);
 
-}
+    function_sound_drift(sound);
+
+    /*    song_drift(sound);
+        handle_effects(sound);
+    */
+    }

@@ -1,14 +1,13 @@
-/*use std::sync::atomic::Ordering;
+use std::sync::atomic::Ordering;
 use std::thread;
 use std::time::Duration;
-use rand::Rng;
-use crate::sounds::apply_sound::apply_sound;
+use rand::RngExt;
+use crate::functions::sounds::utils::function_sound_util_volume::function_sound_util_volume;
 use crate::types::sounds::type_sounds::Sound;
 
 pub const DRIFT_STEP_MS: u64 = 50;
 const DRIFT_DURATION_MS: u64 = 4500;
-
-pub(crate) fn song_drift(sound: &mut Sound) {
+pub fn function_sound_drift(sound: &mut Sound) {
     if !sound.play.load(Ordering::Relaxed) {
         return;
     }
@@ -23,20 +22,26 @@ pub(crate) fn song_drift(sound: &mut Sound) {
     };
 
     let min = 10;
-    let max = 60;
+    let max = 100;
 
-    let min_bonus = 0.85;
-    let max_bonus = 1.35;
+    let min_bonus = 0.75;
+    let max_bonus = 1.55;
 
     thread::spawn(move || {
         let mut rng = rand::rng();
 
         while play_flag.load(Ordering::Relaxed) {
-            let time_until_next_effect = rng.random_range(10..100);
+            let time_until_next_effect = rng.random_range(min..max);
 
             thread::sleep(Duration::from_secs(time_until_next_effect));
 
             if !play_flag.load(Ordering::Relaxed) {
+                function_sound_util_volume(
+                    &player,
+                    &user_volume,
+                    &fade_volume,
+                    &drift_volume,
+                );
                 return;
             }
 
@@ -63,7 +68,7 @@ pub(crate) fn song_drift(sound: &mut Sound) {
                     *drift_value = drift;
                 }
 
-                apply_sound(
+                function_sound_util_volume(
                     &player,
                     &user_volume,
                     &fade_volume,
@@ -76,4 +81,5 @@ pub(crate) fn song_drift(sound: &mut Sound) {
             }
         }
     });
-}*/
+
+}

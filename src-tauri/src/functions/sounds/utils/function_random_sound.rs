@@ -1,10 +1,8 @@
 use std::fs;
-use std::path::{Path, PathBuf};
-use std::sync::{Arc, Mutex};
+use std::path::PathBuf;
 use rand::RngExt;
-use rodio::Player;
 
-pub fn random_sound(directory: &str) -> PathBuf {
+pub fn function_random_sound(directory: &str) -> PathBuf {
     let path = fs::read_dir(directory).unwrap();
 
     let files: Vec<PathBuf> = path
