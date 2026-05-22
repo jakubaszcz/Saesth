@@ -22,7 +22,7 @@ export function DrawSettings() {
     } = useSettings();
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 p-6">
             {settings.map((setting) => {
                 const metadata = SETTING_METADATA[setting.setting_id] || {
                     title: setting.setting_id,

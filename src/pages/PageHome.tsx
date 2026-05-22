@@ -26,14 +26,13 @@ export function PageHome() {
     }
 
     return (
-        <div className="flex">
-
+        <div className="flex h-screen w-full">
             <HomeNavBar
-            navigation={navigation}
-            changeNavigation={changeNavigation}
+                navigation={navigation}
+                changeNavigation={changeNavigation}
             />
 
-            <main className="flex-1">
+            <main className="flex-1 w-full h-full overflow-y-auto">
                 {RenderPage()}
             </main>
         </div>

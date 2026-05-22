@@ -24,7 +24,7 @@ function App() {
               <Header tab={tab} setTab={setTab} />
           </div>
 
-          <div className="flex-1 w-full h-full overflow-y-auto hide-scrollbar p-6">
+          <div className="flex-1 w-full h-full overflow-y-auto hide-scrollbar">
               {tab === Pages.HOME && <PageHome />}
               {tab === Pages.SETTINGS && <DrawSettings />}
           </div>

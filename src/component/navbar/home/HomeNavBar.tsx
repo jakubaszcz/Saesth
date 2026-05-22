@@ -1,17 +1,30 @@
-import {X} from "lucide-react";
+import {AudioLines, HeadsetIcon, LucideSparkle} from "lucide-react";
 import {HomeNavigation} from "../../../structures/navbar/home/homeNavBar.ts";
 import {Props} from "./Props.ts";
 
 export function HomeNavBar({ navigation, changeNavigation }: Props) {
+
+
+    function RenderIcon(item: HomeNavigation) {
+        switch (item) {
+            case HomeNavigation.Sounds:
+                return <AudioLines/>;
+            case HomeNavigation.Setup:
+                return <HeadsetIcon />;
+            default:
+                return <LucideSparkle/>;
+        }
+    }
+
     return (
-        <aside className="h-screen flex flex-col gap-4">
+        <div className="h-screen flex flex-col gap-4 px-2">
             {Object.values(HomeNavigation).map((item) => (
                 <button
                     key={item}
                     onClick={() => changeNavigation(item)}
                     className={`
                         p-3 rounded-xl
-                        flex items-center justify-center
+                        flex
                         transition
                         ${
                         item === navigation
@@ -20,9 +33,9 @@ export function HomeNavBar({ navigation, changeNavigation }: Props) {
                     }
                     `}
                 >
-                    <X />
+                    {RenderIcon(item)}
                 </button>
             ))}
-        </aside>
+        </div>
     );
 }
