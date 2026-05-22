@@ -1,7 +1,7 @@
 import {
     APIFetchSound,
     APIToggleSound,
-    APIChangeVolume
+    APIChangeVolume, APIToggleSoundEffect
 } from "../../api/sounds/sounds.ts"
 import {useEffect, useState} from "react";
 import {Sound} from "../../structures/sounds/sounds.ts";
@@ -55,9 +55,36 @@ export function useSounds() {
         }
     }
 
+    const toggleSoundEffect = async (sound_id: string, effect_id: string) => {
+        try {
+            const response = await APIToggleSoundEffect(sound_id, effect_id);
+
+            console.log("response : ", response)
+
+
+            setSounds((prev) =>
+                prev.map((sound) =>
+                    sound.sound_id === sound_id
+                        ? {
+                            ...sound,
+                            effects: sound.effects.map((effect) =>
+                                effect.effect_id === effect_id
+                                    ? { ...effect, active: response }
+                                    : effect
+                            ),
+                        }
+                        : sound
+                )
+            );
+        } catch (error) {
+            console.error("Failed to toggle sound effect:", error);
+        }
+    };
+
     return {
         sounds,
         toggleSound,
-        volumeSound
+        volumeSound,
+        toggleSoundEffect
     }
 }

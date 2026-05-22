@@ -12,7 +12,7 @@ function App() {
       <main
           className="
     h-screen
-    w-full
+    w-screen
     flex flex-col
     overflow-hidden
     bg-radial-[at_50%_20%]
@@ -24,7 +24,7 @@ function App() {
               <Header tab={tab} setTab={setTab} />
           </div>
 
-          <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar p-6">
+          <div className="flex-1 w-full h-full overflow-y-auto hide-scrollbar p-6">
               {tab === Pages.HOME && <DrawHome />}
               {tab === Pages.SETTINGS && <DrawSettings />}
           </div>

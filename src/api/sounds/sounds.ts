@@ -12,3 +12,7 @@ export async function APIToggleSound(sound_id: string): Promise<boolean> {
 export async function APIChangeVolume(sound_id: string, volume: number): Promise<number> {
     return await invoke<number>("volume_sound", { soundId: sound_id, volume: volume });
 }
+
+export async function APIToggleSoundEffect(sound_id: string, effect_id: string): Promise<boolean> {
+    return await invoke<boolean>("toggle_sound_effect", { soundId: sound_id, effectId: effect_id });
+}

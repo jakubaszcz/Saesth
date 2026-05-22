@@ -10,7 +10,6 @@ use crate::types::setup::type_setup::{SetupDTO};
 use crate::utils::prefix::util_prefix::util_prefix_add_prefix;
 
 mod database;
-mod sounds;
 mod inits;
 mod types;
 mod global;

@@ -1,24 +1,16 @@
-import {
-    Play, Pause
-} from "lucide-react";
-import { Props } from "./props.ts"
-import {getSoundIcon} from "../../../sounds/SoundsIcon.tsx";
-export const CardSound = ({sound, onClick, onChange}: Props) => {
+import {getSoundIcon} from "../../../../sounds/SoundsIcon.tsx";
+import {Pause, Play, Sparkle} from "lucide-react";
+import {Props} from "./props.ts";
+import {State} from "../state.ts";
+
+export function SoundCard({
+    sound,
+    onToggleSound,
+    onChangeVolume,
+    onSwitchState
+    }: Props) {
     return (
-        <div
-            className="
-      rounded-lg
-      bg-white/5
-      backdrop-blur-md
-      border border-white/10
-      shadow-[0_10px_40px_rgba(0,0,0,0.18)]
-      p-5
-      flex flex-col gap-5
-      transition-all duration-300
-      hover:bg-white/[0.07]
-      hover:shadow-[0_14px_44px_rgba(0,0,0,0.24)]
-    "
-        >
+        <div>
             <p>Name : { sound.sound_id}</p>
             <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3">
@@ -35,7 +27,7 @@ export const CardSound = ({sound, onClick, onChange}: Props) => {
 
                 <div className="flex items-center gap-2">
                     <button
-                        onClick={() => onClick(sound.sound_id)}
+                        onClick={() => onToggleSound(sound.sound_id)}
                         className="
           w-11 h-11
           rounded-xl
@@ -46,19 +38,36 @@ export const CardSound = ({sound, onClick, onChange}: Props) => {
           transition-all duration-300
           hover:bg-white/20
           hover:scale-105
-          active:scale-95
-        "
-                    >
+          active:scale-95">
                         {sound.play ? (
                             <Pause size={20} />
                         ) : (
                             <Play size={20} />
                         )}
                     </button>
+                    {
+                        onSwitchState !== undefined
+                            ? <div>
 
+                                <button onClick={() => onSwitchState(State.Effect)} className="w-11 h-11
+          rounded-xl
+          flex items-center justify-center
+          bg-white/10
+          border border-white/10
+          text-[var(--primary-100)]
+          transition-all duration-300
+          hover:bg-white/20
+          hover:scale-105
+          active:scale-95">
+                                    <Sparkle size={20}/>
+                                </button>
+
+                            </div>
+                            : null
+                    }
                 </div>
             </div>
-                        <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between text-sm uppercase tracking-wide text-[var(--primary-100)]">
                     <span>Volume</span>
                     <span>{Math.round(sound.volume * 100)}%</span>
@@ -71,7 +80,7 @@ export const CardSound = ({sound, onClick, onChange}: Props) => {
                     step={1}
                     value={sound.volume * 100}
                     onChange={(e) =>
-                        onChange(sound.sound_id, parseFloat(e.target.value) / 100)
+                        onChangeVolume(sound.sound_id, parseFloat(e.target.value) / 100)
                     }
                     className="
     w-full
@@ -109,5 +118,5 @@ export const CardSound = ({sound, onClick, onChange}: Props) => {
                 />
             </div>
         </div>
-    );
-};
+    )
+}
