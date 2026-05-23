@@ -14,6 +14,8 @@ export const Card = ({sound, onToggleSound, onChangeVolume}: Props) => {
         case State.Sound:
             return <div className="
 rounded-lg
+h-2/4
+h-full
 w-full
 bg-white/5
 backdrop-blur-md

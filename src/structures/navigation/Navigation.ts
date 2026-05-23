@@ -1,4 +1,5 @@
 export enum Navigation {
     Sounds = "Sounds",
-    Setup = "Setup"
+    Setup = "Setup",
+    Settings = "Settings",
 }

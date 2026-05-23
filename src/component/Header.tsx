@@ -1,14 +1,8 @@
 import {getCurrentWindow} from "@tauri-apps/api/window";
-import {BoltIcon, X, House, Minus, Maximize2, Minimize2} from "lucide-react";
-import {Pages} from "../pages/pages.ts";
+import {X, Minus, Maximize2, Minimize2} from "lucide-react";
 import React, {useEffect, useState} from "react";
 
-type Props = {
-  tab: Pages;
-  setTab: React.Dispatch<React.SetStateAction<Pages>>;
-};
-
-export const Header = ({ tab, setTab }: Props) => {
+export const Header = () => {
 
   const appWindow = getCurrentWindow();
 
@@ -74,19 +68,6 @@ drop-shadow-sm
       </div>
 
       <div className="flex gap-2 text-(--primary-500)">
-        { tab === Pages.HOME && (
-            <button
-                onClick={() => setTab(Pages.SETTINGS)}
-                aria-label="Go to settings"
-            >
-              <BoltIcon size={20} className="transition-all duration-300 ease-out hover:scale-125 hover:text-[var(--primary-600)] cursor-pointer"/>
-            </button>
-        )}
-        { tab === Pages.SETTINGS && (
-            <button onClick={() => setTab(Pages.HOME)} aria-label="Go to home">
-              <House size={20} className="transition-all duration-300 ease-out hover:scale-125 hover:text-[var(--primary-600)] cursor-pointer"/>
-            </button>
-        )}
         <button onClick={handleMinimize} aria-label="Minimize">
           <Minus size={20} className="transition-all duration-300 ease-out hover:scale-125 hover:text-[var(--primary-600)] cursor-pointer"/>
         </button>
