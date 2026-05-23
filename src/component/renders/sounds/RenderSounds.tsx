@@ -11,7 +11,7 @@ export function RenderSounds() {
 
     return (
         <div>
-            <div className="w-full h-full grid grid-cols-2 lg:grid-cols-4 gap-4 font-manrope">
+            <div className="h-full grid grid-cols-2 lg:grid-cols-4 gap-4 font-manrope">
                 {sounds.map((data,) => (
                     <Card
                         key={data.sound_id}

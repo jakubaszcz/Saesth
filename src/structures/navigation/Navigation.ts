@@ -1,4 +1,4 @@
-export enum HomeNavigation {
+export enum Navigation {
     Sounds = "Sounds",
     Setup = "Setup"
 }

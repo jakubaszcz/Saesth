@@ -1,23 +1,23 @@
 import { ComponentSetup } from "../features/setup/ComponentSetup.tsx";
 import {RenderSounds} from "../component/renders/sounds/RenderSounds.tsx";
-import {HomeNavBar} from "../component/navbar/home/HomeNavBar.tsx";
-import {useHomeNavBar} from "../hooks/navbar/home/useHomeNavBar.ts";
-import {HomeNavigation} from "../structures/navbar/home/homeNavBar.ts";
+import {ComponentNavigation} from "../component/navigation/ComponentNavigation.tsx";
+import {useNavigation} from "../hooks/navbar/useNavigation.ts";
+import {Navigation} from "../structures/navigation/Navigation.ts";
 
 export function PageHome() {
 
     const {
         navigation,
         changeNavigation
-    } = useHomeNavBar()
+    } = useNavigation()
 
     function RenderPage() {
         switch (navigation) {
 
-            case HomeNavigation.Sounds:
+            case Navigation.Sounds:
                 return <RenderSounds />;
 
-            case HomeNavigation.Setup:
+            case Navigation.Setup:
                 return <ComponentSetup />;
 
             default:
@@ -27,12 +27,12 @@ export function PageHome() {
 
     return (
         <div className="flex h-screen w-full">
-            <HomeNavBar
+            <ComponentNavigation
                 navigation={navigation}
                 changeNavigation={changeNavigation}
             />
 
-            <main className="flex-1 w-full h-full overflow-y-auto">
+            <main className="w-full h-full overflow-y-auto px-4">
                 {RenderPage()}
             </main>
         </div>
