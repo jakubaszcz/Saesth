@@ -1,2 +1,2 @@
 pub mod function_sound_util_volume;
-mod function_random_sound;
+pub mod function_random_sound;

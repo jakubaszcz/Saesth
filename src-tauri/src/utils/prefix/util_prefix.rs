@@ -1,8 +1,13 @@
 use crate::global::global::{PREFIX_FOR_SETTING, PREFIXES};
 
 pub fn util_prefix_find_prefix(id: &str) -> String {
-    for prefix in PREFIXES.iter() {
-        if id.contains(prefix) {
+
+    let mut prefixes = PREFIXES.to_vec();
+
+    prefixes.sort_by_key(|p| std::cmp::Reverse(p.len()));
+
+    for prefix in prefixes {
+        if id.starts_with(format!("{}_", prefix).as_str()) {
             return prefix.to_string();
         }
     }

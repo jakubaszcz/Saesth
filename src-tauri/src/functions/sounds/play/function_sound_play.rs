@@ -1,7 +1,9 @@
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::Ordering;
 use rodio::{DeviceSinkBuilder, Player, Source};
+use tauri::ipc::RuntimeCapability;
 use crate::functions::sounds::drift::function_sound_drift::function_sound_drift;
+use crate::functions::sounds::effect::function_sound_effect::function_sound_effect;
 use crate::functions::sounds::play::fade::function_sound_fade::function_sound_fade;
 use crate::types::sounds::type_sounds::Sound;
 use crate::utils::prefix::util_prefix::util_prefix_remove_prefix;
@@ -41,16 +43,14 @@ pub fn function_sound_play(sound: &mut Sound) {
 
     let clone_player = player.clone();
     let play_flag = sound.play.clone();
-    
-    // REMOVED: *fade_volume.lock().unwrap() = 0.0;
-    // We let it start from whatever it is (e.g. if it was already partially faded in or out)
+    let mixer = handle.mixer().clone();
 
     function_sound_fade(
-        play_flag,
+        play_flag.clone(),
         clone_player,
-        user_volume,
-        fade_volume,
-        drift_volume,
+        user_volume.clone(),
+        fade_volume.clone(),
+        drift_volume.clone(),
     );
 
     sound.player = Some(player);
@@ -60,7 +60,15 @@ pub fn function_sound_play(sound: &mut Sound) {
 
     function_sound_drift(sound);
 
-    /*    song_drift(sound);
-        handle_effects(sound);
-    */
+    for effect in &sound.effects {
+        function_sound_effect(
+            effect.clone(),
+            play_flag.clone(),
+            user_volume.clone(),
+            fade_volume.clone(),
+            drift_volume.clone(),
+            mixer.clone(),
+        );
+    }
+
     }

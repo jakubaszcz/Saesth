@@ -4,7 +4,7 @@ import {State} from "./state.ts";
 import {SoundCard} from "./sound/SoundCard.tsx";
 import {EffectCard} from "./effect/EffectCard.tsx";
 
-export const Card = ({sound, onToggleSound, onChangeVolume}: Props) => {
+export const Card = ({sound, onToggleSound, onChangeVolume, onEffect}: Props) => {
     const {
         state,
         changeState,
@@ -54,7 +54,7 @@ hover:shadow-[0_14px_44px_rgba(0,0,0,0.24)]
 ">
                 <EffectCard
                     sound={sound}
-                    onToggleSoundEffect={onToggleSound}
+                    onToggleSoundEffect={onEffect}
                     onSwitchState={changeState}
                 />
             </div>;

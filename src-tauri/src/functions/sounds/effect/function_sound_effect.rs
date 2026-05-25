@@ -1,20 +1,20 @@
-/*use std::fs::File;
+use std::fs::File;
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::Duration;
-
 use rand::RngExt;
 use rodio::{Decoder, Player};
-use crate::sounds::apply_sound::apply_sound;
-use crate::sounds::random_sound;
+use crate::functions::sounds::utils::function_random_sound::function_random_sound;
 use crate::types::sounds::type_sounds::Effect;
 use crate::utils::prefix::util_prefix::util_prefix_remove_prefix;
 
 pub(crate) const FADE_STEPS: u64 = 5;
 const FADE_DURATION_MS: u64 = 1500;
 
-pub fn effects_manager(
+const PATH: &str = "./sounds/effects";
+
+pub fn function_sound_effect(
     effect: Effect,
     play_flag: Arc<AtomicBool>,
     user_volume: Arc<Mutex<f32>>,
@@ -23,8 +23,8 @@ pub fn effects_manager(
     mixer: rodio::mixer::Mixer,
 ) {
     thread::spawn(move || {
-        let min = 5;
-        let max = 20;
+        let min = 1;
+        let max = 5;
 
         let min_bonus = 0.2;
         let max_bonus = 0.6;
@@ -38,6 +38,8 @@ pub fn effects_manager(
             let wait = rand::rng().random_range(min..max);
             thread::sleep(Duration::from_secs(wait));
 
+            println!("effect playing : {:?}", util_prefix_remove_prefix(&effect.effect_id).as_str());
+
             if !play_flag.load(Ordering::Relaxed) {
                 return;
             }
@@ -46,11 +48,13 @@ pub fn effects_manager(
                 continue;
             }
 
-            let path = random_sound::random_sound(util_prefix_remove_prefix(&effect.effect_id).as_str()) else {
-                continue;
-            };
+            let path = format!(
+                "{}/{}",
+                PATH,
+                util_prefix_remove_prefix(&effect.effect_id).as_str());
 
-            let Ok(file) = File::open(&path) else {
+
+            let Ok(file) = File::open(function_random_sound(&path)) else {
                 continue;
             };
 
@@ -102,4 +106,4 @@ fn fade_out_effect(player: &Player, volume: f32) {
 
         thread::sleep(Duration::from_millis(FADE_STEPS));
     }
-}*/
+}

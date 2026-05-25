@@ -18,6 +18,7 @@ pub struct Sound {
     pub effects: Vec<Effect>,
 }
 
+#[derive(Clone)]
 pub struct Effect {
     pub effect_id: String,
     pub active: Arc<AtomicBool>,
