@@ -12,6 +12,10 @@ const SETTING_METADATA: Record<string, { title: string; description: string }> =
     "setting_single_instance": {
         title: "Single Instance",
         description: "Launching multiple instances of the application will result in only one instance running."
+    },
+    "setting_discord_rich_presence": {
+        title: "Discord Rich Presence",
+        description: "When enabled, the application will display on your Discord."
     }
 };
 
