@@ -26,7 +26,7 @@ export function DrawSettings() {
     } = useSettings();
 
     return (
-        <div className="flex flex-col gap-4">
+        <div>
             {settings.map((setting) => {
                 const metadata = SETTING_METADATA[setting.setting_id] || {
                     title: setting.setting_id,
@@ -35,57 +35,23 @@ export function DrawSettings() {
 
                 return (
                     <div
-                        key={setting.setting_id}
-                        className="
-                            rounded-lg
-                            border border-white/10
-                            bg-white/5
-                            backdrop-blur-md
-                            shadow-[0_10px_40px_rgba(0,0,0,0.18)]
-                            transition-all duration-300
-                            hover:bg-white/[0.07]
-                            hover:shadow-[0_14px_44px_rgba(0,0,0,0.24)]
-                            p-5
-                        "
-                    >
-                        <div className="flex items-center justify-between gap-4">
-                            <div className="min-w-0">
-                                <p className="font-inter text-base font-semibold text-[var(--primary-200)]">
+                        key={setting.setting_id}>
+                        <div>
+                            <div>
+                                <p>
                                     {metadata.title}
                                 </p>
 
-                                <p className="mt-1 text-sm leading-relaxed text-[var(--primary-100)]">
+                                <p>
                                     {metadata.description}
                                 </p>
                             </div>
 
                             <button onClick={() => toggleSetting(setting.setting_id)}>
                                 {setting.active ? (
-                                    <p className="
-                            rounded-lg
-                            border border-white/10
-                            bg-white/5
-                            backdrop-blur-md
-                            shadow-[0_10px_40px_rgba(0,0,0,0.18)]
-                            transition-all duration-300
-                            hover:bg-white/[0.07]
-                            hover:shadow-[0_14px_44px_rgba(0,0,0,0.24)]
-                            px-4 py-2
-                            text-[var(--primary-200)]
-                        ">On</p>
+                                    <p>On</p>
                                 ) : (
-                                    <p className="
-                            rounded-lg
-                            border border-white/10
-                            bg-white/5
-                            backdrop-blur-md
-                            shadow-[0_10px_40px_rgba(0,0,0,0.18)]
-                            transition-all duration-300
-                            hover:bg-white/[0.07]
-                            hover:shadow-[0_14px_44px_rgba(0,0,0,0.24)]
-                            px-4 py-2
-                            text-[var(--primary-200)]
-                        ">Off</p>
+                                    <p>Off</p>
                                 )}
                             </button>
                         </div>

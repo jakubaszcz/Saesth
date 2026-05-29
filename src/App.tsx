@@ -31,30 +31,20 @@ function App() {
     }
 
   return (
-      <main
-          className="
-    h-screen
-    w-screen
-    flex flex-col
-    overflow-hidden
-    bg-radial-[at_50%_20%]
-    from-(--primary-400)
-    via-(--primary-700)
-    to-(--primary-950)
-    to-90%">
-          <div className="shrink-0">
+      <main>
+          <div>
               <Header/>
           </div>
 
-          <div className="flex flex-1 overflow-hidden">
-              <aside className="shrink-0">
+          <div>
+              <aside>
                   <ComponentNavigation
                       navigation={navigation}
                       changeNavigation={changeNavigation}
                   />
               </aside>
 
-              <div className="flex-1 overflow-y-auto hide-scrollbar px-2">
+              <div>
                   {RenderPage()}
               </div>
           </div>

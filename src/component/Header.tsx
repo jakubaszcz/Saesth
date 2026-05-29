@@ -1,6 +1,6 @@
 import {getCurrentWindow} from "@tauri-apps/api/window";
 import {X, Minus, Maximize2, Minimize2} from "lucide-react";
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 
 export const Header = () => {
 
@@ -51,39 +51,30 @@ export const Header = () => {
   }, []);
 
   return (
-    <header data-tauri-drag-region className="
-    w-full flex justify-between items-center h-14 px-8
-    flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <div className="
-        font-manrope
-text-[var(--primary-500)]
-text-2xl
-tracking-wide
-select-none
-drop-shadow-sm
-">
+    <header data-tauri-drag-region>
+      <div>
+        <div>
           Saesth
         </div>
       </div>
 
-      <div className="flex gap-2 text-(--primary-500)">
+      <div>
         <button onClick={handleMinimize} aria-label="Minimize">
-          <Minus size={20} className="transition-all duration-300 ease-out hover:scale-125 hover:text-[var(--primary-600)] cursor-pointer"/>
+          <Minus size={20}/>
         </button>
         {!isMaximized && (
             <button onClick={handleMaximize} aria-label="Minimize">
-              <Maximize2 size={20} className="transition-all duration-300 ease-out hover:scale-125 hover:text-[var(--primary-600)] cursor-pointer"/>
+              <Maximize2 size={20}/>
             </button>
         )}
         {isMaximized && (
             <button onClick={handleMaximize} aria-label="Minimize">
-              <Minimize2 size={20} className="transition-all duration-300 ease-out hover:scale-125 hover:text-[var(--primary-600)] cursor-pointer"/>
+              <Minimize2 size={20}/>
             </button>
         )}
         <button onClick={handleClose} aria-label="Close"
         >
-          <X size={20} className="transition-all duration-300 ease-out hover:scale-125 hover:text-[var(--primary-600)] cursor-pointer"/>
+          <X size={20}/>
         </button>
       </div>
     </header>

@@ -5,9 +5,9 @@ import {State} from "../state.ts";
 
 export function EffectCard({ sound, onToggleSoundEffect, onSwitchState}: Props) {
     return (
-        <div className="flex flex-col">
+        <div>
 
-            <div className="flex flex-col items-end-safe">
+            <div>
 
                 <button onClick={() => onSwitchState(State.Sound)}>
 
@@ -21,11 +21,11 @@ export function EffectCard({ sound, onToggleSoundEffect, onSwitchState}: Props) 
 
                 <div key={effect.effect_id}>
 
-                    <div className="flex flex-row gap-4">
+                    <div>
 
-                        <p className="flex items-start">{effect.effect_id}</p>
+                        <p>{effect.effect_id}</p>
 
-                        <button className="flex items-end-safe" onClick={() => onToggleSoundEffect(sound.sound_id, effect.effect_id)}>
+                        <button onClick={() => onToggleSoundEffect(sound.sound_id, effect.effect_id)}>
 
                             { effect.active ? "ON" : "OFF" }
 
