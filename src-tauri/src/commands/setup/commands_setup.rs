@@ -38,6 +38,10 @@ pub fn commands_setup_toggle_setup(setup_id: String) -> bool {
             let new_val = !setup.toggle.load(Ordering::Relaxed);
             setup.toggle.store(new_val, Ordering::Relaxed);
 
+            {
+                database_set_setup_toggle(setup_id.as_str(), new_val);
+            }
+
             new_val
         }).unwrap_or(false)
 }
