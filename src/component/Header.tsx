@@ -51,28 +51,33 @@ export const Header = () => {
   }, []);
 
   return (
-    <header data-tauri-drag-region>
-      <div>
-        <div>
-          <h1>Saesth</h1>
+    <header data-tauri-drag-region className="flex justify-between items-center h-(--header-height) px-2">
+      <div className="p-(--padding-md)">
+        <div className="flex flex-col items-start">
+          <h1 className="font-secondary text-(--color-primary-100) font-bold space-y-10 text-medium">Saesth</h1>
+          <p className="text-(--color-primary-600) text-sm font-primary">What is your today's mood?</p>
         </div>
       </div>
 
-      <div>
-        <button onClick={handleMinimize} aria-label="Minimize">
+      <div className="flex gap-5">
+        <button onClick={handleMinimize} aria-label="Minimize" className="text-(--color-primary-700)
+        hover:text-(--color-primary-600) hover:scale-110 transition-all duration-300">
           <Minus size={20}/>
         </button>
         {!isMaximized && (
-            <button onClick={handleMaximize} aria-label="Minimize">
+            <button onClick={handleMaximize} aria-label="Minimize" className="text-(--color-primary-700)
+        hover:text-(--color-primary-600) hover:scale-110 transition-all duration-300">
               <Maximize2 size={20}/>
             </button>
         )}
         {isMaximized && (
-            <button onClick={handleMaximize} aria-label="Minimize">
+            <button onClick={handleMaximize} aria-label="Minimize" className="text-(--color-primary-700)
+        hover:text-(--color-primary-600) hover:scale-110 transition-all duration-300">
               <Minimize2 size={20}/>
             </button>
         )}
-        <button onClick={handleClose} aria-label="Close"
+        <button onClick={handleClose} aria-label="Close" className="text-(--color-primary-700)
+        hover:text-(--color-primary-600) hover:scale-110 transition-all duration-300"
         >
           <X size={20}/>
         </button>

@@ -31,6 +31,13 @@
 
   --font-primary: "Nunito", sans-serif;
   --font-secondary: "Outfit", sans-serif;
+
+  --padding-md: 0.5rem;
+  --padding-lg: 2rem;
+}
+
+text-medium {
+  @apply text-3xl;
 }
 
 body {
