@@ -31,12 +31,12 @@ function App() {
     }
 
   return (
-      <main>
+      <main className="background-color h-screen w-screen">
           <div>
               <Header/>
           </div>
 
-          <div>
+          <div className="flex">
               <aside>
                   <ComponentNavigation
                       navigation={navigation}

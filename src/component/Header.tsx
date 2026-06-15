@@ -54,7 +54,7 @@ export const Header = () => {
     <header data-tauri-drag-region>
       <div>
         <div>
-          Saesth
+          <h1>Saesth</h1>
         </div>
       </div>
 
