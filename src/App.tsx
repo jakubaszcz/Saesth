@@ -31,20 +31,20 @@ function App() {
     }
 
   return (
-      <main className="background-color h-screen w-screen">
-          <div>
+      <main className="background-color h-screen w-screen flex flex-col">
+          <div className="flex-none">
               <Header/>
           </div>
 
-          <div className="flex">
-              <aside>
+          <div className="flex flex-1 overflow-hidden">
+              <aside className="h-full flex-none">
                   <ComponentNavigation
                       navigation={navigation}
                       changeNavigation={changeNavigation}
                   />
               </aside>
 
-              <div>
+              <div className="flex-1 overflow-y-auto">
                   {RenderPage()}
               </div>
           </div>
