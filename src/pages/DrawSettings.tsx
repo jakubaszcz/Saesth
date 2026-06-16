@@ -34,27 +34,30 @@ export function DrawSettings() {
                 };
 
                 return (
-                    <div className="p-5 rounded-lg bg-primary-800 hover:bg-primary-700 duration-300 transition-all"
+                    <div className="p-5 rounded-lg bg-primary-800 hover:bg-primary-700 duration-300 transition-all flex items-center justify-between"
                         key={setting.setting_id}>
-                        <div>
-                            <div className="flex flex-col gap-1">
-                                <p className="text-primary-200 font-semibold font-secondary">
-                                    {metadata.title}
-                                </p>
+                        <div className="flex flex-col gap-1 w-3/4">
+                            <p className="text-primary-200 font-semibold font-secondary">
+                                {metadata.title}
+                            </p>
 
-                                <p className="text-primary-300 text-sm font-primary">
-                                    {metadata.description}
-                                </p>
-                            </div>
-
-                            <button onClick={() => toggleSetting(setting.setting_id)}>
-                                {setting.active ? (
-                                    <p>On</p>
-                                ) : (
-                                    <p>Off</p>
-                                )}
-                            </button>
+                            <p className="text-primary-300 text-sm font-primary">
+                                {metadata.description}
+                            </p>
                         </div>
+
+                        <button
+                            onClick={() => toggleSetting(setting.setting_id)}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
+                                setting.active ? "bg-primary-500" : "bg-primary-900"
+                            }`}
+                        >
+                            <span
+                                className={`inline-block h-4 w-4 transform rounded-full bg-primary-100 transition-transform duration-300 ${
+                                    setting.active ? "translate-x-6" : "translate-x-1"
+                                }`}
+                            />
+                        </button>
                     </div>
                 );
             })}

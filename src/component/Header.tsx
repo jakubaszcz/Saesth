@@ -60,23 +60,23 @@ export const Header = () => {
 
       <div className="flex gap-5">
         <button onClick={handleMinimize} aria-label="Minimize" className="text-(--color-primary-700)
-        hover:text-(--color-primary-600) hover:scale-110 transition-all duration-300">
+        hover:text-primary-600 hover:scale-110 transition-all duration-300">
           <Minus size={20}/>
         </button>
         {!isMaximized && (
             <button onClick={handleMaximize} aria-label="Minimize" className="text-(--color-primary-700)
-        hover:text-(--color-primary-600) hover:scale-110 transition-all duration-300">
+        hover:text-primary-600 hover:scale-110 transition-all duration-300">
               <Maximize2 size={20}/>
             </button>
         )}
         {isMaximized && (
             <button onClick={handleMaximize} aria-label="Minimize" className="text-(--color-primary-700)
-        hover:text-(--color-primary-600) hover:scale-110 transition-all duration-300">
+        hover:text-primary-600 hover:scale-110 transition-all duration-300">
               <Minimize2 size={20}/>
             </button>
         )}
         <button onClick={handleClose} aria-label="Close" className="text-(--color-primary-700)
-        hover:text-(--color-primary-600) hover:scale-110 transition-all duration-300"
+        hover:text-primary-600 hover:scale-110 transition-all duration-300"
         >
           <X size={20}/>
         </button>
