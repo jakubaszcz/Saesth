@@ -26,7 +26,7 @@ export function DrawSettings() {
     } = useSettings();
 
     return (
-        <div>
+        <div className="flex flex-col gap-2">
             {settings.map((setting) => {
                 const metadata = SETTING_METADATA[setting.setting_id] || {
                     title: setting.setting_id,
@@ -34,15 +34,15 @@ export function DrawSettings() {
                 };
 
                 return (
-                    <div
+                    <div className="p-5 rounded-lg bg-primary-800 hover:bg-primary-700 duration-300 transition-all"
                         key={setting.setting_id}>
                         <div>
-                            <div>
-                                <p>
+                            <div className="flex flex-col gap-1">
+                                <p className="text-primary-200 font-semibold font-secondary">
                                     {metadata.title}
                                 </p>
 
-                                <p>
+                                <p className="text-primary-300 text-sm font-primary">
                                     {metadata.description}
                                 </p>
                             </div>

@@ -18,13 +18,13 @@ export function ComponentNavigation({ navigation, changeNavigation }: Props) {
     }
 
     return (
-        <div className="flex flex-col h-full items-center gap-5 p-2">
+        <div className="flex flex-col h-full items-center gap-5 p-(--padding-md)">
             <div className="flex flex-col items-center gap-5">
                 {Object.values(Navigation)
                     .filter(item => item !== Navigation.Settings)
                     .map((item) => (
                         <button
-                            className={`text-(--color-primary-700) hover:text-(--color-primary-600) transition-all duration-300 ${item === navigation ? "text-primary-400 scale-110" : ""}`}
+                            className={`text-primary-700 hover:text-primary-600 transition-all duration-300 ${item === navigation ? "text-primary-400 scale-110" : ""}`}
                             key={item}
                             onClick={() => changeNavigation(item)}
                         >

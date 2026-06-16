@@ -55,7 +55,6 @@ export const Header = () => {
       <div className="p-(--padding-md)">
         <div className="flex flex-col items-start">
           <h1 className="font-secondary text-(--color-primary-100) font-bold space-y-10 text-medium">Saesth</h1>
-          <p className="text-(--color-primary-600) text-sm font-primary">What is your today's mood?</p>
         </div>
       </div>
 

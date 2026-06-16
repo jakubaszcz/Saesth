@@ -44,7 +44,7 @@ function App() {
                   />
               </aside>
 
-              <div className="flex-1 overflow-y-auto p-2">
+              <div className="flex-1 overflow-y-auto pr-2">
                   {RenderPage()}
               </div>
           </div>

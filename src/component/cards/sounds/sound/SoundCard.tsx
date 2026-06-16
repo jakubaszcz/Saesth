@@ -40,7 +40,7 @@ export function SoundCard({
                     )}
                 </button>
 
-                <div className="flex-grow">
+                <div className="grow">
                     <div className="flex justify-between items-center">
                         <span className="text-primary-300 text-sm font-medium">
                             Volume
