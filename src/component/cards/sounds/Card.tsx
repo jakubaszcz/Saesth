@@ -12,7 +12,7 @@ export const Card = ({sound, onToggleSound, onChangeVolume, onEffect}: Props) =>
 
     switch (state) {
         case State.Sound:
-            return <div className="p-2 rounded-lg bg-primary-800 hover:bg-primary-700 duration-300 transition-all">
+            return <div className="p-5 rounded-lg bg-primary-800 hover:bg-primary-700 duration-300 transition-all">
                 <SoundCard
                     sound={sound}
                     onToggleSound={onToggleSound}

@@ -10,7 +10,7 @@ export function ContainerSounds() {
     } = useSounds()
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {sounds.map((data,) => (
                 <Card
                     key={data.sound_id}
