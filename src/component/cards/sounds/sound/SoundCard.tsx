@@ -1,13 +1,11 @@
 import {getSoundIcon} from "../../../../sounds/SoundsIcon.tsx";
 import {Pause, Play, Sparkle} from "lucide-react";
 import {Props} from "./props.ts";
-import {State} from "../state.ts";
 
 export function SoundCard({
     sound,
     onToggleSound,
     onChangeVolume,
-    onSwitchState
     }: Props) {
     return (
         <div>
@@ -23,11 +21,9 @@ export function SoundCard({
                         </h3>
                     </div>
 
-                    {onSwitchState !== undefined && (
-                        <button onClick={() => onSwitchState(State.Effect)} className="text-primary-200 hover:text-primary-100 hover:scale-110 duration-300 transition-all">
-                            <Sparkle size={20} />
-                        </button>
-                    )}
+                    <button className="text-primary-200 hover:text-primary-100 hover:scale-110 duration-300 transition-all">
+                        <Sparkle size={20} />
+                    </button>
                 </div>
             </div>
             <div className="flex items-center gap-4 mt-2">
