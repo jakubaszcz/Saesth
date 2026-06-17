@@ -34,6 +34,12 @@
 
   --padding-md: 0.5rem;
   --padding-lg: 2rem;
+
+  --spacing-max-height-0: 0;
+  --spacing-max-height-96: 24rem;
+
+  --grid-template-rows-0fr: 0fr;
+  --grid-template-rows-1fr: 1fr;
 }
 
 text-medium {
@@ -42,6 +48,16 @@ text-medium {
 
 body {
   @apply bg-background;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 input[type="number"]::-webkit-inner-spin-button,

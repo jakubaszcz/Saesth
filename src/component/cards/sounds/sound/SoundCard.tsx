@@ -1,8 +1,40 @@
-import {getSoundIcon} from "../../../../sounds/SoundsIcon.tsx";
-import {Pause, Play, Sparkle} from "lucide-react";
+import {CloudRain, Pause, Play, Sparkle, X, Zap, Volleyball, WavesIcon, FlameIcon, Triangle, Bird} from "lucide-react";
 import {Props} from "./props.ts";
-import {getSoundEffectIcon} from "../../../../sounds/EffectsIcon.tsx";
-import {useState} from "react";
+import {ReactNode, useState} from "react";
+
+const SOUND_METADATA: Record<string, { title: string, icon: ReactNode}> = {
+    "sound_rain": {
+        title: "Rain",
+        icon: <CloudRain/>
+    },
+    "sound_beach": {
+        title: "Beach",
+        icon: <Volleyball/>
+    },
+    "sound_waterfall": {
+        title: "Waterfall",
+        icon: <WavesIcon/>
+    },
+    "sound_fire": {
+        title: "Fire",
+        icon: <FlameIcon/>
+    }
+};
+
+const SOUND_EFFECT_METADATA: Record<string, { title: string, icon: ReactNode }> = {
+    "sound_effect_thunder": {
+        title: "Thunder",
+        icon: <Zap/>
+    },
+    "sound_effect_triangle": {
+        title: "Triangle",
+        icon: <Triangle/>
+    },
+    "sound_effect_seagull": {
+        title: "Seagull",
+        icon: <Bird/>
+    }
+};
 
 export function SoundCard({
     sound,
@@ -23,11 +55,11 @@ export function SoundCard({
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <div className="text-primary-500">
-                            {getSoundIcon(sound.sound_id)}
+                            {SOUND_METADATA[sound.sound_id]?.icon || <X size={20} />}
                         </div>
 
-                        <h3 className="text-primary-200 font-secondary">
-                            {sound.sound_id}
+                        <h3 className="text-primary-200 font-secondary font-bold">
+                            {SOUND_METADATA[sound.sound_id]?.title || "Unknown"}
                         </h3>
                     </div>
 
@@ -56,7 +88,7 @@ export function SoundCard({
                             Volume
                         </span>
 
-                        <div className="flex items-center gap-1 border border-primary-700 rounded-md px-2 py-1">
+                        <div className="flex items-center gap-1 border bg-primary-800 border-primary-700 rounded-md px-2 py-1">
                             <input
                                 type="number"
                                 min={0}
@@ -124,52 +156,60 @@ export function SoundCard({
                     />
                 </div>
             </div>
-            {
-                isEffect && sound.effects && sound.effects.length > 0 && (
-                    <div className="mt-2 p-4 border border-primary-700 rounded-lg bg-primary-800 duration-300 transition-all">
-                        <h1 className="font-secondary font-bold text-primary-200">
-                            Effects
-                        </h1>
+            <div className={`grid transition-all duration-300 ease-in-out ${
+                isEffect && sound.effects && sound.effects.length > 0
+                    ? "grid-rows-[1fr] opacity-100 mt-2"
+                    : "grid-rows-[0fr] opacity-0"
+            }`}>
+                <div className="overflow-hidden">
+                    {
+                        sound.effects && sound.effects.length > 0 && (
+                            <div className="p-4 border border-primary-700 rounded-lg bg-primary-800">
+                                <h1 className="font-secondary font-bold text-primary-200">
+                                    Effects
+                                </h1>
 
-                        {sound.effects.map((effect) => (
-                            <div
-                                key={effect.effect_id}
-                                className="flex items-center justify-between mt-3"
-                            >
-                                <div className="flex items-center gap-3 text-primary-500">
-                                    {getSoundEffectIcon(sound.sound_id, effect.effect_id)}
+                                {sound.effects.map((effect) => (
+                                    <div
+                                        key={effect.effect_id}
+                                        className="flex items-center justify-between mt-3"
+                                    >
+                                        <div className="flex items-center gap-3 text-primary-500">
+                                            {SOUND_EFFECT_METADATA[effect.effect_id]?.icon || <Sparkle size={20} />}
 
-                                    <p className="text-primary-100 font-primary">
-                                        {effect.effect_id}
-                                    </p>
-                                </div>
+                                            <p className="text-primary-100 font-primary">
+                                                {SOUND_EFFECT_METADATA[effect.effect_id]?.title || "Unknown"}
+                                            </p>
+                                        </div>
 
-                                <button
-                                    onClick={() =>
-                                        onToggleSoundEffect(
-                                            sound.sound_id,
-                                            effect.effect_id
-                                        )
-                                    }
-                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
-                                        effect.active
-                                            ? "bg-primary-500"
-                                            : "bg-primary-900"
-                                    }`}
-                                >
-                <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-primary-100 transition-transform duration-300 ${
-                        effect.active
-                            ? "translate-x-6"
-                            : "translate-x-1"
-                    }`}
-                />
-                                </button>
+                                        <button
+                                            onClick={() =>
+                                                onToggleSoundEffect(
+                                                    sound.sound_id,
+                                                    effect.effect_id
+                                                )
+                                            }
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
+                                                effect.active
+                                                    ? "bg-primary-500"
+                                                    : "bg-primary-900"
+                                            }`}
+                                        >
+                        <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-primary-100 transition-transform duration-300 ${
+                                effect.active
+                                    ? "translate-x-6"
+                                    : "translate-x-1"
+                            }`}
+                        />
+                                        </button>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                )
-            }
+                        )
+                    }
+                </div>
+            </div>
         </div>
     )
 }

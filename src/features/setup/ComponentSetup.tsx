@@ -112,7 +112,7 @@ export function ComponentSetup() {
                             Volume
                         </span>
 
-                                <div className="flex items-center gap-1 border border-primary-700 rounded-md px-2 py-1">
+                                <div className="flex items-center gap-1 border bg-primary-800 border-primary-700 rounded-md px-2 py-1">
                                     <input
                                         type="number"
                                         min={0}
