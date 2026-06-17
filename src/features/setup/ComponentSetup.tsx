@@ -112,9 +112,35 @@ export function ComponentSetup() {
                             Volume
                         </span>
 
-                                <span className="text-primary-200 text-sm font-semibold">
-                            {Math.round(s.volume * 100)}%
-                        </span>
+                                <div className="flex items-center gap-1 border border-primary-700 rounded-md px-2 py-1">
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        max={100}
+                                        value={Math.round(s.volume * 100)}
+                                        onChange={(e) => {
+                                            const value = Math.max(
+                                                0,
+                                                Math.min(100, Number(e.target.value))
+                                            );
+
+                                            volumeSetup(s.setup_id, value / 100);
+                                        }}
+                                        className="
+            w-12
+            bg-transparent
+            text-primary-200
+            text-sm
+            font-semibold
+            text-right
+            outline-none
+        "
+                                    />
+
+                                    <span className="text-primary-200 text-sm font-semibold">
+                                %
+                            </span>
+                                </div>
                             </div>
 
                             <input
