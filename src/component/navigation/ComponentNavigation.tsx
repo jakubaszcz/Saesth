@@ -24,7 +24,7 @@ export function ComponentNavigation({ navigation, changeNavigation }: Props) {
                     .filter(item => item !== Navigation.Settings)
                     .map((item) => (
                         <button
-                            className={`text-primary-700 hover:text-primary-600 transition-all duration-300 ${item === navigation ? "text-primary-400 scale-110" : ""}`}
+                            className={`text-primary-700 hover:text-primary-600 transition-all duration-300 cursor-pointer ${item === navigation ? "text-primary-400 scale-110" : ""}`}
                             key={item}
                             onClick={() => changeNavigation(item)}
                         >
@@ -35,7 +35,7 @@ export function ComponentNavigation({ navigation, changeNavigation }: Props) {
 
             <div className="mt-auto">
                 <button
-                    className={`text-(--color-primary-700) hover:text-(--color-primary-600) transition-all duration-300 ${navigation === Navigation.Settings ? "text-primary-400 scale-110" : ""}`}
+                    className={`text-(--color-primary-700) hover:text-(--color-primary-600) transition-all duration-300 cursor-pointer ${navigation === Navigation.Settings ? "text-primary-400 scale-110" : ""}`}
                     key={Navigation.Settings}
                     onClick={() => changeNavigation(Navigation.Settings)}
                 >

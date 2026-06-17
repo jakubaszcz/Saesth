@@ -48,7 +48,7 @@ export function DrawSettings() {
 
                         <button
                             onClick={() => toggleSetting(setting.setting_id)}
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
+                            className={`cursor-pointer relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
                                 setting.active ? "bg-primary-500" : "bg-primary-900"
                             }`}
                         >

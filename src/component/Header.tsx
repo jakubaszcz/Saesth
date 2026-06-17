@@ -54,29 +54,29 @@ export const Header = () => {
     <header data-tauri-drag-region className="flex justify-between items-center h-(--header-height) px-2">
       <div className="p-(--padding-md)">
         <div className="flex flex-col items-start">
-          <h1 className="font-secondary text-(--color-primary-100) font-bold space-y-10 text-medium">Saesth</h1>
+          <h1 className="font-secondary text-primary-100 font-bold space-y-10 text-medium">Saesth</h1>
         </div>
       </div>
 
       <div className="flex gap-5">
-        <button onClick={handleMinimize} aria-label="Minimize" className="text-(--color-primary-700)
-        hover:text-primary-600 hover:scale-110 transition-all duration-300">
+        <button onClick={handleMinimize} aria-label="Minimize" className="text-primary-700
+        hover:text-primary-600 hover:scale-110 transition-all duration-300 cursor-pointer">
           <Minus size={20}/>
         </button>
         {!isMaximized && (
-            <button onClick={handleMaximize} aria-label="Minimize" className="text-(--color-primary-700)
-        hover:text-primary-600 hover:scale-110 transition-all duration-300">
+            <button onClick={handleMaximize} aria-label="Minimize" className="text-primary-700
+        hover:text-primary-600 hover:scale-110 transition-all duration-300 cursor-pointer">
               <Maximize2 size={20}/>
             </button>
         )}
         {isMaximized && (
-            <button onClick={handleMaximize} aria-label="Minimize" className="text-(--color-primary-700)
-        hover:text-primary-600 hover:scale-110 transition-all duration-300">
+            <button onClick={handleMaximize} aria-label="Minimize" className="text-primary-700
+        hover:text-primary-600 hover:scale-110 transition-all duration-300 cursor-pointer">
               <Minimize2 size={20}/>
             </button>
         )}
-        <button onClick={handleClose} aria-label="Close" className="text-(--color-primary-700)
-        hover:text-primary-600 hover:scale-110 transition-all duration-300"
+        <button onClick={handleClose} aria-label="Close" className="text-primary-700
+        hover:text-primary-600 hover:scale-110 transition-all duration-300 cursor-pointer"
         >
           <X size={20}/>
         </button>

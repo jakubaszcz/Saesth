@@ -58,14 +58,14 @@ export function SoundCard({
                             {SOUND_METADATA[sound.sound_id]?.icon || <X size={20} />}
                         </div>
 
-                        <h3 className="text-primary-200 font-secondary font-bold">
+                        <h3 className="text-primary-100 font-secondary font-bold">
                             {SOUND_METADATA[sound.sound_id]?.title || "Unknown"}
                         </h3>
                     </div>
 
                     {
                         sound.effects && sound.effects.length > 0 && (
-                            <button onClick={toggleEffect} className="text-primary-200 hover:text-primary-100 hover:scale-110 duration-300 transition-all">
+                            <button onClick={toggleEffect} className="cursor-pointer text-primary-200 hover:text-primary-100 hover:scale-110 duration-300 transition-all">
                                 <Sparkle size={20} />
                             </button>
                         )
@@ -73,7 +73,7 @@ export function SoundCard({
                 </div>
             </div>
             <div className="flex items-center gap-4 mt-2">
-                <button className="text-primary-200 hover:text-primary-300 hover:scale-110 duration-300 transition-all flex-shrink-0"
+                <button className="cursor-pointer text-primary-200 hover:text-primary-300 hover:scale-110 duration-300 transition-all flex-shrink-0"
                     onClick={() => onToggleSound(sound.sound_id)}>
                     {sound.play ? (
                         <Pause size={20} />
@@ -84,7 +84,7 @@ export function SoundCard({
 
                 <div className="grow">
                     <div className="flex justify-between items-center">
-                        <span className="text-primary-300 text-sm font-medium">
+                        <span className="text-primary-300 text-sm font-medium font-primary">
                             Volume
                         </span>
 
@@ -165,7 +165,7 @@ export function SoundCard({
                     {
                         sound.effects && sound.effects.length > 0 && (
                             <div className="p-4 border border-primary-700 rounded-lg bg-primary-800">
-                                <h1 className="font-secondary font-bold text-primary-200">
+                                <h1 className="font-secondary font-bold text-primary-100">
                                     Effects
                                 </h1>
 
@@ -189,7 +189,7 @@ export function SoundCard({
                                                     effect.effect_id
                                                 )
                                             }
-                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
+                                            className={`cursor-pointer relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
                                                 effect.active
                                                     ? "bg-primary-500"
                                                     : "bg-primary-900"

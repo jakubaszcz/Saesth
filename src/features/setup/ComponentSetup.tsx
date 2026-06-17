@@ -94,7 +94,7 @@ export function ComponentSetup() {
 
                             <button
                                 onClick={() => toggleSetup(s.setup_id)}
-                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
+                                className={`cursor-pointer relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
                                     s.toggle ? "bg-primary-500" : "bg-primary-900"
                                 }`}
                             >
@@ -108,7 +108,7 @@ export function ComponentSetup() {
 
                         <div className="grow mt-2">
                             <div className="flex justify-between items-center">
-                        <span className="text-primary-300 text-sm font-medium">
+                        <span className="text-primary-300 text-sm font-medium font-primary">
                             Volume
                         </span>
 
