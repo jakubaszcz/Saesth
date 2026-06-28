@@ -1,6 +1,6 @@
 import {getCurrentWindow} from "@tauri-apps/api/window";
 import {X, Minus, Maximize2, Minimize2} from "lucide-react";
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 
 export const Header = () => {
 
@@ -51,39 +51,34 @@ export const Header = () => {
   }, []);
 
   return (
-    <header data-tauri-drag-region className="
-    w-full flex justify-between items-center h-14 px-8
-    flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <div className="
-        font-manrope
-text-[var(--primary-500)]
-text-2xl
-tracking-wide
-select-none
-drop-shadow-sm
-">
-          Saesth
+    <header data-tauri-drag-region className="flex justify-between items-center h-(--header-height) px-2">
+      <div className="p-(--padding-md)">
+        <div className="flex flex-col items-start">
+          <h1 className="font-secondary text-primary-100 font-bold space-y-10 text-medium">Saesth</h1>
         </div>
       </div>
 
-      <div className="flex gap-2 text-(--primary-500)">
-        <button onClick={handleMinimize} aria-label="Minimize">
-          <Minus size={20} className="transition-all duration-300 ease-out hover:scale-125 hover:text-[var(--primary-600)] cursor-pointer"/>
+      <div className="flex gap-5">
+        <button onClick={handleMinimize} aria-label="Minimize" className="text-primary-700
+        hover:text-primary-600 hover:scale-110 transition-all duration-300 cursor-pointer">
+          <Minus size={20}/>
         </button>
         {!isMaximized && (
-            <button onClick={handleMaximize} aria-label="Minimize">
-              <Maximize2 size={20} className="transition-all duration-300 ease-out hover:scale-125 hover:text-[var(--primary-600)] cursor-pointer"/>
+            <button onClick={handleMaximize} aria-label="Minimize" className="text-primary-700
+        hover:text-primary-600 hover:scale-110 transition-all duration-300 cursor-pointer">
+              <Maximize2 size={20}/>
             </button>
         )}
         {isMaximized && (
-            <button onClick={handleMaximize} aria-label="Minimize">
-              <Minimize2 size={20} className="transition-all duration-300 ease-out hover:scale-125 hover:text-[var(--primary-600)] cursor-pointer"/>
+            <button onClick={handleMaximize} aria-label="Minimize" className="text-primary-700
+        hover:text-primary-600 hover:scale-110 transition-all duration-300 cursor-pointer">
+              <Minimize2 size={20}/>
             </button>
         )}
-        <button onClick={handleClose} aria-label="Close"
+        <button onClick={handleClose} aria-label="Close" className="text-primary-700
+        hover:text-primary-600 hover:scale-110 transition-all duration-300 cursor-pointer"
         >
-          <X size={20} className="transition-all duration-300 ease-out hover:scale-125 hover:text-[var(--primary-600)] cursor-pointer"/>
+          <X size={20}/>
         </button>
       </div>
     </header>

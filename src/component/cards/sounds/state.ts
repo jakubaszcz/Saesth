@@ -1,1 +1,0 @@
-export enum State { Sound, Effect }
