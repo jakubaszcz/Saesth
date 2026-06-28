@@ -26,7 +26,7 @@ export function DrawSettings() {
     } = useSettings();
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
             {settings.map((setting) => {
                 const metadata = SETTING_METADATA[setting.setting_id] || {
                     title: setting.setting_id,
@@ -34,61 +34,30 @@ export function DrawSettings() {
                 };
 
                 return (
-                    <div
-                        key={setting.setting_id}
-                        className="
-                            rounded-lg
-                            border border-white/10
-                            bg-white/5
-                            backdrop-blur-md
-                            shadow-[0_10px_40px_rgba(0,0,0,0.18)]
-                            transition-all duration-300
-                            hover:bg-white/[0.07]
-                            hover:shadow-[0_14px_44px_rgba(0,0,0,0.24)]
-                            p-5
-                        "
-                    >
-                        <div className="flex items-center justify-between gap-4">
-                            <div className="min-w-0">
-                                <p className="font-inter text-base font-semibold text-[var(--primary-200)]">
-                                    {metadata.title}
-                                </p>
+                    <div className="p-5 rounded-lg bg-primary-800 hover:bg-primary-700 duration-300 transition-all flex items-center justify-between"
+                        key={setting.setting_id}>
+                        <div className="flex flex-col gap-1 w-3/4">
+                            <p className="text-primary-200 font-semibold font-secondary">
+                                {metadata.title}
+                            </p>
 
-                                <p className="mt-1 text-sm leading-relaxed text-[var(--primary-100)]">
-                                    {metadata.description}
-                                </p>
-                            </div>
-
-                            <button onClick={() => toggleSetting(setting.setting_id)}>
-                                {setting.active ? (
-                                    <p className="
-                            rounded-lg
-                            border border-white/10
-                            bg-white/5
-                            backdrop-blur-md
-                            shadow-[0_10px_40px_rgba(0,0,0,0.18)]
-                            transition-all duration-300
-                            hover:bg-white/[0.07]
-                            hover:shadow-[0_14px_44px_rgba(0,0,0,0.24)]
-                            px-4 py-2
-                            text-[var(--primary-200)]
-                        ">On</p>
-                                ) : (
-                                    <p className="
-                            rounded-lg
-                            border border-white/10
-                            bg-white/5
-                            backdrop-blur-md
-                            shadow-[0_10px_40px_rgba(0,0,0,0.18)]
-                            transition-all duration-300
-                            hover:bg-white/[0.07]
-                            hover:shadow-[0_14px_44px_rgba(0,0,0,0.24)]
-                            px-4 py-2
-                            text-[var(--primary-200)]
-                        ">Off</p>
-                                )}
-                            </button>
+                            <p className="text-primary-300 text-sm font-primary">
+                                {metadata.description}
+                            </p>
                         </div>
+
+                        <button
+                            onClick={() => toggleSetting(setting.setting_id)}
+                            className={`cursor-pointer relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
+                                setting.active ? "bg-primary-500" : "bg-primary-900"
+                            }`}
+                        >
+                            <span
+                                className={`inline-block h-4 w-4 transform rounded-full bg-primary-100 transition-transform duration-300 ${
+                                    setting.active ? "translate-x-6" : "translate-x-1"
+                                }`}
+                            />
+                        </button>
                     </div>
                 );
             })}
