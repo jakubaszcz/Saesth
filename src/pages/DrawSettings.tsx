@@ -6,8 +6,8 @@ const SETTING_METADATA: Record<string, { title: string; description: string }> =
         description: "When closed, the application will continue to run in the system tray."
     },
     "setting_sync_local_database": {
-        title: "Sync Local Database",
-        description: "Automatically synchronize your local database with the cloud."
+        title: "New Database",
+        description: "Automatically reset the database when the application is opened."
     },
     "setting_single_instance": {
         title: "Single Instance",
