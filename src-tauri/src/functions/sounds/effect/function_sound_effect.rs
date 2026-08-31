@@ -12,6 +12,7 @@ use crate::utils::prefix::util_prefix::util_prefix_remove_prefix;
 pub(crate) const FADE_STEPS: u64 = 5;
 const FADE_DURATION_MS: u64 = 1500;
 
+const caca: Vec<String> = vec![];
 const PATH: &str = "./sounds/effects";
 
 pub fn function_sound_effect(
@@ -48,13 +49,27 @@ pub fn function_sound_effect(
                 continue;
             }
 
-            let path = format!(
-                "{}/{}",
-                PATH,
-                util_prefix_remove_prefix(&effect.effect_id).as_str());
+            let exe_path = std::env::current_exe().unwrap();
+            let base_path = exe_path.parent().unwrap();
+            
+            // Check if we are in development or production
+            let sounds_path = if base_path.join("sounds").exists() {
+                base_path.join("sounds")
+            } else {
+                base_path.join("../sounds")
+            };
+            
+            let effects_path = sounds_path.join("effects");
 
+            let path = effects_path
+                .join(util_prefix_remove_prefix(&effect.effect_id).as_str());
 
-            let Ok(file) = File::open(function_random_sound(&path)) else {
+            let sound_file_path = function_random_sound(path.to_str().unwrap());
+            if sound_file_path.as_os_str().is_empty() {
+                continue;
+            }
+
+            let Ok(file) = File::open(sound_file_path) else {
                 continue;
             };
 
@@ -93,7 +108,6 @@ pub fn function_sound_effect(
         }
     });
 }
-
 fn fade_out_effect(player: &Player, volume: f32) {
     let steps = FADE_DURATION_MS / FADE_STEPS;
 
@@ -107,3 +121,5 @@ fn fade_out_effect(player: &Player, volume: f32) {
         thread::sleep(Duration::from_millis(FADE_STEPS));
     }
 }
+
+

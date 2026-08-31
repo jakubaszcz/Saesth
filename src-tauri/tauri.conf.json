@@ -9,6 +9,12 @@
     "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist"
   },
+  "plugins": {
+    "dev-server": {
+      "host": "localhost",
+      "port": 1420
+    }
+  },
   "app": {
     "windows": [
       {
@@ -31,10 +37,11 @@
       "icons/icon.ico"
     ],
     "resources": [
-      "sounds/rain/*",
-      "sounds/beach/*",
-      "sounds/waterfall/*",
-      "sounds/fire/*"
+      "sounds/rain/**/*",
+      "sounds/beach/**/*",
+      "sounds/waterfall/**/*",
+      "sounds/fire/**/*",
+      "sounds/effects/**/*"
     ]
   }
 }

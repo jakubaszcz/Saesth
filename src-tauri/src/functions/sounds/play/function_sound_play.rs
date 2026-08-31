@@ -15,11 +15,20 @@ pub fn function_sound_play(sound: &mut Sound) {
         return;
     }
 
-    let path = format!(
-        "{}/{}/{}.mp3",
-        PATH,
-        util_prefix_remove_prefix(&sound.sound_id).as_str(),
-        "default");
+    let exe_path = std::env::current_exe().unwrap();
+    let base_path = exe_path.parent().unwrap();
+    
+    // Check if we are in development or production
+    let sounds_path = if base_path.join("sounds").exists() {
+        base_path.join("sounds")
+    } else {
+        // Fallback for some Tauri configurations where resources are in a different place
+        base_path.join("../sounds")
+    };
+
+    let path = sounds_path
+        .join(util_prefix_remove_prefix(&sound.sound_id).as_str())
+        .join("default.mp3");
 
     let handle = DeviceSinkBuilder::open_default_sink().unwrap();
 
@@ -29,7 +38,13 @@ pub fn function_sound_play(sound: &mut Sound) {
         )
     );
 
-    let file = std::fs::File::open(path).unwrap();
+    let file = match std::fs::File::open(&path) {
+        Ok(f) => f,
+        Err(e) => {
+            eprintln!("Failed to open sound file at {:?}: {}", path, e);
+            return;
+        }
+    };
 
     let source = rodio::Decoder::new(file).unwrap().repeat_infinite();
 
