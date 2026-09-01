@@ -1,6 +1,7 @@
 use std::num::{NonZeroU16, NonZeroU32};
 use std::sync::{Arc, Mutex, OnceLock};
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::mpsc::Sender;
 use std::thread;
 use rdev::{listen, Event, EventType};
 use rodio::{DeviceSinkBuilder, MixerDeviceSink, Player};
@@ -160,50 +161,60 @@ pub fn function_setup_init() {
     });
 
     thread::spawn(move || {
-
-        let mut pressed_keys = std::collections::HashSet::new();
-        let mut pressed_buttons = std::collections::HashSet::new();
-
-        listen(move |event: Event| {
-            match event.event_type {
-                EventType::KeyPress(key) => {
-                    if pressed_keys.insert(key) {
-                        if function_setup_get_setup_toggled(util_prefix_add_prefix(PREFIX_FOR_SETUP, KEYBOARD)) {
-                            let kind = match key {
-                                rdev::Key::Space => Some(Type::Space),
-                                rdev::Key::Delete => Some(Type::Delete),
-                                _ => Some(Type::Keys),
-                            };
-                            if let Some(k) = kind {
-                                let _ = tx.send(k);
-                            }
-                        }
-                    }
-                }
-
-                EventType::KeyRelease(key) => {
-                    pressed_keys.remove(&key);
-                }
-
-                EventType::ButtonPress(button) => {
-                    if pressed_buttons.insert(button) {
-                        if function_setup_get_setup_toggled(util_prefix_add_prefix(PREFIX_FOR_SETUP, MOUSE)) {
-                            let kind = match button {
-                                rdev::Button::Left => Some(Type::LMB),
-                                rdev::Button::Right => Some(Type::RMB),
-                                _ => None,
-                            };
-                            if let Some(k) = kind {
-                                let _ = tx.send(k);
-                            }
-                        }
-                    }
-                }
-                EventType::ButtonRelease(button) => {
-                    pressed_buttons.remove(&button);
-                }
-                _ => {}
-            }
-        }).expect("failed to listen to events");
+        key_event(tx)
     });
+}
+
+#[cfg(target_os = "linux")]
+fn key_event(tx: Sender<Type>) {
+
+}
+
+#[cfg(target_os = "windows")]
+fn key_event(tx: Sender<Type>) {
+
+    let mut pressed_keys = std::collections::HashSet::new();
+    let mut pressed_buttons = std::collections::HashSet::new();
+
+    listen(move |event: Event| {
+        match event.event_type {
+            EventType::KeyPress(key) => {
+                if pressed_keys.insert(key) {
+                    if function_setup_get_setup_toggled(util_prefix_add_prefix(PREFIX_FOR_SETUP, KEYBOARD)) {
+                        let kind = match key {
+                            rdev::Key::Space => Some(Type::Space),
+                            rdev::Key::Delete => Some(Type::Delete),
+                            _ => Some(Type::Keys),
+                        };
+                        if let Some(k) = kind {
+                            let _ = tx.send(k);
+                        }
+                    }
+                }
+            }
+
+            EventType::KeyRelease(key) => {
+                pressed_keys.remove(&key);
+            }
+
+            EventType::ButtonPress(button) => {
+                if pressed_buttons.insert(button) {
+                    if function_setup_get_setup_toggled(util_prefix_add_prefix(PREFIX_FOR_SETUP, MOUSE)) {
+                        let kind = match button {
+                            rdev::Button::Left => Some(Type::LMB),
+                            rdev::Button::Right => Some(Type::RMB),
+                            _ => None,
+                        };
+                        if let Some(k) = kind {
+                            let _ = tx.send(k);
+                        }
+                    }
+                }
+            }
+            EventType::ButtonRelease(button) => {
+                pressed_buttons.remove(&button);
+            }
+            _ => {}
+        }
+    }).expect("failed to listen to events");
 }
