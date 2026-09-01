@@ -35,6 +35,15 @@ pub fn commands_sounds_volume_sound(sound_id: String, volume: f32) -> f32 {
         .map(|s| {
             *s.volume.lock().unwrap() = volume;
 
+            if let Some(player) = &s.player {
+                function_sound_util_volume(
+                    player,
+                    &s.volume,
+                    &s.fade_volume,
+                    &s.drift_volume,
+                );
+            }
+
             {
                 database_set_sound_volume(sound_id.as_str(), volume);
             }
