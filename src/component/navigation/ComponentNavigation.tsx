@@ -18,7 +18,7 @@ export function ComponentNavigation({ navigation, changeNavigation }: Props) {
     }
 
     return (
-        <div className="flex flex-col h-full items-center gap-5 p-(--padding-md)">
+        <div className="flex flex-col h-full items-center gap-5 p-(--padding-md) pt-0">
             <div className="flex flex-col items-center gap-5">
                 {Object.values(Navigation)
                     .filter(item => item !== Navigation.Settings)
