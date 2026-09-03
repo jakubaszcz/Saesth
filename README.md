@@ -1,22 +1,58 @@
-# Saesth
+# Saesth — Work Aesthetically
 
-Work with aesthetics.
+Saesth is a lightweight Windows application designed to make your workspace feel calmer and more enjoyable.
 
-Saesth lets you enjoy natural and atmospheric sounds designed to help you focus, relax, and work in a beautiful environment.
+Create your own atmosphere with relaxing ambient sounds such as rain and other natural environments, while keeping them alongside the audio you already listen to.
 
-![Screenshot](assets/screen.png)
+Saesth also makes your interactions with your computer feel more satisfying. Keyboard presses, releases, and mouse interactions can produce soft, responsive sounds, making every action feel a little more alive.
+
+Saesth isn't just an ambient sound player. It's a tool designed to turn your workspace into your own peaceful environment.
+
+**Discover Saesth:** https://www.saesth.com/
+
+![Saesth](https://www.saesth.com/og-image.png)
 
 ## Features
 
-- Play relaxing natural sounds
-- Mix multiple sounds together
-- Create your perfect work atmosphere
-- Designed for focus and calm sessions
+### Ambient sounds
+Mix relaxing natural sounds and create an atmosphere that fits the way you work.
+
+### Responsive input sounds
+Give your keyboard and mouse their own satisfying sound feedback. Each interaction can subtly react and vary while you work.
+
+### Lightweight
+Saesth is built with Rust and designed to stay quietly in the background without getting in your way.
+
+### Calm interface
+The interface is designed around the same philosophy as the sounds themselves: simple, calm, and distraction-free.
+
+### Shareable sound packs
+Create packs containing custom sounds and configurations, then share them with other Saesth users.
+
+> **Status:** Upcoming
+
+## Download
+
+Download the latest version of Saesth from:
+
+https://www.saesth.com/
 
 ## License
 
-Source available.
+Saesth is **source-available software**.
 
-You may view the source code, report issues, and contribute through pull requests. Unauthorized redistribution or commercial use may be restricted.
+The source code is publicly accessible for transparency and contributions, but this does not grant permission to redistribute, sell, or create independent versions of Saesth.
 
-![Icon](assets/icon.png)
+You may:
+
+- View the source code.
+- Contribute to the official Saesth project.
+
+You may not, without explicit permission:
+
+- Redistribute Saesth or substantial parts of its source code.
+- Sell Saesth or its source code.
+- Create and distribute your own version of Saesth.
+- Use the source code as the basis of another commercial or publicly distributed product.
+
+See the `LICENSE` file for the complete terms.
