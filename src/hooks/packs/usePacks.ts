@@ -1,8 +1,26 @@
 import {
+    APIFetchPack,
     APIOpenPack
 } from "../../api/packs/packs.ts"
+import {useEffect, useState} from "react";
+import {Pack} from "../../structures/packs/packs.ts";
 
 export const usePacks = () => {
+
+    const [packs, setPacks] = useState<Pack[]>([]);
+
+    useEffect(() => {
+        async function loadPacks() {
+            try {
+                const response = await APIFetchPack();
+                setPacks(response);
+            } catch (error) {
+                console.error("Failed to fetch packs:", error);
+            }
+        }
+
+        loadPacks()
+    })
     const openPack = async () => {
         try {
             await APIOpenPack();
@@ -11,5 +29,14 @@ export const usePacks = () => {
         }
     };
 
-    return { openPack };
+    const loadPacks = async () => {
+        try {
+            const response = await APIFetchPack();
+            setPacks(response);
+        } catch (error) {
+            console.error("Failed to fetch packs:", error);
+        }
+    };
+
+    return { packs, openPack, loadPacks };
 };

@@ -54,7 +54,7 @@ export function SoundCard({
             <div>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <div className="text-primary-500">
+                            <div className="text-primary-500">
                             {SOUND_METADATA[sound.sound_id]?.icon || <X size={20} />}
                         </div>
 

@@ -5,6 +5,7 @@ use tauri::{Emitter, Manager};
 use crate::database::settings::database_settings::database_settings_get_active_setting;
 use crate::functions::functions::functions;
 use crate::global::global::PREFIX_FOR_SETTING;
+use crate::types::packs::type_packs::Pack;
 use crate::types::settings::type_settings::{SettingDTO, SettingKeys};
 use crate::types::setup::type_setup::{SetupDTO};
 use crate::utils::prefix::util_prefix::util_prefix_add_prefix;
@@ -67,6 +68,11 @@ fn volume_setup(setup_id: String, value: f32) -> f32 {
 #[tauri::command]
 fn open_packs() {
     commands::packs::commands_packs::command_open_packs();
+}
+
+#[tauri::command]
+fn fetch_packs() -> Vec<Pack> {
+    commands::packs::commands_packs::command_display_pack()
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -137,6 +143,7 @@ pub fn run() {
             fetch_settings,
             toggle_setting,
             open_packs,
+            fetch_packs,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

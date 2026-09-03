@@ -15,6 +15,7 @@ export function useSounds() {
                 const response = await APIFetchSound();
 
                 setSounds(response);
+                console.log("success sound")
             } catch (error) {
                 console.error("Failed to load sounds:", error);
             }

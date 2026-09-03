@@ -1,6 +1,9 @@
 use std::fs;
 use directories::ProjectDirs;
 use opener;
+use crate::global::global::{PACKS};
+use crate::types::packs::type_packs::Pack;
+
 const DATABASE_QUALIFIER : &str = "com";
 const DATABASE_ORGANISATION : &str = "saesth";
 const DATABASE_APPLICATION : &str = "saesth";
@@ -13,4 +16,10 @@ pub fn command_open_packs() {
     let pack_dir = local.join("pack");
 
     opener::open(&pack_dir).unwrap();
+}
+
+pub fn command_display_pack() -> Vec<Pack> {
+    let list = PACKS.get().unwrap().lock().unwrap();
+
+    list.clone()
 }
