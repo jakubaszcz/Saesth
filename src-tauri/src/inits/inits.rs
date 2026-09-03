@@ -8,5 +8,6 @@ pub fn inits() {
     SOUNDS.get_or_init(|| Mutex::new(inits::sounds::init_sound::init()));
     SETTINGS.get_or_init(|| Mutex::new(inits::settings::init_settings::init()));
 
-    inits::discord_rich_presence::init_discord_rich_presence::init()
+    inits::discord_rich_presence::init_discord_rich_presence::init();
+    inits::pack::init_pack::init();
 }
