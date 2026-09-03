@@ -1,4 +1,4 @@
-import {AudioLines, BoltIcon, HeadsetIcon, LucideSparkle} from "lucide-react";
+import {AudioLines, BoltIcon, HeadsetIcon, LucideSparkle, Package} from "lucide-react";
 import {Navigation} from "../../structures/navigation/Navigation.ts";
 import {Props} from "./props.ts";
 
@@ -10,6 +10,8 @@ export function ComponentNavigation({ navigation, changeNavigation }: Props) {
                 return <AudioLines size={size}/>;
             case Navigation.Setup:
                 return <HeadsetIcon size={size}/>;
+            case Navigation.Pack:
+                return <Package size={size}/>;
             case Navigation.Settings:
                 return <BoltIcon size={size}/>;
             default:

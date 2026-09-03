@@ -6,6 +6,8 @@ import {ComponentNavigation} from "./component/navigation/ComponentNavigation.ts
 import {Navigation} from "./structures/navigation/Navigation.ts";
 import {ComponentSetup} from "./features/setup/ComponentSetup.tsx";
 import {ContainerSounds} from "./containers/sounds/ContainerSounds.tsx";
+import {ContainerPacks} from "./containers/packs/ContainerPacks.tsx";
+
 function App() {
 
     const {
@@ -21,7 +23,8 @@ function App() {
 
             case Navigation.Setup:
                 return <ComponentSetup />;
-
+            case Navigation.Pack:
+                return <ContainerPacks />
             case Navigation.Settings:
                 return <DrawSettings />;
 

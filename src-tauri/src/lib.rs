@@ -64,6 +64,11 @@ fn volume_setup(setup_id: String, value: f32) -> f32 {
     commands::setup::commands_setup::commands_setup_volume_setup(setup_id, value)
 }
 
+#[tauri::command]
+fn open_packs() {
+    commands::packs::commands_packs::command_open_packs();
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
 
@@ -131,6 +136,7 @@ pub fn run() {
             volume_setup,
             fetch_settings,
             toggle_setting,
+            open_packs,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
