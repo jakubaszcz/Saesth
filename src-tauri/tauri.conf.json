@@ -29,7 +29,7 @@
         "enable": true,
         "scope": [
           "$APPDATA/**/*",
-          "$HOME/AppData/Roaming/saesth/saesth/data/pack/**/*"
+          "$HOME/AppData/Roaming/saesth/saesth/data/packs/**/*"
         ]
       },
       "csp": "default-src 'self'; img-src 'self' asset.localhost http://asset.localhost; connect-src 'self' ipc: http://ipc.localhost"

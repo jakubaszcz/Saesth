@@ -1,5 +1,6 @@
 use std::sync::{Mutex, OnceLock};
 use rusqlite::Connection;
+use crate::types::appdata::type_appdata::Appdata;
 use crate::types::packs::type_packs::Pack;
 use crate::types::settings::type_settings::Setting;
 use crate::types::setup::type_setup::Setup;
@@ -25,3 +26,4 @@ pub static SOUNDS: OnceLock<Mutex<Vec<Sound>>> = OnceLock::new();
 pub static SETUP: OnceLock<Mutex<Vec<Setup>>> = OnceLock::new();
 pub static SETTINGS: OnceLock<Mutex<Vec<Setting>>> = OnceLock::new();
 pub static PACKS: OnceLock<Mutex<Vec<Pack>>> = OnceLock::new();
+pub static PATHS: OnceLock<Appdata> = OnceLock::new();

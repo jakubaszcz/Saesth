@@ -7,7 +7,7 @@ export function ContainerPacks() {
 
     return (
         <div className="h-full w-full flex flex-col p-(--padding-md)">
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 overflow-y-auto content-start">
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-2 overflow-y-auto content-start">
                 {packs.map((pack) => (
                     <Card key={pack.name} name={pack.name} description={pack.description} icon={pack.icon}/>
                 ))}

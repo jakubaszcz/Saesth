@@ -6,28 +6,24 @@ use directories::ProjectDirs;
 use crate::commands::packs::commands_packs::command_open_packs;
 use crate::types::packs::type_packs::Pack;
 use zip::ZipArchive;
+use crate::global::global::PATHS;
 
-const DATABASE_QUALIFIER : &str = "com";
-const DATABASE_ORGANISATION : &str = "saesth";
-const DATABASE_APPLICATION : &str = "saesth";
 pub fn init() -> Vec<Pack> {
-    let directory = ProjectDirs::from(DATABASE_QUALIFIER, DATABASE_ORGANISATION, DATABASE_APPLICATION).unwrap();
-    let local = directory.data_dir();
 
-    fs::create_dir_all(local).unwrap();
 
-    let pack_dir = local.join("pack");
-    fs::create_dir_all(&pack_dir).unwrap();
+    let path = &PATHS.get().unwrap().packs;
 
+    println!("{}", path.display());
 
     let mut packs = Vec::new();
 
-    for entry in fs::read_dir(&pack_dir).unwrap() {
+    for entry in fs::read_dir(path).unwrap() {
         let entry = entry.unwrap();
-        let path = entry.path();
+        let zip = entry.path();
 
-        if path.extension().and_then(|ext| ext.to_str()) == Some("zip") {
-            packs.push(read_pack(path, &pack_dir));
+        if zip.extension().and_then(|ext| ext.to_str()) == Some("zip") {
+            println!("{}", zip.display());
+            packs.push(read_pack(zip, path));
         }
     }
     packs
@@ -52,6 +48,8 @@ fn read_pack(path: PathBuf, pack_dir: &PathBuf) -> Pack {
     io::copy(&mut icon, &mut output).unwrap();
 
     config.icon = icon_path.to_string_lossy().to_string();
+
+    println!("{} icon path", icon_path.display());
 
     config
 }

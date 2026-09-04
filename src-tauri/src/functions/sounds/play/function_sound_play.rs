@@ -8,8 +8,6 @@ use crate::functions::sounds::play::fade::function_sound_fade::function_sound_fa
 use crate::types::sounds::type_sounds::Sound;
 use crate::utils::prefix::util_prefix::util_prefix_remove_prefix;
 
-const PATH: &str = "./sounds";
-
 pub fn function_sound_play(sound: &mut Sound) {
     if sound.player.is_some() {
         return;
@@ -18,11 +16,9 @@ pub fn function_sound_play(sound: &mut Sound) {
     let exe_path = std::env::current_exe().unwrap();
     let base_path = exe_path.parent().unwrap();
     
-    // Check if we are in development or production
     let sounds_path = if base_path.join("sounds").exists() {
         base_path.join("sounds")
     } else {
-        // Fallback for some Tauri configurations where resources are in a different place
         base_path.join("../sounds")
     };
 
