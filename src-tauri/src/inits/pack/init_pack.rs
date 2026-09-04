@@ -9,11 +9,8 @@ use zip::ZipArchive;
 use crate::global::global::PATHS;
 
 pub fn init() -> Vec<Pack> {
-
-
     let path = &PATHS.get().unwrap().packs;
-
-    println!("{}", path.display());
+    let cache = &PATHS.get().unwrap().packs_cache;
 
     let mut packs = Vec::new();
 
@@ -22,15 +19,15 @@ pub fn init() -> Vec<Pack> {
         let zip = entry.path();
 
         if zip.extension().and_then(|ext| ext.to_str()) == Some("zip") {
-            println!("{}", zip.display());
-            packs.push(read_pack(zip, path));
+            packs.push(read_pack(zip, cache));
         }
     }
     packs
 }
 
-fn read_pack(path: PathBuf, pack_dir: &PathBuf) -> Pack {
+fn read_pack(path: PathBuf, cache: &PathBuf) -> Pack {
     let file = File::open(&path).unwrap();
+
     let mut archive = ZipArchive::new(file).unwrap();
 
     let mut config: Pack = {
@@ -41,7 +38,7 @@ fn read_pack(path: PathBuf, pack_dir: &PathBuf) -> Pack {
     let mut icon = archive.by_name("icon.png").unwrap();
 
     let icon_file_name = format!("{}.png", path.file_stem().unwrap().to_string_lossy());
-    let icon_path = pack_dir.join(icon_file_name);
+    let icon_path = cache.join(icon_file_name);
 
     let mut output = File::create(&icon_path).unwrap();
 
