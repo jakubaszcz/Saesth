@@ -4,5 +4,5 @@ use serde::{Deserialize, Serialize};
 pub struct Pack {
     name: String,
     description: String,
-    icon: String,
+    pub(crate) icon: String,
 }

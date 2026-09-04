@@ -1,13 +1,15 @@
 import { usePacks } from "../../hooks/packs/usePacks.ts";
+import {Card} from "../../component/cards/packs/Card.tsx";
 
 export function ContainerPacks() {
     const { packs, openPack } = usePacks();
 
+
     return (
-        <div className="h-full w-full flex flex-col">
-            <div className="flex-1">
+        <div className="h-full w-full flex flex-col p-(--padding-md)">
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 overflow-y-auto content-start">
                 {packs.map((pack) => (
-                    <p key={pack.name}>{pack.name}</p>
+                    <Card key={pack.name} name={pack.name} description={pack.description} icon={pack.icon}/>
                 ))}
             </div>
 
