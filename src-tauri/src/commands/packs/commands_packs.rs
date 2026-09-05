@@ -16,3 +16,7 @@ pub fn command_display_pack() -> Vec<Pack> {
 
     list.clone()
 }
+
+pub fn command_select_pack(id: String) {
+
+}

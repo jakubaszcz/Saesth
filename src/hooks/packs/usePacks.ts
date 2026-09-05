@@ -1,6 +1,6 @@
 import {
     APIFetchPack,
-    APIOpenPack
+    APIOpenPack, APISelectPack
 } from "../../api/packs/packs.ts"
 import {useEffect, useState} from "react";
 import {Pack} from "../../structures/packs/packs.ts";
@@ -38,5 +38,13 @@ export const usePacks = () => {
         }
     };
 
-    return { packs, openPack, loadPacks };
+    const selectPack = async (id: String) => {
+        try {
+            await APISelectPack(id);
+        } catch (error) {
+            console.error("Failed to select pack:", id);
+        }
+    }
+
+    return { packs, openPack, loadPacks, selectPack };
 };

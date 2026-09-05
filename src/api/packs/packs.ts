@@ -8,3 +8,7 @@ export async function APIOpenPack() {
 export async function APIFetchPack(): Promise<Pack[]> {
     return await invoke<Pack[]>("fetch_packs");
 }
+
+export async function APISelectPack(id: String) {
+    return await invoke("select_pack", {id})
+}

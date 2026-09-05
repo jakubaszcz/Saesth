@@ -75,6 +75,11 @@ fn fetch_packs() -> Vec<Pack> {
     commands::packs::commands_packs::command_display_pack()
 }
 
+#[tauri::command]
+fn select_pack(id: String) {
+    commands::packs::commands_packs::command_select_pack(id);
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
 
@@ -144,6 +149,7 @@ pub fn run() {
             toggle_setting,
             open_packs,
             fetch_packs,
+            select_pack,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
