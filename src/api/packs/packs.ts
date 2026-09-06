@@ -12,3 +12,7 @@ export async function APIFetchPack(): Promise<Pack[]> {
 export async function APISelectPack(id: String) {
     return await invoke("select_pack", {id})
 }
+
+export async function APIHasActivePack() {
+    return await invoke<boolean>("has_active_pack");
+}

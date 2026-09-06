@@ -22,8 +22,6 @@ export function ComponentSetup() {
     const [setup, setSetup] = useState<Setup[]>([]);
 
     const toggleSetup = async (setup_id: string) => {
-
-        console.log("toggle setup : ", setup_id)
         try {
             const response = await invoke<boolean>("toggle_setup", { setupId: setup_id });
 

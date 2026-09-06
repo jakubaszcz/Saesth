@@ -20,7 +20,7 @@ export const usePacks = () => {
         }
 
         loadPacks()
-    })
+    }, [])
     const openPack = async () => {
         try {
             await APIOpenPack();

@@ -43,9 +43,11 @@ pub fn command_select_pack(id: String) {
     SOUNDS.get_or_init(|| Mutex::new(init_pack_sound()));
 }
 
-pub fn command_save_pack(id: String) {
-    println!("save pack");
+pub fn command_has_active_pack() -> bool {
+    PACK.get().is_some()
+}
 
+pub fn command_save_pack(id: String) {
     let path = &PATHS.get().unwrap().packs_cache;
 
     let pack = if path.clone().join(id.clone()).exists() {
@@ -65,5 +67,4 @@ pub fn command_save_pack(id: String) {
     });
 
     SOUNDS.get_or_init(|| Mutex::new(init_pack_sound()));
-
 }
