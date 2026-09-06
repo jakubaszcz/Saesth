@@ -77,7 +77,7 @@ fn fetch_packs() -> Vec<Pack> {
 
 #[tauri::command]
 fn select_pack(id: String) {
-    commands::packs::commands_packs::command_select_pack(id);
+    commands::packs::commands_packs::command_save_pack(id);
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

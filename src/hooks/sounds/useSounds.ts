@@ -3,26 +3,24 @@ import {
     APIToggleSound,
     APIChangeVolume, APIToggleSoundEffect
 } from "../../api/sounds/sounds.ts"
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {Sound} from "../../structures/sounds/sounds.ts";
 
 export function useSounds() {
     const [sounds, setSounds] = useState<Sound[]>([]);
 
-    useEffect(() => {
-        async function loadSounds() {
-            try {
-                const response = await APIFetchSound();
+    const fetchSound = async () => {
+        console.log("fetching");
 
-                setSounds(response);
-                console.log("success sound")
-            } catch (error) {
-                console.error("Failed to load sounds:", error);
-            }
+        try {
+            const response = await APIFetchSound();
+
+            console.log("RESPONSE:", response);
+            setSounds(response);
+        } catch (error) {
+            console.error("Failed to load sounds:", error);
         }
-
-        loadSounds()
-    })
+    };
 
     const toggleSound = async (sound_id: string) => {
         try {
@@ -84,6 +82,7 @@ export function useSounds() {
 
     return {
         sounds,
+        fetchSound,
         toggleSound,
         volumeSound,
         toggleSoundEffect

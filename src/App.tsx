@@ -7,24 +7,26 @@ import {Navigation} from "./structures/navigation/Navigation.ts";
 import {ComponentSetup} from "./features/setup/ComponentSetup.tsx";
 import {ContainerSounds} from "./containers/sounds/ContainerSounds.tsx";
 import {ContainerPacks} from "./containers/packs/ContainerPacks.tsx";
+import {useSounds} from "./hooks/sounds/useSounds.ts";
 
 function App() {
+
+    const soundsManager = useSounds();
 
     const {
         navigation,
         changeNavigation
     } = useNavigation()
 
-    function RenderPage() {
+    function RenderPage(soundmanager: any) {
         switch (navigation) {
 
             case Navigation.Sounds:
-                return <ContainerSounds />;
-
+                return <ContainerSounds soundsManager={soundmanager} />;
             case Navigation.Setup:
                 return <ComponentSetup />;
             case Navigation.Pack:
-                return <ContainerPacks />
+                return <ContainerPacks soundsManager={soundmanager} />
             case Navigation.Settings:
                 return <DrawSettings />;
 
@@ -48,7 +50,7 @@ function App() {
               </aside>
 
               <div className="flex-1 overflow-y-auto pr-2">
-                  {RenderPage()}
+                  {RenderPage(soundsManager)}
               </div>
           </div>
       </main>

@@ -18,13 +18,13 @@ pub struct Sound {
     pub effects: Vec<Effect>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Effect {
     pub effect_id: String,
     pub active: Arc<AtomicBool>,
 }
 
-#[derive(serde::Serialize, Clone)]
+#[derive(serde::Serialize, Clone, Debug)]
 pub struct SoundDTO {
     sound_id: String,
     play: bool,
@@ -32,7 +32,7 @@ pub struct SoundDTO {
     effects: Vec<EffectDTO>,
 }
 
-#[derive(serde::Serialize, Clone)]
+#[derive(serde::Serialize, Clone, Debug)]
 pub struct EffectDTO {
     effect_id: String,
     active: bool,

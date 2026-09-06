@@ -1,17 +1,23 @@
+use std::fs;
 use std::sync::atomic::Ordering;
+use rdev::Key::PrintScreen;
 use rusqlite::fallible_iterator::FallibleIterator;
+use tauri::AppHandle;
 use crate::database::sounds::database_sounds::{database_set_sound_effect_active, database_set_sound_volume};
 use crate::functions;
 use crate::functions::sounds::utils::function_sound_util_volume::function_sound_util_volume;
-use crate::global::global::SOUNDS;
+use crate::global::global::{PATHS, SOUNDS};
 use crate::types::sounds::type_sounds::SoundDTO;
 
 pub fn commands_sounds_fetch_sounds() -> Vec<SoundDTO> {
     let list = SOUNDS.get().unwrap().lock().unwrap();
 
-    list.iter()
+
+    let list = list.iter()
         .map(|sound| SoundDTO::from(sound))
-        .collect()
+        .collect();
+
+    list
 }
 
 pub fn commands_sounds_toggle_sound(sound_id: String) -> bool {
