@@ -1,8 +1,18 @@
 import {getCurrentWindow} from "@tauri-apps/api/window";
-import {X, Minus, Maximize2, Minimize2} from "lucide-react";
+import {X, Minus, Maximize2, Minimize2, Package} from "lucide-react";
 import {useEffect, useState} from "react";
+import type {usePacks} from "../hooks/packs/usePacks.ts";
 
-export const Header = () => {
+type HeaderProps = {
+  packsManager: ReturnType<typeof usePacks>;
+};
+
+export const Header = ({ packsManager }: HeaderProps) => {
+
+  const {packs, selectedPack} = packsManager;
+  const currentPackName = selectedPack === null
+    ? "No pack selected"
+    : packs.find(pack => pack.id === selectedPack)?.name || selectedPack;
 
   const appWindow = getCurrentWindow();
 
@@ -51,14 +61,22 @@ export const Header = () => {
   }, []);
 
   return (
-    <header data-tauri-drag-region className="flex justify-between items-center h-(--header-height) px-2">
-      <div className="p-(--padding-md)">
-        <div className="flex flex-col items-start">
-          <h1 className="font-secondary text-primary-100 font-bold space-y-10 text-medium">Saesth</h1>
+    <header data-tauri-drag-region className="flex justify-between items-center gap-4 h-(--header-height) px-2">
+      <div data-tauri-drag-region className="flex min-w-0 items-center gap-3 p-(--padding-md)">
+        <h1 data-tauri-drag-region className="shrink-0 font-secondary text-primary-100 font-bold text-medium">Saesth</h1>
+        <div
+          data-tauri-drag-region
+          role="status"
+          title={`Current pack: ${currentPackName}`}
+          className="flex min-w-0 items-center gap-2 rounded-lg bg-primary-800 px-3 py-1 text-xs text-primary-200"
+        >
+          <Package size={14} className="pointer-events-none shrink-0" aria-hidden="true" />
+          <span data-tauri-drag-region className="shrink-0">Current pack:</span>
+          <span data-tauri-drag-region className="truncate font-semibold text-primary-100">{currentPackName}</span>
         </div>
       </div>
 
-      <div className="flex gap-5">
+      <div className="flex shrink-0 gap-5">
         <button onClick={handleMinimize} aria-label="Minimize" className="text-primary-700
         hover:text-primary-600 hover:scale-110 transition-all duration-300 cursor-pointer">
           <Minus size={20}/>

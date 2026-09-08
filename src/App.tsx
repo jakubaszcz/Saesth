@@ -40,7 +40,7 @@ function App() {
   return (
       <main className="background-color h-screen w-screen flex flex-col">
           <div className="flex-none">
-              <Header/>
+              <Header packsManager={packsManager}/>
           </div>
 
           <div className="flex flex-1 overflow-hidden">
