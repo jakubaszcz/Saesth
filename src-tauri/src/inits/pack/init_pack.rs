@@ -12,7 +12,7 @@ use zip::ZipArchive;
 use crate::database::packs::database_packs::{database_create_pack_table_if_missing, database_pack_get_active_pack};
 use crate::database::sounds::database_sounds::{database_get_sound_effect_active, database_get_sound_volume};
 use crate::global::global::{PACK, PATHS, PREFIX_FOR_SOUND, PREFIX_FOR_SOUND_EFFECT};
-use crate::types::manifest::type_manifest::Manifest;
+use crate::types::manifest::type_manifest::{Manifest, ManifestSounds};
 use crate::types::sounds::type_sounds::{Effect, Sound};
 
 #[derive(Deserialize)]
@@ -79,6 +79,11 @@ fn read_pack(path: PathBuf, cache: &Path) -> Pack {
             fs::create_dir_all(parent).unwrap();
         }
 
+        // Keep user volumes saved in the cached manifest across restarts.
+        if output_path == pack_cache.join("manifest.json") && output_path.is_file() {
+            continue;
+        }
+
         let mut output = File::create(&output_path).unwrap();
         io::copy(&mut file, &mut output).unwrap();
     }
@@ -88,7 +93,7 @@ fn read_pack(path: PathBuf, cache: &Path) -> Pack {
     config
 }
 
-fn make_stream(id: &str, effects: Vec<Effect>) -> Sound {
+fn make_stream(id: &str, effects: Vec<Effect>, config: &ManifestSounds) -> Sound {
 
     let sound_id = format!("{}_{}", PREFIX_FOR_SOUND, id);
 
@@ -97,7 +102,7 @@ fn make_stream(id: &str, effects: Vec<Effect>) -> Sound {
         handle: None,
         player: None,
         play: Arc::new(AtomicBool::new(false)),
-        volume: Arc::new(Mutex::new(database_get_sound_volume(&sound_id.clone()))),
+        volume: Arc::new(Mutex::new(config.volume)),
         fade_volume: Arc::new(Mutex::new(0.0)),
         drift_volume: Arc::new(Mutex::new(1.0)),
         effects
@@ -147,7 +152,7 @@ pub fn init_pack_sound() -> Vec<Sound> {
                 .map(|effect| make_effect(&sound.id, effect))
                 .collect();
 
-            make_stream(&sound.id, effects)
+            make_stream(&sound.id, effects, &sound)
         })
         .collect()
 }

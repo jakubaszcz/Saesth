@@ -3,7 +3,8 @@ use std::sync::atomic::Ordering;
 use rdev::Key::PrintScreen;
 use rusqlite::fallible_iterator::FallibleIterator;
 use tauri::AppHandle;
-use crate::database::sounds::database_sounds::{database_set_sound_effect_active, database_set_sound_volume};
+use crate::commands::manifest::commands_manifest::commands_manifest_change_volume;
+use crate::database::sounds::database_sounds::{database_set_sound_effect_active};
 use crate::functions;
 use crate::functions::sounds::utils::function_sound_util_volume::function_sound_util_volume;
 use crate::global::global::{PATHS, SOUNDS};
@@ -33,12 +34,13 @@ pub fn commands_sounds_toggle_sound(sound_id: String) -> bool {
         .unwrap_or(false)
 }
 
-pub fn commands_sounds_volume_sound(sound_id: String, volume: f32) -> f32 {
+pub fn commands_sounds_volume_sound(sound_id: String, volume: f32) -> Result<f32, String> {
     let list = SOUNDS.get().unwrap().lock().unwrap();
 
     list.iter()
         .find(|s| s.sound_id == sound_id)
         .map(|s| {
+            commands_manifest_change_volume(&sound_id, volume)?;
             *s.volume.lock().unwrap() = volume;
 
             if let Some(player) = &s.player {
@@ -50,13 +52,9 @@ pub fn commands_sounds_volume_sound(sound_id: String, volume: f32) -> f32 {
                 );
             }
 
-            {
-                database_set_sound_volume(sound_id.as_str(), volume);
-            }
-
-            volume
+            Ok(volume)
         })
-        .unwrap_or(0.5)
+        .unwrap_or_else(|| Err(format!("Sound not found: {}", sound_id)))
 }
 
 pub fn commands_sounds_toggle_sound_effect(sound_id: String, effect_id: String) -> bool {

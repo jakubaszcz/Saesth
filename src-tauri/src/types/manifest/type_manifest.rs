@@ -12,5 +12,6 @@ pub struct Manifest {
 
 pub struct ManifestSounds {
     pub id: String,
+    pub volume: f32,
     pub effects: Vec<String>,
 }

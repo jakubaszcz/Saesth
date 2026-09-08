@@ -36,7 +36,7 @@ fn toggle_sound_effect(sound_id: String, effect_id: String) -> bool {
 }
 
 #[tauri::command]
-fn volume_sound(sound_id: String, volume: f32) -> f32 {
+fn volume_sound(sound_id: String, volume: f32) -> Result<f32, String> {
     commands::sounds::commands_sounds::commands_sounds_volume_sound(sound_id, volume)
 }
 
