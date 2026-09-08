@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 use serde::{Deserialize, Serialize};
+use crate::types::manifest::type_manifest::ManifestSetup;
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Pack {
@@ -13,5 +14,6 @@ pub struct Pack {
 pub struct SelectedPack {
     pub id: String,
     pub root: PathBuf,
-    pub sound: PathBuf
+    pub sound: PathBuf,
+    pub setup: ManifestSetup
 }

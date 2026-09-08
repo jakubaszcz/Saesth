@@ -79,7 +79,6 @@ fn read_pack(path: PathBuf, cache: &Path) -> Pack {
             fs::create_dir_all(parent).unwrap();
         }
 
-        // Keep user volumes saved in the cached manifest across restarts.
         if output_path == pack_cache.join("manifest.json") && output_path.is_file() {
             continue;
         }

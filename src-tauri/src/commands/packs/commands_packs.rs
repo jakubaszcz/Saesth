@@ -1,4 +1,5 @@
 use std::fs;
+use std::fs::File;
 use std::path::PathBuf;
 use std::ptr::null;
 use std::sync::Mutex;
@@ -6,8 +7,10 @@ use directories::ProjectDirs;
 use opener;
 use tauri::{AppHandle, Emitter};
 use crate::database::packs::database_packs::database_pack_set_active_pack;
+use crate::functions::setup::function_setup::function_setup_init;
 use crate::global::global::{PACK, PACKS, PATHS, SOUNDS};
 use crate::inits::pack::init_pack::init_pack_sound;
+use crate::types::manifest::type_manifest::Manifest;
 use crate::types::packs::type_packs::{Pack, SelectedPack};
 
 
@@ -32,12 +35,30 @@ pub fn command_select_pack(id: String) {
         return;
     };
 
+    let selected_pack = path.join(id.clone());
+    if id.is_empty() {
+        return;;
+    }
+    let manifest_path = selected_pack.join("manifest.json");
+    drop(selected_pack);
+
+    let file = match File::open(manifest_path) {
+        Ok(file) => file,
+        Err(_) => return,
+    };
+
+    let manifest: Manifest = match serde_json::from_reader(file) {
+        Ok(m) => m,
+        Err(_) => return,
+    };
+
     let sounds = pack.join("sounds");
 
     let selected_pack = SelectedPack {
         id,
         root: pack,
         sound: sounds.exists().then_some(sounds).expect("REASON"),
+        setup: manifest.setup
     };
 
     {

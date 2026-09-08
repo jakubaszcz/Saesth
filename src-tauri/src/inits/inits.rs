@@ -3,6 +3,7 @@ use crate::global::global::{DATABASE, PACKS, PATHS, SETTINGS, SETUP, SOUNDS};
 use crate::inits;
 
 pub fn inits() {
+    SOUNDS.get_or_init(|| Mutex::new(Vec::new()));
     PATHS.get_or_init(inits::appdata::init_appdata::init);
     DATABASE.set(Mutex::new(inits::database::init_database::init())).unwrap();
     SETUP.get_or_init(|| Mutex::new(inits::setup::init_setup::init()));
