@@ -9,7 +9,7 @@ pub struct Pack {
     pub(crate) icon: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct SelectedPack {
     pub id: String,
     pub root: PathBuf,

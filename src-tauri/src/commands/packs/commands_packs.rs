@@ -34,13 +34,24 @@ pub fn command_select_pack(id: String) {
 
     let sounds = pack.join("sounds");
 
-    PACK.get_or_init(|| SelectedPack {
+    let selected_pack = SelectedPack {
         id,
         root: pack,
         sound: sounds.exists().then_some(sounds).expect("REASON"),
-    });
+    };
 
-    SOUNDS.get_or_init(|| Mutex::new(init_pack_sound()));
+    {
+        let mut current_pack = PACK
+            .get_or_init(|| Mutex::new(selected_pack.clone()))
+            .lock()
+            .unwrap();
+        *current_pack = selected_pack;
+    }
+
+    let new_sounds = init_pack_sound();
+    *SOUNDS.get_or_init(|| Mutex::new(Vec::new()))
+        .lock()
+        .unwrap() = new_sounds;
 }
 
 pub fn command_has_active_pack() -> bool {
@@ -50,21 +61,11 @@ pub fn command_has_active_pack() -> bool {
 pub fn command_save_pack(id: String) {
     let path = &PATHS.get().unwrap().packs_cache;
 
-    let pack = if path.clone().join(id.clone()).exists() {
-        path.join(id.clone())
-    } else {
+    if !path.join(&id).exists() {
         return;
-    };
+    }
 
     database_pack_set_active_pack(id.clone());
 
-    let sounds = pack.join("sounds");
-
-    PACK.get_or_init(|| SelectedPack {
-        id,
-        root: pack,
-        sound: sounds.exists().then_some(sounds).expect("REASON"),
-    });
-
-    SOUNDS.get_or_init(|| Mutex::new(init_pack_sound()));
+    command_select_pack(id);
 }

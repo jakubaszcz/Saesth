@@ -118,11 +118,13 @@ fn make_effect(sound_id: &str, id: &str) -> Effect {
 }
 
 pub fn init_pack_sound() -> Vec<Sound> {
-    let Some(selected_pack) = PACK.get() else {
+    let Some(pack) = PACK.get() else {
         return Vec::new();
     };
 
+    let selected_pack = pack.lock().unwrap();
     let manifest_path = selected_pack.root.join("manifest.json");
+    drop(selected_pack);
 
     let file = match File::open(manifest_path) {
         Ok(file) => file,

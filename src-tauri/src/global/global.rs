@@ -26,6 +26,6 @@ pub static SOUNDS: OnceLock<Mutex<Vec<Sound>>> = OnceLock::new();
 pub static SETUP: OnceLock<Mutex<Vec<Setup>>> = OnceLock::new();
 pub static SETTINGS: OnceLock<Mutex<Vec<Setting>>> = OnceLock::new();
 pub static PACKS: OnceLock<Mutex<Vec<Pack>>> = OnceLock::new();
-pub static PACK: OnceLock<SelectedPack> = OnceLock::new();
+pub static PACK: OnceLock<Mutex<SelectedPack>> = OnceLock::new();
 
 pub static PATHS: OnceLock<Appdata> = OnceLock::new();
