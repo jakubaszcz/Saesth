@@ -123,6 +123,9 @@ pub fn init_pack_sound() -> Vec<Sound> {
     };
 
     let selected_pack = pack.lock().unwrap();
+    if selected_pack.id.is_empty() {
+        return Vec::new();
+    }
     let manifest_path = selected_pack.root.join("manifest.json");
     drop(selected_pack);
 

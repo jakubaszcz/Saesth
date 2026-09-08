@@ -9,10 +9,17 @@ export async function APIFetchPack(): Promise<Pack[]> {
     return await invoke<Pack[]>("fetch_packs");
 }
 
-export async function APISelectPack(id: String) {
+export async function APISelectPack(id: string) {
     return await invoke("select_pack", {id})
 }
 
 export async function APIHasActivePack() {
     return await invoke<boolean>("has_active_pack");
+}
+export async function APIGetSelectedPack() {
+    return await invoke<string | null>("get_selected_pack");
+}
+
+export async function APIDeselectPack() {
+    return await invoke("deselect_pack");
 }

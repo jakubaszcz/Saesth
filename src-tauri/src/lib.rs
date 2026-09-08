@@ -85,6 +85,16 @@ fn has_active_pack() -> bool {
     commands::packs::commands_packs::command_has_active_pack()
 }
 
+#[tauri::command]
+fn get_selected_pack() -> Option<String> {
+    commands::packs::commands_packs::command_get_selected_pack()
+}
+
+#[tauri::command]
+fn deselect_pack() {
+    commands::packs::commands_packs::command_deselect_pack();
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
 
@@ -156,6 +166,8 @@ pub fn run() {
             fetch_packs,
             select_pack,
             has_active_pack,
+            get_selected_pack,
+            deselect_pack,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

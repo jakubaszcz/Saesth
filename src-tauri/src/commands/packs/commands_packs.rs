@@ -55,7 +55,7 @@ pub fn command_select_pack(id: String) {
 }
 
 pub fn command_has_active_pack() -> bool {
-    PACK.get().is_some()
+    command_get_selected_pack().is_some()
 }
 
 pub fn command_save_pack(id: String) {
@@ -68,4 +68,29 @@ pub fn command_save_pack(id: String) {
     database_pack_set_active_pack(id.clone());
 
     command_select_pack(id);
+}
+
+pub fn command_get_selected_pack() -> Option<String> {
+    let pack = PACK.get()?.lock().unwrap();
+    if pack.id.is_empty() { None } else { Some(pack.id.clone()) }
+}
+
+pub fn command_deselect_pack() {
+    database_pack_set_active_pack(String::new());
+    if let Some(sounds) = SOUNDS.get() {
+        let mut sounds = sounds.lock().unwrap();
+        for sound in sounds.iter() {
+            sound.play.store(false, std::sync::atomic::Ordering::Relaxed);
+            if let Some(player) = &sound.player {
+                player.lock().unwrap().stop();
+            }
+        }
+        sounds.clear();
+    }
+    if let Some(pack) = PACK.get() {
+        let mut pack = pack.lock().unwrap();
+        pack.id.clear();
+        pack.root.clear();
+        pack.sound.clear();
+    }
 }

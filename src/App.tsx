@@ -8,10 +8,12 @@ import {ComponentSetup} from "./features/setup/ComponentSetup.tsx";
 import {ContainerSounds} from "./containers/sounds/ContainerSounds.tsx";
 import {ContainerPacks} from "./containers/packs/ContainerPacks.tsx";
 import {useSounds} from "./hooks/sounds/useSounds.ts";
+import {usePacks} from "./hooks/packs/usePacks.ts";
 
 function App() {
 
     const soundsManager = useSounds();
+    const packsManager = usePacks();
 
     const {
         navigation,
@@ -26,7 +28,7 @@ function App() {
             case Navigation.Setup:
                 return <ComponentSetup />;
             case Navigation.Pack:
-                return <ContainerPacks soundsManager={soundmanager} />
+                return <ContainerPacks soundsManager={soundmanager} packsManager={packsManager} />
             case Navigation.Settings:
                 return <DrawSettings />;
 

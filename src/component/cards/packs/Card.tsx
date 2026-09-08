@@ -1,23 +1,31 @@
-import {usePacks} from "../../../hooks/packs/usePacks.ts";
+import type {usePacks} from "../../../hooks/packs/usePacks.ts";
+import type {useSounds} from "../../../hooks/sounds/useSounds.ts";
 import {Props} from "./props.ts";
 import {convertFileSrc} from "@tauri-apps/api/core";
 
 type CardProps = Props & {
-    soundManager: any;
+    soundManager: ReturnType<typeof useSounds>;
+    packsManager: ReturnType<typeof usePacks>;
 };
 
 export const Card = ( {
                          soundManager,
+                          packsManager,
                          name,
                          id,
                          description,
                          icon
                      }: CardProps) => {
-    const { selectPack } = usePacks();
+    const { selectPack, deselectPack, selectedPack } = packsManager;
+    const isSelected = selectedPack === id;
     const { fetchSound } = soundManager;
 
     async function select(id: string) {
-        await selectPack(id);
+        if (isSelected) {
+            await deselectPack();
+        } else {
+            await selectPack(id);
+        }
         await fetchSound();
     }
 
@@ -32,8 +40,11 @@ export const Card = ( {
                     {description}
                 </p>
 
-                <button onClick={() => select(id)}>
-                    Select
+                <button
+                    onClick={() => select(id)}
+                    className="ml-auto text-primary-500 bg-primary-900 p-2 w-30 rounded-xl transition duration-300 hover:text-primary-400 hover:scale-110"
+                >
+                    {isSelected ? "Unselect" : "Select"}
                 </button>
             </div>
 

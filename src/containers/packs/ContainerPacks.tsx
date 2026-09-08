@@ -1,15 +1,18 @@
-import { usePacks } from "../../hooks/packs/usePacks.ts";
+import type {usePacks} from "../../hooks/packs/usePacks.ts";
+import type {useSounds} from "../../hooks/sounds/useSounds.ts";
 import {Card} from "../../component/cards/packs/Card.tsx";
 
-export function ContainerPacks({ soundsManager }: any) {
-    const { packs, openPack } = usePacks();
+export function ContainerPacks({soundsManager, packsManager}: {soundsManager: ReturnType<typeof useSounds>; packsManager: ReturnType<typeof usePacks>}) {
+    const {packs, openPack} = packsManager;
+
 
 
     return (
         <div className="h-full w-full flex flex-col p-(--padding-md)">
             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-2 overflow-y-auto content-start">
                 {packs.map((pack) => (
-                    <Card soundManager={soundsManager} key={pack.name} name={pack.name} id={pack.id} description={pack.description} icon={pack.icon}/>
+                    <Card packsManager={packsManager} soundManager={soundsManager} key={pack.id} id={pack.id}
+                          description={pack.description} icon={pack.icon} name={pack.name}/>
                 ))}
             </div>
 
