@@ -8,7 +8,7 @@ use opener;
 use tauri::{AppHandle, Emitter};
 use crate::database::packs::database_packs::database_pack_set_active_pack;
 use crate::functions::setup::function_setup::function_setup_init;
-use crate::global::global::{PACK, PACKS, PATHS, SOUNDS};
+use crate::global::global::{PACK, PACKS, PATHS, SETUP, SOUNDS};
 use crate::inits::pack::init_pack::init_pack_sound;
 use crate::types::manifest::type_manifest::Manifest;
 use crate::types::packs::type_packs::{Pack, SelectedPack};
@@ -69,6 +69,9 @@ pub fn command_select_pack(id: String) {
         *current_pack = selected_pack;
     }
 
+    let new_setup = crate::inits::setup::init_setup::init();
+    *SETUP.get_or_init(|| Mutex::new(Vec::new())).lock().unwrap() = new_setup;
+
     let new_sounds = init_pack_sound();
     *SOUNDS.get_or_init(|| Mutex::new(Vec::new()))
         .lock()
@@ -107,6 +110,9 @@ pub fn command_deselect_pack() {
             }
         }
         sounds.clear();
+    }
+    if let Some(setup) = SETUP.get() {
+        setup.lock().unwrap().clear();
     }
     if let Some(pack) = PACK.get() {
         let mut pack = pack.lock().unwrap();

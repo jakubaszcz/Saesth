@@ -56,12 +56,12 @@ fn fetch_setup() -> Vec<SetupDTO> {
 }
 
 #[tauri::command]
-fn toggle_setup(setup_id: String) -> bool {
+fn toggle_setup(setup_id: String) -> Result<bool, String> {
     commands::setup::commands_setup::commands_setup_toggle_setup(setup_id)
 }
 
 #[tauri::command]
-fn volume_setup(setup_id: String, value: f32) -> f32 {
+fn volume_setup(setup_id: String, value: f32) -> Result<f32, String> {
     commands::setup::commands_setup::commands_setup_volume_setup(setup_id, value)
 }
 

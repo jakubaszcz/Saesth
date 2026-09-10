@@ -1,15 +1,12 @@
 use std::num::{NonZeroU16, NonZeroU32};
-use std::sync::{Arc, Mutex, OnceLock};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
+use std::sync::atomic::{Ordering};
 use std::sync::mpsc::Sender;
 use std::thread;
 use rdev::{listen, Event, EventType};
-use rodio::{DeviceSinkBuilder, MixerDeviceSink, Player};
+use rodio::{DeviceSinkBuilder, Player};
 use rodio::buffer::SamplesBuffer;
-use rusqlite::fallible_iterator::FallibleIterator;
 use crate::global::global::{PACK, PREFIX_FOR_SETUP, SETUP};
-use crate::types::setup::type_setup::{Setup};
-use crate::inits::setup::init_setup::init;
 use crate::types::manifest::type_manifest::ManifestSetup;
 use crate::utils::prefix::util_prefix::util_prefix_add_prefix;
 
@@ -103,10 +100,10 @@ fn generate_sound(kind: &Type, setup: &ManifestSetup) -> Vec<f32> {
         lowpass += 0.12 * (raw - lowpass);
 
         let volume = match kind {
-            Type::Space => function_setup_get_setup_volume(util_prefix_add_prefix(PREFIX_FOR_SETUP, KEYBOARD)),
-            Type::Delete => function_setup_get_setup_volume(util_prefix_add_prefix(PREFIX_FOR_SETUP, KEYBOARD)),
-            Type::LMB | Type::RMB => function_setup_get_setup_volume(util_prefix_add_prefix(PREFIX_FOR_SETUP, MOUSE)),
-            Type::Keys => function_setup_get_setup_volume(util_prefix_add_prefix(PREFIX_FOR_SETUP, KEYBOARD)),
+            Type::Space => setup.keyboard.volume,
+            Type::Delete => setup.keyboard.volume,
+            Type::LMB | Type::RMB => setup.mouse.volume,
+            Type::Keys => setup.keyboard.volume,
         };
 
         samples.push(lowpass * ( volume));
