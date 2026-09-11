@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "bundle": {
+    "targets": [
+      "msi"
+    ],
+    "publisher": "Ontic",
+    "shortDescription": "A quiet space for ambient sounds.",
+    "windows": {
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper",
+        "silent": true
+      },
+      "wix": {
+        "upgradeCode": "be2c1fd9-c47c-44c8-9c23-ee7f459c17e6",
+        "language": "en-US"
+      }
+    }
+  }
+}

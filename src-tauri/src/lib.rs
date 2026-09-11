@@ -104,6 +104,13 @@ pub fn run() {
 
     tauri::Builder::default()
         .setup(|app| {
+            // Use the same OS-specific paths as pack storage, without granting
+            // access to the rest of the user's application data.
+            let paths = crate::global::global::PATHS.get().expect("app paths initialized");
+            let asset_scope = app.asset_protocol_scope();
+            asset_scope.allow_directory(&paths.packs, true)?;
+            asset_scope.allow_directory(&paths.packs_cache, true)?;
+
             let window = app.get_window("main").unwrap();
             let handle = app.handle().clone();
 
