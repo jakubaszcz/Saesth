@@ -2,7 +2,8 @@ import {AudioLines, BoltIcon, HeadsetIcon, LucideSparkle, Package} from "lucide-
 import {Navigation} from "../../structures/navigation/Navigation.ts";
 import {Props} from "./props.ts";
 
-export function ComponentNavigation({ navigation, changeNavigation }: Props) {
+export function ComponentNavigation({navigation, changeNavigation }: Props) {
+
 
     function RenderIcon(item: Navigation, size: number = 20) {
         switch (item) {
@@ -24,9 +25,15 @@ export function ComponentNavigation({ navigation, changeNavigation }: Props) {
             <div className="flex flex-col items-center gap-5">
                 {Object.values(Navigation)
                     .filter(item => item !== Navigation.Settings)
+                    .filter(_item => null)
                     .map((item) => (
                         <button
-                            className={`p-2 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center ${item === navigation ? "bg-primary-800 text-primary-200 scale-110 shadow-lg" : "text-primary-600 hover:bg-primary-800/50 hover:text-primary-400"}`}
+                            aria-label={item}
+                            className={`p-2 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center ${
+                                item === navigation
+                                    ? "bg-primary-800 text-primary-200 scale-110 shadow-lg"
+                                    : "text-primary-600 hover:bg-primary-800/50 hover:text-primary-400"
+                            }`}
                             key={item}
                             onClick={() => changeNavigation(item)}
                         >

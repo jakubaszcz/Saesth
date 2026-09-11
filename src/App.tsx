@@ -20,15 +20,33 @@ function App() {
         changeNavigation
     } = useNavigation()
 
-    function RenderPage(soundmanager: any) {
-        switch (navigation) {
+    const { packs, selectedPack } = packsManager;
+    const activeNavigation =
+        (packs.length === 0 || !selectedPack) &&
+        (navigation === Navigation.Sounds || navigation === Navigation.Setup)
+            ? Navigation.Pack
+            : navigation;
 
+    function RenderPage(soundManager: any, pack: string | null) {
+        switch (activeNavigation) {
             case Navigation.Sounds:
-                return <ContainerSounds soundsManager={soundmanager} />;
+                return pack
+                    ? <ContainerSounds soundsManager={soundManager} />
+                    : null;
+
             case Navigation.Setup:
-                return <ComponentSetup />;
+                return pack
+                    ? <ComponentSetup />
+                    : null;
+
             case Navigation.Pack:
-                return <ContainerPacks soundsManager={soundmanager} packsManager={packsManager} />
+                return (
+                    <ContainerPacks
+                        soundsManager={soundManager}
+                        packsManager={packsManager}
+                    />
+                );
+
             case Navigation.Settings:
                 return <DrawSettings />;
 
@@ -46,13 +64,14 @@ function App() {
           <div className="flex flex-1 overflow-hidden">
               <aside className="h-full flex-none">
                   <ComponentNavigation
-                      navigation={navigation}
+                      navigation={activeNavigation}
+                      packsManager={packsManager}
                       changeNavigation={changeNavigation}
                   />
               </aside>
 
               <div className="flex-1 overflow-y-auto pr-2">
-                  {RenderPage(soundsManager)}
+                  {RenderPage(soundsManager, selectedPack)}
               </div>
           </div>
       </main>
