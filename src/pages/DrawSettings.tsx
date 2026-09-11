@@ -26,7 +26,13 @@ export function DrawSettings() {
     } = useSettings();
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className="page-shell">
+            <header>
+                <p className="page-eyebrow">The little details</p>
+                <h1 className="page-title">Make Saesth yours.</h1>
+                <p className="page-description">A few preferences to help everything feel at home.</p>
+            </header>
+            <div className="flex max-w-3xl flex-col gap-4">
             {settings.map((setting) => {
                 const metadata = SETTING_METADATA[setting.setting_id] || {
                     title: setting.setting_id,
@@ -34,19 +40,23 @@ export function DrawSettings() {
                 };
 
                 return (
-                    <div className="p-5 rounded-lg bg-primary-800 hover:bg-primary-700 duration-300 transition-all flex items-center justify-between"
+                    <div className="quiet-panel flex items-center justify-between gap-6"
                         key={setting.setting_id}>
                         <div className="flex flex-col gap-1 w-3/4">
-                            <p className="text-primary-200 font-semibold font-secondary">
+                            <p className="text-primary-100 text-lg font-medium font-secondary">
                                 {metadata.title}
                             </p>
 
-                            <p className="text-primary-300 text-sm font-primary">
+                            <p className="text-primary-200 text-sm leading-6 font-primary">
                                 {metadata.description}
                             </p>
                         </div>
 
                         <button
+                            type="button"
+                            role="switch"
+                            aria-checked={setting.active}
+                            aria-label={metadata.title}
                             onClick={() => toggleSetting(setting.setting_id)}
                             className={`cursor-pointer relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
                                 setting.active ? "bg-primary-500" : "bg-primary-900"
@@ -61,6 +71,7 @@ export function DrawSettings() {
                     </div>
                 );
             })}
+            </div>
         </div>
     );
 }

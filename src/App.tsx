@@ -56,13 +56,13 @@ function App() {
     }
 
   return (
-      <main className="background-color h-screen w-screen flex flex-col">
+      <main className="app-shell h-screen w-screen flex flex-col">
           <div className="flex-none">
               <Header packsManager={packsManager}/>
           </div>
 
           <div className="flex flex-1 overflow-hidden">
-              <aside className="h-full flex-none">
+              <aside className="h-full flex-none border-r border-primary-700/40">
                   <ComponentNavigation
                       navigation={activeNavigation}
                       packsManager={packsManager}
@@ -70,7 +70,7 @@ function App() {
                   />
               </aside>
 
-              <div className="flex-1 overflow-y-auto pr-2">
+              <div className="min-w-0 flex-1 overflow-y-auto">
                   {RenderPage(soundsManager, selectedPack)}
               </div>
           </div>

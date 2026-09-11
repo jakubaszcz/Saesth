@@ -54,26 +54,26 @@ export function SoundCard({
             <div>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                            <div className="text-primary-500">
+                            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-900/60 text-primary-300">
                             {SOUND_METADATA[sound.sound_id]?.icon || <X size={20} />}
                         </div>
 
-                        <h3 className="text-primary-100 font-secondary font-bold">
+                        <h3 className="text-primary-100 font-secondary text-xl font-medium">
                             {SOUND_METADATA[sound.sound_id]?.title || "Unknown"}
                         </h3>
                     </div>
 
                     {
                         sound.effects && sound.effects.length > 0 && (
-                            <button onClick={toggleEffect} className="cursor-pointer text-primary-200 hover:text-primary-100 hover:scale-110 duration-300 transition-all">
+                            <button onClick={toggleEffect} aria-label="Sound effects" aria-expanded={isEffect} className="quiet-icon-button">
                                 <Sparkle size={20} />
                             </button>
                         )
                     }
                 </div>
             </div>
-            <div className="flex items-center gap-4 mt-2">
-                <button className="cursor-pointer text-primary-200 hover:text-primary-300 hover:scale-110 duration-300 transition-all flex-shrink-0"
+            <div className="flex items-center gap-4 mt-6">
+                <button aria-label={`${sound.play ? "Pause" : "Play"} ${SOUND_METADATA[sound.sound_id]?.title || sound.sound_id}`} aria-pressed={sound.play} className="quiet-icon-button border border-primary-600/40 bg-primary-700/40"
                     onClick={() => onToggleSound(sound.sound_id)}>
                     {sound.play ? (
                         <Pause size={20} />
@@ -88,8 +88,9 @@ export function SoundCard({
                             Volume
                         </span>
 
-                        <div className="flex items-center gap-1 border bg-primary-800 border-primary-700 rounded-md px-2 py-1">
+                        <div className="volume-value">
                             <input
+                                aria-label={`${SOUND_METADATA[sound.sound_id]?.title || sound.sound_id} volume percentage`}
                                 type="number"
                                 min={0}
                                 max={100}
@@ -142,6 +143,7 @@ export function SoundCard({
                             [&::-moz-range-thumb]:rounded-full
                             [&::-moz-range-thumb]:bg-primary-100
                         "
+                        aria-label={`${SOUND_METADATA[sound.sound_id]?.title || sound.sound_id} volume`}
                         type="range"
                         min={0}
                         max={100}
@@ -161,20 +163,20 @@ export function SoundCard({
                     ? "grid-rows-[1fr] opacity-100 mt-2"
                     : "grid-rows-[0fr] opacity-0"
             }`}>
-                <div className="overflow-hidden">
+                <div className="overflow-hidden" inert={!isEffect}>
                     {
                         sound.effects && sound.effects.length > 0 && (
-                            <div className="p-4 border border-primary-700 rounded-lg bg-primary-800">
-                                <h1 className="font-secondary font-bold text-primary-100">
+                            <div className="mt-3 p-4 border border-primary-700/50 rounded-2xl bg-primary-900/40">
+                                <h4 className="text-sm font-semibold text-primary-200">
                                     Effects
-                                </h1>
+                                </h4>
 
                                 {sound.effects.map((effect) => (
                                     <div
                                         key={effect.effect_id}
                                         className="flex items-center justify-between mt-3"
                                     >
-                                        <div className="flex items-center gap-3 text-primary-500">
+                                        <div className="flex items-center gap-3 text-primary-300">
                                             {SOUND_EFFECT_METADATA[effect.effect_id]?.icon || <Sparkle size={20} />}
 
                                             <p className="text-primary-100 font-primary">
@@ -183,6 +185,9 @@ export function SoundCard({
                                         </div>
 
                                         <button
+                                            role="switch"
+                                            aria-checked={effect.active}
+                                            aria-label={SOUND_EFFECT_METADATA[effect.effect_id]?.title || effect.effect_id}
                                             onClick={() =>
                                                 onToggleSoundEffect(
                                                     sound.sound_id,
