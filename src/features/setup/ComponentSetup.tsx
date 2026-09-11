@@ -22,8 +22,6 @@ export function ComponentSetup() {
     const [setup, setSetup] = useState<Setup[]>([]);
 
     const toggleSetup = async (setup_id: string) => {
-
-        console.log("toggle setup : ", setup_id)
         try {
             const response = await invoke<boolean>("toggle_setup", { setupId: setup_id });
 
@@ -68,10 +66,17 @@ export function ComponentSetup() {
         }
 
         fetchSetup().catch();
-    })
+    }, [])
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className="page-shell">
+            <header>
+                <p className="page-eyebrow">Everyday rituals</p>
+                <h1 className="page-title">A softer kind of focus.</h1>
+                <p className="page-description">Tune the sounds that accompany your keyboard, mouse and everyday moments.</p>
+            </header>
+            {setup.length === 0 && <div className="quiet-panel text-sm text-primary-200">This pack has no setup sounds to adjust.</div>}
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {setup.map((s) => {
 
                 const metadata = SETUP_METADATA[s.setup_id] || {
@@ -80,19 +85,23 @@ export function ComponentSetup() {
                 };
 
                 return (
-                    <div key={s.setup_id} className="p-5 rounded-lg bg-primary-800 hover:bg-primary-700 duration-300 transition-all">
+                    <div key={s.setup_id} className="quiet-panel">
                         <div className="flex items-center justify-between">
                             <div className="flex flex-col gap-1 w-3/4">
-                                <p className="text-primary-200 font-semibold font-secondary">
+                                <p className="text-primary-100 text-lg font-medium font-secondary">
                                     {metadata.title}
                                 </p>
 
-                                <p className="text-primary-300 text-sm font-primary">
+                                <p className="text-primary-200 text-sm leading-6 font-primary">
                                     {metadata.description}
                                 </p>
                             </div>
 
                             <button
+                                type="button"
+                                role="switch"
+                                aria-checked={s.toggle}
+                                aria-label={metadata.title}
                                 onClick={() => toggleSetup(s.setup_id)}
                                 className={`cursor-pointer relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
                                     s.toggle ? "bg-primary-500" : "bg-primary-900"
@@ -106,14 +115,15 @@ export function ComponentSetup() {
                             </button>
                         </div>
 
-                        <div className="grow mt-2">
+                        <div className="grow mt-6 border-t border-primary-700/40 pt-5">
                             <div className="flex justify-between items-center">
                         <span className="text-primary-300 text-sm font-medium font-primary">
                             Volume
                         </span>
 
-                                <div className="flex items-center gap-1 border bg-primary-800 border-primary-700 rounded-md px-2 py-1">
+                                <div className="volume-value">
                                     <input
+                                        aria-label={`${metadata.title} volume percentage`}
                                         type="number"
                                         min={0}
                                         max={100}
@@ -166,6 +176,7 @@ export function ComponentSetup() {
                             [&::-moz-range-thumb]:rounded-full
                             [&::-moz-range-thumb]:bg-primary-100
                         "
+                                aria-label={`${metadata.title} volume`}
                                 type="range"
                                 min={0}
                                 max={100}
@@ -181,6 +192,7 @@ export function ComponentSetup() {
             })
             }
 
+            </div>
         </div>
     )
 

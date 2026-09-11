@@ -1,4 +1,4 @@
-use serde::Deserialize;
+/*use serde::Deserialize;
 use crate::database::settings::database_settings::{database_settings_get_active_setting};
 use crate::database::sounds::database_sounds::{database_create_sound_effect_if_missing, database_create_sound_if_missing, database_sync_sound, database_sync_sound_effect};
 use crate::global::global::{PREFIX_FOR_SETTING, PREFIX_FOR_SOUND, PREFIX_FOR_SOUND_EFFECT};
@@ -54,4 +54,4 @@ pub fn init_tables() {
     if database_settings_get_active_setting(format!("{}_{}", PREFIX_FOR_SETTING, SettingKeys::SyncLocalDatabase.to_key()).as_str()) {
         sync_tables();
     }
-}
+}*/

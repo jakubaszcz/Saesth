@@ -1,39 +1,20 @@
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::AtomicBool;
-use serde::Deserialize;
-use crate::database::setup::database_setup::{database_get_setup_toggle, database_get_setup_volume};
-use crate::global::global::PREFIX_FOR_SETUP;
-use crate::inits::setup::init_tables_setup::init_tables;
+use crate::global::global::{PACK, PREFIX_FOR_SETUP};
 use crate::types::setup::type_setup::Setup;
 
-const RESOURCES: &str = include_str!("../../ressources/setup.json");
-
-#[derive(Deserialize)]
-struct Config {
-    id: String
-}
-
-fn make_setup(id: &str) -> Setup {
-
-    let setup_id = format!("{}_{}", PREFIX_FOR_SETUP, id);
-
-    Setup {
-        setup_id: setup_id.clone(),
-        toggle: Arc::new(AtomicBool::new(database_get_setup_toggle(&setup_id))),
-        volume: Arc::new(Mutex::new(database_get_setup_volume(&setup_id.clone())))
-    }
-}
-
 pub fn init() -> Vec<Setup> {
-
-    {
-        init_tables()
-    }
-
-    let config: Vec<Config> = serde_json::from_str(RESOURCES).unwrap();
-
-    config
-        .iter()
-        .map(|setup| make_setup(&setup.id))
-        .collect()
+    let Some(pack) = PACK.get() else { return Vec::new(); };
+    let pack = pack.lock().unwrap();
+    if pack.id.is_empty() { return Vec::new(); }
+    let config = &pack.setup;
+    [
+        ("global", config.global.active, config.global.volume),
+        ("keyboard", config.keyboard.active, config.keyboard.volume),
+        ("mouse", config.mouse.active, config.mouse.volume),
+    ].into_iter().map(|(id, active, volume)| Setup {
+        setup_id: format!("{}_{}", PREFIX_FOR_SETUP, id),
+        toggle: Arc::new(AtomicBool::new(active)),
+        volume: Arc::new(Mutex::new(volume)),
+    }).collect()
 }

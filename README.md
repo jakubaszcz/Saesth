@@ -56,3 +56,23 @@ You may not, without explicit permission:
 - Use the source code as the basis of another commercial or publicly distributed product.
 
 See the `LICENSE` file for the complete terms.
+## Building the Windows MSI
+
+On Windows, install Node.js, Rust (MSVC), and the Visual Studio C++ build tools required by Tauri, then run:
+
+```sh
+npm ci
+npm run build:msi
+```
+
+Alternatively, run `create.bat`. The script rebuilds both the frontend and Rust executable and stops if the build fails. The MSI is written to `src-tauri/target/release/bundle/msi/` (unless a custom Cargo target directory is configured). Upload the generated `.msi` to your download host; no separate `dist` or sounds folder is required.
+
+Windows packaging options live in `src-tauri/tauri.windows.conf.json`, merged automatically with the shared configuration. Tauri's maintained WiX template replaces the old standalone `msi-installer.wxs` and manual harvesting. WebView2 is downloaded during installation only when needed, so internet access is required on machines without the runtime. The MSI is unsigned unless code signing is configured separately.
+
+The release version comes from `tauri.conf.json`; keep it in sync with `Cargo.toml` and `package.json`. Keep the WiX upgrade code stable across releases. The retired manual installer declared version `1.2.0`, whereas this project is `0.1.0`: users who installed that old package must uninstall it before installing this lower version, or wait for a release with a higher version.
+
+See the [Tauri Windows installer guide](https://v2.tauri.app/distribute/windows-installer/) for build prerequisites and signing options. Linux and macOS packages must be built and tested separately on their respective platforms.
+
+### Pack asset permissions
+
+The shared asset protocol scope starts empty. During Rust setup, only `PATHS.packs` and `PATHS.packs_cache` are authorized recursively using `asset_protocol_scope().allow_directory`. These are the same paths resolved by `directories::ProjectDirs` for pack storage on Windows, macOS and Linux. No Windows-specific paths or broad application-data access are needed, and existing packs stay in their current location. If storage paths change, these permissions follow automatically.

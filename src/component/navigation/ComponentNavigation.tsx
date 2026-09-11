@@ -1,47 +1,37 @@
-import {AudioLines, BoltIcon, HeadsetIcon, LucideSparkle} from "lucide-react";
+﻿import {AudioLines, SlidersHorizontal, Headphones, Moon, Package} from "lucide-react";
 import {Navigation} from "../../structures/navigation/Navigation.ts";
 import {Props} from "./props.ts";
+import type {usePacks} from "../../hooks/packs/usePacks.ts";
 
-export function ComponentNavigation({ navigation, changeNavigation }: Props) {
+type NavigationProps = Props & {packsManager: ReturnType<typeof usePacks>};
+const items = [
+    {page: Navigation.Sounds, label: "Sounds", icon: AudioLines},
+    {page: Navigation.Setup, label: "Setup", icon: Headphones},
+    {page: Navigation.Pack, label: "Packs", icon: Package},
+    {page: Navigation.Settings, label: "Settings", icon: SlidersHorizontal},
+];
 
-    function RenderIcon(item: Navigation, size: number = 20) {
-        switch (item) {
-            case Navigation.Sounds:
-                return <AudioLines size={size}/>;
-            case Navigation.Setup:
-                return <HeadsetIcon size={size}/>;
-            case Navigation.Settings:
-                return <BoltIcon size={size}/>;
-            default:
-                return <LucideSparkle/>;
-        }
-    }
-
+export function ComponentNavigation({navigation, changeNavigation, packsManager}: NavigationProps) {
     return (
-        <div className="flex flex-col h-full items-center gap-5 p-(--padding-md) pt-0">
-            <div className="flex flex-col items-center gap-5">
-                {Object.values(Navigation)
-                    .filter(item => item !== Navigation.Settings)
-                    .map((item) => (
-                        <button
-                            className={`p-2 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center ${item === navigation ? "bg-primary-800 text-primary-200 scale-110 shadow-lg" : "text-primary-600 hover:bg-primary-800/50 hover:text-primary-400"}`}
-                            key={item}
-                            onClick={() => changeNavigation(item)}
-                        >
-                            {RenderIcon(item)}
-                        </button>
-                    ))}
-            </div>
-
-            <div className="mt-auto">
+        <nav aria-label="Main navigation" className="flex h-full w-18 flex-col gap-2 px-3 py-6 lg:w-48 lg:px-4">
+            <p className="mb-4 hidden px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary-300 lg:block">Your quiet corner</p>
+            {items.filter(item => item.page === Navigation.Pack || item.page === Navigation.Settings || Boolean(packsManager.selectedPack)).map(({page, label, icon: Icon}) => (
                 <button
-                    className={`p-2 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center ${navigation === Navigation.Settings ? "bg-primary-800 text-primary-200 scale-110 shadow-lg" : "text-primary-600 hover:bg-primary-800/50 hover:text-primary-400"}`}
-                    key={Navigation.Settings}
-                    onClick={() => changeNavigation(Navigation.Settings)}
+                    type="button"
+                    key={page}
+                    aria-label={label}
+                    aria-current={navigation === page ? "page" : undefined}
+                    title={label}
+                    onClick={() => changeNavigation(page)}
+                    className={`flex min-h-11 items-center justify-center gap-3 rounded-2xl border px-3 py-3 text-sm transition-colors duration-300 lg:justify-start ${page === Navigation.Settings ? "mt-auto" : ""} ${navigation === page ? "border-primary-600/50 bg-primary-800/80 text-primary-50" : "border-transparent text-primary-300 hover:bg-primary-800/40 hover:text-primary-100"}`}
                 >
-                    {RenderIcon(Navigation.Settings)}
+                    <Icon size={19} strokeWidth={1.6} className="shrink-0" aria-hidden="true" />
+                    <span className="hidden lg:inline">{label}</span>
                 </button>
+            ))}
+            <div aria-hidden="true" className="mt-5 hidden items-center gap-2 px-3 text-xs text-primary-300 lg:flex">
+                <Moon size={13} /> Take it slow.
             </div>
-        </div>
+        </nav>
     );
 }

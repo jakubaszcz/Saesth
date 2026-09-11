@@ -46,7 +46,7 @@ pub fn database_settings_get_active_setting(setting: &str) -> bool {
         .unwrap_or(false)
 }
 
-pub fn database_settings_set_active_setting(setting: &str, active: bool) {
+pub fn  database_settings_set_active_setting(setting: &str, active: bool) {
     let conn = global_database_get();
 
     conn.execute(

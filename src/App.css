@@ -70,3 +70,24 @@ input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
+/* Shared, quiet surfaces and controls across Saesth. */
+@layer components {
+  .app-shell { @apply bg-primary-900 font-primary text-primary-100; background-image: radial-gradient(ellipse at top right, #374d6930, transparent 65%); }
+  .page-shell { @apply mx-auto flex min-h-full w-full max-w-6xl flex-col gap-8 px-4 py-6 sm:px-8 sm:py-10; }
+  .page-eyebrow { @apply mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary-300; }
+  .page-title { @apply font-secondary text-3xl font-medium tracking-tight text-primary-50; }
+  .page-description { @apply mt-2 text-sm leading-relaxed text-primary-200; }
+  .quiet-panel { @apply rounded-3xl border border-primary-700/50 bg-primary-800/30 p-5 sm:p-6; }
+  .quiet-icon-button { @apply inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-primary-200 transition-colors duration-300 hover:bg-primary-700/50 hover:text-primary-50; }
+  .volume-value { @apply flex items-center gap-1 rounded-xl border border-primary-700/60 bg-primary-900/50 px-3 py-1.5; }
+}
+
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--color-primary-300); outline-offset: 4px; }
+input[type="range"] { min-height: 6px; margin-block: 14px; }
+button[role="switch"] { flex-shrink: 0; box-shadow: inset 0 0 0 1px #98b4d033; }
+::selection { background: var(--color-primary-600); color: var(--color-primary-50); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

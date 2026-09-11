@@ -6,21 +6,46 @@ import {ComponentNavigation} from "./component/navigation/ComponentNavigation.ts
 import {Navigation} from "./structures/navigation/Navigation.ts";
 import {ComponentSetup} from "./features/setup/ComponentSetup.tsx";
 import {ContainerSounds} from "./containers/sounds/ContainerSounds.tsx";
+import {ContainerPacks} from "./containers/packs/ContainerPacks.tsx";
+import {useSounds} from "./hooks/sounds/useSounds.ts";
+import {usePacks} from "./hooks/packs/usePacks.ts";
+
 function App() {
+
+    const soundsManager = useSounds();
+    const packsManager = usePacks();
 
     const {
         navigation,
         changeNavigation
     } = useNavigation()
 
-    function RenderPage() {
-        switch (navigation) {
+    const { packs, selectedPack } = packsManager;
+    const activeNavigation =
+        (packs.length === 0 || !selectedPack) &&
+        (navigation === Navigation.Sounds || navigation === Navigation.Setup)
+            ? Navigation.Pack
+            : navigation;
 
+    function RenderPage(soundManager: any, pack: string | null) {
+        switch (activeNavigation) {
             case Navigation.Sounds:
-                return <ContainerSounds />;
+                return pack
+                    ? <ContainerSounds soundsManager={soundManager} />
+                    : null;
 
             case Navigation.Setup:
-                return <ComponentSetup />;
+                return pack
+                    ? <ComponentSetup />
+                    : null;
+
+            case Navigation.Pack:
+                return (
+                    <ContainerPacks
+                        soundsManager={soundManager}
+                        packsManager={packsManager}
+                    />
+                );
 
             case Navigation.Settings:
                 return <DrawSettings />;
@@ -31,21 +56,22 @@ function App() {
     }
 
   return (
-      <main className="background-color h-screen w-screen flex flex-col">
+      <main className="app-shell h-screen w-screen flex flex-col">
           <div className="flex-none">
-              <Header/>
+              <Header packsManager={packsManager}/>
           </div>
 
           <div className="flex flex-1 overflow-hidden">
-              <aside className="h-full flex-none">
+              <aside className="h-full flex-none border-r border-primary-700/40">
                   <ComponentNavigation
-                      navigation={navigation}
+                      navigation={activeNavigation}
+                      packsManager={packsManager}
                       changeNavigation={changeNavigation}
                   />
               </aside>
 
-              <div className="flex-1 overflow-y-auto pr-2">
-                  {RenderPage()}
+              <div className="min-w-0 flex-1 overflow-y-auto">
+                  {RenderPage(soundsManager, selectedPack)}
               </div>
           </div>
       </main>

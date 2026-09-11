@@ -4,7 +4,7 @@ import {SoundCard} from "./sound/SoundCard.tsx";
 export const Card = ({sound, onToggleSound, onChangeVolume, onEffect}: Props) => {
 
     return (
-        <div className="p-5 rounded-lg bg-primary-800 hover:bg-primary-700 duration-300 transition-all">
+        <div className={`quiet-panel transition-colors duration-300 ${sound.play ? "border-primary-400/60 bg-primary-800/70" : "hover:border-primary-600"}`}>
             <SoundCard
                 sound={sound}
                 onToggleSound={onToggleSound}

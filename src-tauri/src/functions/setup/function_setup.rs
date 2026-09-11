@@ -1,15 +1,13 @@
 use std::num::{NonZeroU16, NonZeroU32};
-use std::sync::{Arc, Mutex, OnceLock};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
+use std::sync::atomic::{Ordering};
 use std::sync::mpsc::Sender;
 use std::thread;
 use rdev::{listen, Event, EventType};
-use rodio::{DeviceSinkBuilder, MixerDeviceSink, Player};
+use rodio::{DeviceSinkBuilder, Player};
 use rodio::buffer::SamplesBuffer;
-use rusqlite::fallible_iterator::FallibleIterator;
-use crate::global::global::{PREFIX_FOR_SETUP, SETUP};
-use crate::types::setup::type_setup::{Setup};
-use crate::inits::setup::init_setup::init;
+use crate::global::global::{PACK, PREFIX_FOR_SETUP, SETUP};
+use crate::types::manifest::type_manifest::ManifestSetup;
 use crate::utils::prefix::util_prefix::util_prefix_add_prefix;
 
 enum Type {
@@ -52,9 +50,8 @@ fn function_setup_get_setup_volume(compare: String) -> f32 {
         .unwrap_or(0.0)
 }
 
-fn generate_sound(kind: &Type, sample: f32) -> Vec<f32> {
-
-    let sample_rate = sample;
+fn generate_sound(kind: &Type, setup: &ManifestSetup) -> Vec<f32> {
+    let sample_rate = setup.global.sample_rate;
     let duration = match kind {
         Type::Space => 0.075,
         Type::Delete => 0.055,
@@ -65,14 +62,13 @@ fn generate_sound(kind: &Type, sample: f32) -> Vec<f32> {
     let mut samples = Vec::with_capacity(count);
 
     let base_freq = match kind {
-        Type::Keys => 600.0,
-        Type::Space => 420.0,
-        Type::Delete => 700.0,
-        Type::LMB => 1200.0,
-        Type::RMB => 700.0,
+        Type::Keys => setup.keyboard.frequency,
+        Type::Space => setup.keyboard.frequency,
+        Type::Delete => setup.keyboard.frequency,
+        Type::LMB => setup.mouse.frequency,
+        Type::RMB => setup.mouse.frequency,
     };
 
-    // Pitch [0.85, 1.10]
     let pitch = 0.85 + rand::random::<f32>() * 0.2;
     let freq = base_freq * pitch;
 
@@ -104,10 +100,10 @@ fn generate_sound(kind: &Type, sample: f32) -> Vec<f32> {
         lowpass += 0.12 * (raw - lowpass);
 
         let volume = match kind {
-            Type::Space => function_setup_get_setup_volume(util_prefix_add_prefix(PREFIX_FOR_SETUP, KEYBOARD)),
-            Type::Delete => function_setup_get_setup_volume(util_prefix_add_prefix(PREFIX_FOR_SETUP, KEYBOARD)),
-            Type::LMB | Type::RMB => function_setup_get_setup_volume(util_prefix_add_prefix(PREFIX_FOR_SETUP, MOUSE)),
-            Type::Keys => function_setup_get_setup_volume(util_prefix_add_prefix(PREFIX_FOR_SETUP, KEYBOARD)),
+            Type::Space => setup.keyboard.volume,
+            Type::Delete => setup.keyboard.volume,
+            Type::LMB | Type::RMB => setup.mouse.volume,
+            Type::Keys => setup.keyboard.volume,
         };
 
         samples.push(lowpass * ( volume));
@@ -118,9 +114,22 @@ fn generate_sound(kind: &Type, sample: f32) -> Vec<f32> {
 
 fn play_sound(kind: Type, player: &Arc<Mutex<Player>>) {
 
-    let sample = 35000.0;
+    let setup = {
+        let Some(pack_mutex) = PACK.get() else {
+            return;
+        };
 
-    let samples = generate_sound(&kind, sample);
+        let pack = pack_mutex.lock().unwrap();
+
+        if pack.id.is_empty() {
+            return;
+        }
+
+        pack.setup.clone()
+    };
+    let sample = setup.global.sample_rate;
+
+    let samples = generate_sound(&kind, &setup);
 
     let source = SamplesBuffer::new(
         NonZeroU16::new(1).unwrap(),

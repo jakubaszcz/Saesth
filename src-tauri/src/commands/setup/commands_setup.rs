@@ -1,47 +1,26 @@
 use std::sync::atomic::Ordering;
-use crate::database::setup::database_setup::{database_set_setup_toggle, database_set_setup_volume};
+use crate::commands::manifest::commands_manifest::commands_manifest_change_setup;
 use crate::global::global::SETUP;
-use crate::types::setup::type_setup::{SetupDTO};
+use crate::types::setup::type_setup::SetupDTO;
 
 pub fn commands_setup_fetch_setup() -> Vec<SetupDTO> {
-    let setup = SETUP.get().unwrap().lock().unwrap();
-
-    setup.iter()
-        .map(|setup| SetupDTO::from(setup))
-        .collect()
+    SETUP.get().unwrap().lock().unwrap().iter().map(SetupDTO::from).collect()
 }
 
-
-pub fn commands_setup_volume_setup(setup_id: String, volume: f32) -> f32{
-    let setup = SETUP.get().unwrap().lock().unwrap();
-
-    setup.iter()
-        .find(|setup| setup.setup_id == setup_id)
-        .map(|setup| {
-            *setup.volume.lock().unwrap() = volume;
-
-            {
-                database_set_setup_volume(setup_id.as_str(), volume);
-            }
-
-            volume
-        })
-        .unwrap_or(0.5)
+pub fn commands_setup_volume_setup(setup_id: String, volume: f32) -> Result<f32, String> {
+    let setups = SETUP.get().ok_or("Setup not initialized")?.lock().map_err(|e| e.to_string())?;
+    let setup = setups.iter().find(|setup| setup.setup_id == setup_id).ok_or("Unknown setup ID")?;
+    let mut current_volume = setup.volume.lock().map_err(|e| e.to_string())?;
+    commands_manifest_change_setup(&setup_id, Some(volume), None)?;
+    *current_volume = volume;
+    Ok(volume)
 }
 
-pub fn commands_setup_toggle_setup(setup_id: String) -> bool {
-    let setup = SETUP.get().unwrap().lock().unwrap();
-
-    setup.iter()
-        .find(|setup| setup.setup_id == setup_id)
-        .map(|setup| {
-            let new_val = !setup.toggle.load(Ordering::Relaxed);
-            setup.toggle.store(new_val, Ordering::Relaxed);
-
-            {
-                database_set_setup_toggle(setup_id.as_str(), new_val);
-            }
-
-            new_val
-        }).unwrap_or(false)
+pub fn commands_setup_toggle_setup(setup_id: String) -> Result<bool, String> {
+    let setups = SETUP.get().ok_or("Setup not initialized")?.lock().map_err(|e| e.to_string())?;
+    let setup = setups.iter().find(|setup| setup.setup_id == setup_id).ok_or("Unknown setup ID")?;
+    let active = !setup.toggle.load(Ordering::Relaxed);
+    commands_manifest_change_setup(&setup_id, None, Some(active))?;
+    setup.toggle.store(active, Ordering::Relaxed);
+    Ok(active)
 }

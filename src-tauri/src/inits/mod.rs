@@ -5,3 +5,5 @@ pub mod settings;
 pub mod inits;
 pub mod database;
 pub mod discord_rich_presence;
+pub mod pack;
+mod appdata;

@@ -5,6 +5,7 @@ use tauri::{Emitter, Manager};
 use crate::database::settings::database_settings::database_settings_get_active_setting;
 use crate::functions::functions::functions;
 use crate::global::global::PREFIX_FOR_SETTING;
+use crate::types::packs::type_packs::Pack;
 use crate::types::settings::type_settings::{SettingDTO, SettingKeys};
 use crate::types::setup::type_setup::{SetupDTO};
 use crate::utils::prefix::util_prefix::util_prefix_add_prefix;
@@ -35,7 +36,7 @@ fn toggle_sound_effect(sound_id: String, effect_id: String) -> bool {
 }
 
 #[tauri::command]
-fn volume_sound(sound_id: String, volume: f32) -> f32 {
+fn volume_sound(sound_id: String, volume: f32) -> Result<f32, String> {
     commands::sounds::commands_sounds::commands_sounds_volume_sound(sound_id, volume)
 }
 
@@ -55,13 +56,43 @@ fn fetch_setup() -> Vec<SetupDTO> {
 }
 
 #[tauri::command]
-fn toggle_setup(setup_id: String) -> bool {
+fn toggle_setup(setup_id: String) -> Result<bool, String> {
     commands::setup::commands_setup::commands_setup_toggle_setup(setup_id)
 }
 
 #[tauri::command]
-fn volume_setup(setup_id: String, value: f32) -> f32 {
+fn volume_setup(setup_id: String, value: f32) -> Result<f32, String> {
     commands::setup::commands_setup::commands_setup_volume_setup(setup_id, value)
+}
+
+#[tauri::command]
+fn open_packs() {
+    commands::packs::commands_packs::command_open_packs();
+}
+
+#[tauri::command]
+fn fetch_packs() -> Vec<Pack> {
+    commands::packs::commands_packs::command_display_pack()
+}
+
+#[tauri::command]
+fn select_pack(id: String) {
+    commands::packs::commands_packs::command_save_pack(id);
+}
+
+#[tauri::command]
+fn has_active_pack() -> bool {
+    commands::packs::commands_packs::command_has_active_pack()
+}
+
+#[tauri::command]
+fn get_selected_pack() -> Option<String> {
+    commands::packs::commands_packs::command_get_selected_pack()
+}
+
+#[tauri::command]
+fn deselect_pack() {
+    commands::packs::commands_packs::command_deselect_pack();
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -73,6 +104,13 @@ pub fn run() {
 
     tauri::Builder::default()
         .setup(|app| {
+            // Use the same OS-specific paths as pack storage, without granting
+            // access to the rest of the user's application data.
+            let paths = crate::global::global::PATHS.get().expect("app paths initialized");
+            let asset_scope = app.asset_protocol_scope();
+            asset_scope.allow_directory(&paths.packs, true)?;
+            asset_scope.allow_directory(&paths.packs_cache, true)?;
+
             let window = app.get_window("main").unwrap();
             let handle = app.handle().clone();
 
@@ -131,6 +169,12 @@ pub fn run() {
             volume_setup,
             fetch_settings,
             toggle_setting,
+            open_packs,
+            fetch_packs,
+            select_pack,
+            has_active_pack,
+            get_selected_pack,
+            deselect_pack,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

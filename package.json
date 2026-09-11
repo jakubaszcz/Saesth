@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "build:msi": "tauri build --bundles msi"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",

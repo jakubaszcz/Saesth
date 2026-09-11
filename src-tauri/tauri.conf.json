@@ -2,7 +2,7 @@
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "saesth",
   "version": "0.1.0",
-  "identifier": "com.bangl.saesth",
+  "identifier": "com.ontic.saesth",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -25,7 +25,11 @@
       }
     ],
     "security": {
-      "csp": null
+      "assetProtocol": {
+        "enable": true,
+        "scope": []
+      },
+      "csp": "default-src 'self'; img-src 'self' asset: http://asset.localhost https://asset.localhost; connect-src 'self' ipc: http://ipc.localhost"
     }
   },
   "bundle": {
@@ -35,13 +39,6 @@
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/icon.ico"
-    ],
-    "resources": [
-      "sounds/rain/**/*",
-      "sounds/beach/**/*",
-      "sounds/waterfall/**/*",
-      "sounds/fire/**/*",
-      "sounds/effects/**/*"
     ]
   }
 }

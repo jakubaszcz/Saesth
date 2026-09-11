@@ -39,8 +39,6 @@ pub fn function_sound_effect(
             let wait = rand::rng().random_range(min..max);
             thread::sleep(Duration::from_secs(wait));
 
-            println!("effect playing : {:?}", util_prefix_remove_prefix(&effect.effect_id).as_str());
-
             if !play_flag.load(Ordering::Relaxed) {
                 return;
             }

@@ -5,25 +5,22 @@ use tauri::ipc::RuntimeCapability;
 use crate::functions::sounds::drift::function_sound_drift::function_sound_drift;
 use crate::functions::sounds::effect::function_sound_effect::function_sound_effect;
 use crate::functions::sounds::play::fade::function_sound_fade::function_sound_fade;
+use crate::global::global::PACK;
 use crate::types::sounds::type_sounds::Sound;
 use crate::utils::prefix::util_prefix::util_prefix_remove_prefix;
-
-const PATH: &str = "./sounds";
 
 pub fn function_sound_play(sound: &mut Sound) {
     if sound.player.is_some() {
         return;
     }
 
-    let exe_path = std::env::current_exe().unwrap();
-    let base_path = exe_path.parent().unwrap();
-    
-    // Check if we are in development or production
-    let sounds_path = if base_path.join("sounds").exists() {
-        base_path.join("sounds")
+    let sounds_path = &PACK.get().unwrap();
+
+
+    let sounds_path = if sounds_path.lock().unwrap().sound.join("sounds").exists() {
+        sounds_path.lock().unwrap().sound.join("sounds")
     } else {
-        // Fallback for some Tauri configurations where resources are in a different place
-        base_path.join("../sounds")
+        sounds_path.lock().unwrap().sound.join("../sounds")
     };
 
     let path = sounds_path

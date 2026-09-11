@@ -5,23 +5,31 @@ import {
 } from "../../api/sounds/sounds.ts"
 import {useEffect, useState} from "react";
 import {Sound} from "../../structures/sounds/sounds.ts";
+import {APIHasActivePack} from "../../api/packs/packs.ts";
 
 export function useSounds() {
     const [sounds, setSounds] = useState<Sound[]>([]);
 
     useEffect(() => {
-        async function loadSounds() {
-            try {
-                const response = await APIFetchSound();
+        const initSounds = async () => {
+            const hasActivePack = await APIHasActivePack();
 
-                setSounds(response);
-            } catch (error) {
-                console.error("Failed to load sounds:", error);
+            if (hasActivePack) {
+                await fetchSound();
             }
-        }
+        };
 
-        loadSounds()
-    })
+        initSounds();
+    }, []);
+
+    const fetchSound = async () => {
+        try {
+            const response = await APIFetchSound();
+            setSounds(response);
+        } catch (error) {
+            console.error("Failed to load sounds:", error);
+        }
+    };
 
     const toggleSound = async (sound_id: string) => {
         try {
@@ -59,8 +67,6 @@ export function useSounds() {
         try {
             const response = await APIToggleSoundEffect(sound_id, effect_id);
 
-            console.log("response : ", response)
-
 
             setSounds((prev) =>
                 prev.map((sound) =>
@@ -83,6 +89,7 @@ export function useSounds() {
 
     return {
         sounds,
+        fetchSound,
         toggleSound,
         volumeSound,
         toggleSoundEffect
