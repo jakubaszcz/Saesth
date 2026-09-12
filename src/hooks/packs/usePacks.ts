@@ -1,3 +1,4 @@
+import {listen} from "@tauri-apps/api/event";
 import {
     APIFetchPack,
     APIOpenPack, APISelectPack, APIGetSelectedPack, APIDeselectPack, APIOpenTempPack
@@ -22,7 +23,18 @@ export const usePacks = () => {
             }
         }
 
-        loadPacks()
+        let disposed = false;
+        const subscription = listen("packs-changed", () => {
+            if (!disposed) void loadPacks();
+        });
+        subscription.then(unlisten => {
+            if (disposed) unlisten();
+            else void loadPacks();
+        }).catch(error => console.error("Failed to watch packs:", error));
+        return () => {
+            disposed = true;
+            void subscription.then(unlisten => unlisten()).catch(() => {});
+        };
     }, [])
     const openPack = async () => {
         try {

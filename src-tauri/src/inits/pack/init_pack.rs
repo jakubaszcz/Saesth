@@ -14,19 +14,8 @@ use crate::types::sounds::type_sounds::{Effect, Sound};
 pub fn init() -> Vec<Pack> {
 
 
-    let path = &PATHS.get().unwrap().packs;
-    let cache = &PATHS.get().unwrap().packs_cache;
-
-    let mut packs = Vec::new();
-
-    for entry in fs::read_dir(path).unwrap() {
-        let entry = entry.unwrap();
-        let zip = entry.path();
-
-        if zip.extension().and_then(|ext| ext.to_str()) == Some("zip") {
-            packs.push(read_pack(zip, cache));
-        }
-    }
+    let paths = PATHS.get().unwrap();
+    let packs = scan_packs(&paths.packs, &paths.packs_cache);
     let selected = crate::global::global::MANIFEST.get().unwrap().lock().unwrap().pack.clone();
     if !selected.is_empty() {
         if let Err(error) = command_select_pack(selected) {
@@ -36,22 +25,75 @@ pub fn init() -> Vec<Pack> {
     packs
 }
 
-fn read_pack(path: PathBuf, cache: &Path) -> Pack {
-    let file = File::open(&path).unwrap();
-    let mut archive = ZipArchive::new(file).unwrap();
+fn scan_packs(path: &Path, cache: &Path) -> Vec<Pack> {
+    let Ok(entries) = fs::read_dir(path) else { return Vec::new(); };
+    let mut packs = Vec::new();
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if path.extension().and_then(|ext| ext.to_str()).is_some_and(|ext| ext.eq_ignore_ascii_case("zip")) {
+            match read_pack(path, cache) {
+                Ok(pack) => packs.push(pack),
+                Err(error) => eprintln!("Unable to load pack: {error}"),
+            }
+        }
+    }
+    packs.sort_by(|a, b| a.id.cmp(&b.id));
+    packs.dedup_by(|a, b| a.id == b.id);
+    packs
+}
+
+pub fn watch_packs(app: tauri::AppHandle) {
+    use std::collections::BTreeMap;
+    use std::time::{Duration, SystemTime};
+    use tauri::Emitter;
+    std::thread::spawn(move || {
+        let paths = PATHS.get().unwrap();
+        let mut previous = BTreeMap::<PathBuf, (u64, Option<SystemTime>)>::new();
+        let mut loaded = None;
+        loop {
+            std::thread::sleep(Duration::from_secs(1));
+            let Ok(entries) = fs::read_dir(&paths.packs) else { continue; };
+            let snapshot: BTreeMap<_, _> = entries.flatten().filter_map(|entry| {
+                let path = entry.path();
+                if !path.extension().and_then(|ext| ext.to_str()).is_some_and(|ext| ext.eq_ignore_ascii_case("zip")) { return None; }
+                let metadata = entry.metadata().ok()?;
+                Some((path, (metadata.len(), metadata.modified().ok())))
+            }).collect();
+            if snapshot == previous && loaded.as_ref() != Some(&snapshot) {
+                let packs = scan_packs(&paths.packs, &paths.packs_cache);
+                // Retry incomplete ZIPs even if their metadata stops changing temporarily.
+                if packs.len() == snapshot.len() { loaded = Some(snapshot.clone()); }
+                let mut current = crate::global::global::PACKS.get().unwrap().lock().unwrap();
+                if serde_json::to_value(&*current).ok() != serde_json::to_value(&packs).ok() {
+                    *current = packs;
+                    let _ = app.emit("packs-changed", ());
+                }
+            }
+            previous = snapshot;
+        }
+    });
+}
+
+fn read_pack(path: PathBuf, cache: &Path) -> Result<Pack, Box<dyn std::error::Error>> {
+    let file = File::open(&path)?;
+    let mut archive = ZipArchive::new(file)?;
 
     let mut config: Pack = {
-        let manifest = archive.by_name("manifest.json").unwrap();
-        serde_json::from_reader(manifest).unwrap()
+        let manifest = archive.by_name("manifest.json")?;
+        serde_json::from_reader(manifest)?
     };
 
+    if config.id.is_empty() || Path::new(&config.id).components().count() != 1
+        || !matches!(Path::new(&config.id).components().next(), Some(std::path::Component::Normal(_))) {
+        return Err("Invalid pack ID".into());
+    }
     let pack_cache = cache.join(&config.id);
     let pack_icon_cache = pack_cache.join("icon.png");
 
-    fs::create_dir_all(&pack_cache).unwrap();
+    fs::create_dir_all(&pack_cache)?;
 
     for i in 0..archive.len() {
-        let mut file = archive.by_index(i).unwrap();
+        let mut file = archive.by_index(i)?;
 
         let Some(enclosed_path) = file.enclosed_name() else {
             continue;
@@ -60,25 +102,26 @@ fn read_pack(path: PathBuf, cache: &Path) -> Pack {
         let output_path = pack_cache.join(enclosed_path);
 
         if file.is_dir() {
-            fs::create_dir_all(&output_path).unwrap();
+            fs::create_dir_all(&output_path)?;
             continue;
         }
 
         if let Some(parent) = output_path.parent() {
-            fs::create_dir_all(parent).unwrap();
+            fs::create_dir_all(parent)?;
         }
 
-        if output_path == pack_cache.join("manifest.json") && output_path.is_file() {
+        if output_path.is_file() {
             continue;
         }
 
-        let mut output = File::create(&output_path).unwrap();
-        io::copy(&mut file, &mut output).unwrap();
+        let mut output = tempfile::NamedTempFile::new_in(output_path.parent().ok_or("Missing parent")?)?;
+        io::copy(&mut file, &mut output)?;
+        output.persist(&output_path)?;
     }
 
     config.icon = pack_icon_cache.to_string_lossy().to_string();
 
-    config
+    Ok(config)
 }
 
 fn make_stream(id: &str, effects: Vec<Effect>, config: &ManifestSounds) -> Sound {
@@ -142,4 +185,32 @@ pub fn init_pack_sound() -> Vec<Sound> {
             make_stream(&sound.id, effects, &sound)
         })
         .collect()
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Write;
+
+    #[test]
+    fn library_tracks_added_and_removed_archives_and_skips_incomplete_copies() {
+        let dir = tempfile::tempdir().unwrap();
+        let packs = dir.path().join("packs");
+        let cache = dir.path().join("cache");
+        fs::create_dir_all(&packs).unwrap();
+        fs::create_dir_all(&cache).unwrap();
+        assert!(scan_packs(&packs, &cache).is_empty());
+        let path = packs.join("test.zip");
+        fs::write(&path, "incomplete zip").unwrap();
+        assert!(scan_packs(&packs, &cache).is_empty());
+        let mut archive = zip::ZipWriter::new(File::create(&path).unwrap());
+        archive.start_file("manifest.json", zip::write::SimpleFileOptions::default()).unwrap();
+        archive.write_all(br#"{"id":"test","name":"Test","description":"A pack","icon":"icon.png"}"#).unwrap();
+        archive.finish().unwrap();
+        assert_eq!(scan_packs(&packs, &cache)[0].id, "test");
+        fs::write(cache.join("test/manifest.json"), "user preferences").unwrap();
+        assert_eq!(scan_packs(&packs, &cache).len(), 1);
+        assert_eq!(fs::read_to_string(cache.join("test/manifest.json")).unwrap(), "user preferences");
+        fs::remove_file(path).unwrap();
+        assert!(scan_packs(&packs, &cache).is_empty());
+    }
 }

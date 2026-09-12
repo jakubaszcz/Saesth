@@ -15,7 +15,7 @@ function TemporaryPackIcon({path}: {path: string}) {
 const steps = [
     {icon: FolderOpen, title: "Open your packs folder", description: "Use the button below to find the right place for your packs."},
     {icon: PackagePlus, title: "Drop in a little atmosphere", description: "Copy a Saesth pack .zip into this folder. Keep it zipped."},
-    {icon: Headphones, title: "Make yourself comfortable", description: "Restart Saesth, then select your new pack. Your sounds are ready."},
+    {icon: Headphones, title: "Make yourself comfortable", description: "Your new pack appears automatically. Select it and enjoy your sounds."},
 ];
 
 export function ContainerPacks({soundsManager, packsManager}: {soundsManager: ReturnType<typeof useSounds>; packsManager: ReturnType<typeof usePacks>}) {
@@ -118,7 +118,7 @@ export function ContainerPacks({soundsManager, packsManager}: {soundsManager: Re
                                   description={pack.description} icon={pack.icon} name={pack.name}/>
                         ))}
                     </div>
-                    <p className="mt-5 text-xs leading-6 text-primary-300">Adding a new pack? Place its .zip in the packs folder, then restart Saesth.</p>
+                    <p className="mt-5 text-xs leading-6 text-primary-300">Add or remove a .zip in your packs folder. Your library updates automatically.</p>
                 </section>
             )}
 
