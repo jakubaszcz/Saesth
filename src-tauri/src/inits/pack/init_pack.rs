@@ -61,10 +61,23 @@ pub fn watch_packs(app: tauri::AppHandle) {
             }).collect();
             if snapshot == previous && loaded.as_ref() != Some(&snapshot) {
                 let packs = scan_packs(&paths.packs, &paths.packs_cache);
-                // Retry incomplete ZIPs even if their metadata stops changing temporarily.
-                if packs.len() == snapshot.len() { loaded = Some(snapshot.clone()); }
+                let complete = packs.len() == snapshot.len();
+                let removed_active_pack = complete && PACK.get().is_some_and(|pack| {
+                    let pack = pack.lock().unwrap();
+                    !pack.id.is_empty()
+                        && pack.root == paths.packs_cache.join(&pack.id)
+                        && !packs.iter().any(|available| available.id == pack.id)
+                });
+                if removed_active_pack {
+                    if let Err(error) = crate::commands::packs::commands_packs::command_deselect_pack() {
+                        eprintln!("Unable to deselect removed pack: {error}");
+                        // Retry on the next scan if persisting the selection failed.
+                        continue;
+                    }
+                }
+                if complete { loaded = Some(snapshot.clone()); }
                 let mut current = crate::global::global::PACKS.get().unwrap().lock().unwrap();
-                if serde_json::to_value(&*current).ok() != serde_json::to_value(&packs).ok() {
+                if removed_active_pack || serde_json::to_value(&*current).ok() != serde_json::to_value(&packs).ok() {
                     *current = packs;
                     let _ = app.emit("packs-changed", ());
                 }
