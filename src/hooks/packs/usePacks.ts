@@ -1,6 +1,6 @@
 import {
     APIFetchPack,
-    APIOpenPack, APISelectPack, APIGetSelectedPack, APIDeselectPack
+    APIOpenPack, APISelectPack, APIGetSelectedPack, APIDeselectPack, APIOpenTempPack
 } from "../../api/packs/packs.ts"
 import {useEffect, useState} from "react";
 import {Pack} from "../../structures/packs/packs.ts";
@@ -31,6 +31,14 @@ export const usePacks = () => {
         }
     };
 
+    const openTempPack = async () => {
+        try {
+            await APIOpenTempPack();
+        } catch (error) {
+            console.error("Failed to open temporary packs:", error);
+        }
+    };
+
     const loadPacks = async () => {
         try {
             const response = await APIFetchPack();
@@ -58,5 +66,5 @@ export const usePacks = () => {
         }
     };
 
-    return { packs, openPack, loadPacks, selectPack, deselectPack, selectedPack };
+    return { packs, openPack, openTempPack, loadPacks, selectPack, deselectPack, selectedPack };
 };

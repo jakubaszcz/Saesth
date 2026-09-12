@@ -67,6 +67,11 @@ fn open_packs() {
 }
 
 #[tauri::command]
+fn open_temp_pack() {
+    commands::packs::commands_packs::command_open_temp_pack();
+}
+
+#[tauri::command]
 fn fetch_packs() -> Vec<Pack> {
     commands::packs::commands_packs::command_display_pack()
 }
@@ -166,6 +171,7 @@ pub fn run() {
             fetch_settings,
             toggle_setting,
             open_packs,
+            open_temp_pack,
             fetch_packs,
             select_pack,
             has_active_pack,

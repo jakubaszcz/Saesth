@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::sync::Mutex;
 use opener;
+use rfd::FileDialog;
 use crate::inits::manifest::init_manifest::update;
 use crate::global::global::{PACK, PACKS, PATHS, SETUP, SOUNDS};
 use crate::inits::pack::init_pack::init_pack_sound;
@@ -12,6 +13,18 @@ pub fn command_open_packs() {
     let path = &PATHS.get().unwrap().packs;
 
     opener::open(path).unwrap();
+}
+
+pub fn command_open_temp_pack() {
+    let path = &PATHS.get().unwrap().packs;
+
+    let folder = FileDialog::new()
+        .set_title("Select a temporary pack")
+        .pick_folder();
+
+    if let Some(folder) = folder {
+        println!("Select a temporary pack {}", folder.display());
+    }
 }
 
 pub fn command_display_pack() -> Vec<Pack> {

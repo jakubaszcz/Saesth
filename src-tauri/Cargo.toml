@@ -18,8 +18,9 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
+rfd = "0.17"
 zip = "9.0.0-pre3"
-opener = "0.8.5"
+opener = { version = "0.8.5", features = ["reveal"] }
 rdev = "0.5.3"
 discord-rich-presence = "0.2"
 directories = "6.0.0"

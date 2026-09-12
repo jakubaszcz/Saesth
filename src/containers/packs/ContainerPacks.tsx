@@ -10,7 +10,7 @@ const steps = [
 ];
 
 export function ContainerPacks({soundsManager, packsManager}: {soundsManager: ReturnType<typeof useSounds>; packsManager: ReturnType<typeof usePacks>}) {
-    const {packs, openPack} = packsManager;
+    const {packs, openPack, openTempPack} = packsManager;
     const isEmpty = packs.length === 0;
     const folderButtonClass = "inline-flex items-center justify-center gap-2 rounded-2xl border border-primary-500/30 bg-primary-700/50 px-5 py-3 text-sm font-semibold text-primary-100 transition-colors duration-300 hover:bg-primary-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 motion-reduce:transition-none";
 
@@ -23,10 +23,18 @@ export function ContainerPacks({soundsManager, packsManager}: {soundsManager: Re
                     <p className="mt-2 text-sm leading-relaxed text-primary-200">Little collections of sound, for moments that are yours.</p>
                 </div>
                 {!isEmpty && (
-                    <button type="button" onClick={openPack} className={folderButtonClass}>
-                        <FolderOpen size={17} aria-hidden="true" />
-                        Open packs folder
-                    </button>
+                    <div>
+                        <button type="button" onClick={openPack} className={folderButtonClass}>
+                            <FolderOpen size={17} aria-hidden="true" />
+                            Open packs folder
+                        </button>
+                        <button type="button" onClick={openTempPack} className={folderButtonClass}>
+                            <FolderOpen size={17} aria-hidden="true" />
+                            Open temporary pack
+                        </button>
+                    </div>
+
+
                 )}
             </header>
 

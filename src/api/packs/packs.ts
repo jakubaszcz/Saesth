@@ -5,6 +5,10 @@ export async function APIOpenPack() {
     return await invoke("open_packs");
 }
 
+export async function APIOpenTempPack() {
+    return await invoke("open_temp_pack");
+}
+
 export async function APIFetchPack(): Promise<Pack[]> {
     return await invoke<Pack[]>("fetch_packs");
 }
