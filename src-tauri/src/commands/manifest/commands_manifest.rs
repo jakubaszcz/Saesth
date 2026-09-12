@@ -1,6 +1,6 @@
 use std::fs;
 use serde_json::Value;
-use crate::global::global::{PACK, PREFIX_FOR_SOUND};
+use crate::global::global::{PACK};
 
 pub fn commands_manifest_change_volume(sound_id: &str, value: f32) -> Result<(), String> {
     let pack = PACK.get().ok_or("No active pack")?.lock().map_err(|e| e.to_string())?;
@@ -21,8 +21,7 @@ fn change_volume(manifest: &mut Value, sound_id: &str, value: f32) -> Result<(),
     if !value.is_finite() || !(0.0..=1.0).contains(&value) {
         return Err("Volume must be between 0 and 1".into());
     }
-    let id = sound_id.strip_prefix(&format!("{}_", PREFIX_FOR_SOUND))
-        .ok_or("Invalid sound ID")?;
+    let id = sound_id;
     let sound = manifest["sounds"].as_array_mut()
         .and_then(|sounds| sounds.iter_mut().find(|sound| sound["id"].as_str() == Some(id)))
         .ok_or_else(|| format!("Sound not found in manifest: {}", id))?;
@@ -42,7 +41,7 @@ pub fn commands_manifest_change_setup(
             return Err("Volume must be between 0 and 1".into());
         }
     }
-    let id = setup_id.strip_prefix(&format!("{}_", crate::global::global::PREFIX_FOR_SETUP))
+    let id = Some(setup_id)
         .filter(|id| matches!(*id, "global" | "keyboard" | "mouse"))
         .ok_or("Invalid setup ID")?;
     let mut pack = PACK.get().ok_or("No active pack")?.lock().map_err(|e| e.to_string())?;

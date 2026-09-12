@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::AtomicBool;
-use crate::global::global::{PACK, PREFIX_FOR_SETUP};
+use crate::global::global::{PACK, };
 use crate::types::setup::type_setup::Setup;
 
 pub fn init() -> Vec<Setup> {
@@ -13,7 +13,7 @@ pub fn init() -> Vec<Setup> {
         ("keyboard", config.keyboard.active, config.keyboard.volume),
         ("mouse", config.mouse.active, config.mouse.volume),
     ].into_iter().map(|(id, active, volume)| Setup {
-        setup_id: format!("{}_{}", PREFIX_FOR_SETUP, id),
+        setup_id: id.to_string(),
         toggle: Arc::new(AtomicBool::new(active)),
         volume: Arc::new(Mutex::new(volume)),
     }).collect()

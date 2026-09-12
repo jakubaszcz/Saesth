@@ -1,35 +1,18 @@
 use std::{fs, io};
 use std::fs::File;
-use std::iter::zip;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::AtomicBool;
-use directories::ProjectDirs;
-use serde::Deserialize;
 use crate::commands::packs::commands_packs::{command_select_pack};
 use crate::types::packs::type_packs::Pack;
 use zip::ZipArchive;
-use crate::database::packs::database_packs::{database_create_pack_table_if_missing, database_pack_get_active_pack};
-use crate::database::sounds::database_sounds::{database_get_sound_effect_active, database_get_sound_volume};
-use crate::global::global::{PACK, PATHS, PREFIX_FOR_SOUND, PREFIX_FOR_SOUND_EFFECT};
+use crate::global::global::{PACK, PATHS};
 use crate::types::manifest::type_manifest::{Manifest, ManifestSounds};
 use crate::types::sounds::type_sounds::{Effect, Sound};
 
-#[derive(Deserialize)]
-struct Config {
-    id: String,
-    effects: Vec<String>
-}
 
 pub fn init() -> Vec<Pack> {
 
-    {
-        database_create_pack_table_if_missing();
-
-        if !database_pack_get_active_pack().to_string().is_empty() {
-            command_select_pack(database_pack_get_active_pack().to_string());
-        }
-    }
 
     let path = &PATHS.get().unwrap().packs;
     let cache = &PATHS.get().unwrap().packs_cache;
@@ -42,6 +25,12 @@ pub fn init() -> Vec<Pack> {
 
         if zip.extension().and_then(|ext| ext.to_str()) == Some("zip") {
             packs.push(read_pack(zip, cache));
+        }
+    }
+    let selected = crate::global::global::MANIFEST.get().unwrap().lock().unwrap().pack.clone();
+    if !selected.is_empty() {
+        if let Err(error) = command_select_pack(selected) {
+            eprintln!("Unable to restore selected pack: {error}");
         }
     }
     packs
@@ -94,7 +83,7 @@ fn read_pack(path: PathBuf, cache: &Path) -> Pack {
 
 fn make_stream(id: &str, effects: Vec<Effect>, config: &ManifestSounds) -> Sound {
 
-    let sound_id = format!("{}_{}", PREFIX_FOR_SOUND, id);
+    let sound_id = id.to_string();
 
     Sound {
         sound_id: sound_id.clone(),
@@ -109,15 +98,13 @@ fn make_stream(id: &str, effects: Vec<Effect>, config: &ManifestSounds) -> Sound
 
 }
 
-fn make_effect(sound_id: &str, id: &str) -> Effect {
+fn make_effect(id: &str) -> Effect {
 
-    let effect_id = format!("{}_{}", PREFIX_FOR_SOUND_EFFECT, id);
+    let effect_id = id.to_string();
 
     Effect {
         effect_id: effect_id.clone(),
-        active: Arc::new(AtomicBool::new(
-            database_get_sound_effect_active(format!("{}_{}", PREFIX_FOR_SOUND, sound_id).as_str(), effect_id.clone().as_str()))
-        ),
+        active: Arc::new(AtomicBool::new(false)),
     }
 }
 
@@ -148,7 +135,7 @@ pub fn init_pack_sound() -> Vec<Sound> {
         .map(|sound| {
             let effects = sound.effects
                 .iter()
-                .map(|effect| make_effect(&sound.id, effect))
+                .map(|effect| make_effect(effect))
                 .collect();
 
             make_stream(&sound.id, effects, &sound)

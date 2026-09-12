@@ -1,6 +1,6 @@
 use std::sync::atomic::Ordering;
-use crate::database::settings::database_settings::database_settings_set_active_setting;
-use crate::global::global::{PREFIX_FOR_SETTING, SETTINGS};
+use crate::inits::manifest::init_manifest::update;
+use crate::global::global::{SETTINGS};
 use crate::types::settings::type_settings::{SettingDTO, SettingKeys};
 
 pub fn commands_settings_fetch_settings() -> Vec<SettingDTO> {
@@ -11,7 +11,7 @@ pub fn commands_settings_fetch_settings() -> Vec<SettingDTO> {
         .collect()
 }
 
-pub fn commands_settings_toggle_setting(setting_id: String) -> bool {
+pub fn commands_settings_toggle_setting(setting_id: String) -> Result<bool, String> {
     let mut settings = SETTINGS.get().unwrap().lock().unwrap();
 
     settings.iter_mut()
@@ -19,13 +19,14 @@ pub fn commands_settings_toggle_setting(setting_id: String) -> bool {
         .map(|s| {
             let new_val = !s.active.load(Ordering::Relaxed);
 
-            s.active.store(new_val, Ordering::Relaxed);
+
 
             {
-                database_settings_set_active_setting(&setting_id, new_val);
+                update(|manifest| { manifest.settings.insert(setting_id.clone(), new_val); })?;
+                s.active.store(new_val, Ordering::Relaxed);
             }
 
-            new_val
+            Ok(new_val)
         })
-        .unwrap_or(false)
+        .unwrap_or_else(|| Err("Unknown setting".into()))
 }

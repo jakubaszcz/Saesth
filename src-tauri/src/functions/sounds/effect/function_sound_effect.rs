@@ -7,7 +7,6 @@ use rand::RngExt;
 use rodio::{Decoder, Player};
 use crate::functions::sounds::utils::function_random_sound::function_random_sound;
 use crate::types::sounds::type_sounds::Effect;
-use crate::utils::prefix::util_prefix::util_prefix_remove_prefix;
 
 pub(crate) const FADE_STEPS: u64 = 5;
 const FADE_DURATION_MS: u64 = 1500;
@@ -60,7 +59,7 @@ pub fn function_sound_effect(
             let effects_path = sounds_path.join("effects");
 
             let path = effects_path
-                .join(util_prefix_remove_prefix(&effect.effect_id).as_str());
+                .join(&effect.effect_id);
 
             let sound_file_path = function_random_sound(path.to_str().unwrap());
             if sound_file_path.as_os_str().is_empty() {

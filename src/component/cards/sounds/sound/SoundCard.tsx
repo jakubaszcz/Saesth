@@ -3,34 +3,34 @@ import {Props} from "./props.ts";
 import {ReactNode, useState} from "react";
 
 const SOUND_METADATA: Record<string, { title: string, icon: ReactNode}> = {
-    "sound_rain": {
+    "rain": {
         title: "Rain",
         icon: <CloudRain/>
     },
-    "sound_beach": {
+    "beach": {
         title: "Beach",
         icon: <Volleyball/>
     },
-    "sound_waterfall": {
+    "waterfall": {
         title: "Waterfall",
         icon: <WavesIcon/>
     },
-    "sound_fire": {
+    "fire": {
         title: "Fire",
         icon: <FlameIcon/>
     }
 };
 
 const SOUND_EFFECT_METADATA: Record<string, { title: string, icon: ReactNode }> = {
-    "sound_effect_thunder": {
+    "thunder": {
         title: "Thunder",
         icon: <Zap/>
     },
-    "sound_effect_triangle": {
+    "triangle": {
         title: "Triangle",
         icon: <Triangle/>
     },
-    "sound_effect_seagull": {
+    "seagull": {
         title: "Seagull",
         icon: <Bird/>
     }

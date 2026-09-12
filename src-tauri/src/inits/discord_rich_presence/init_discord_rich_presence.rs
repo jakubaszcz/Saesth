@@ -1,14 +1,12 @@
 use discord_rich_presence::{activity, DiscordIpc, DiscordIpcClient};
 use discord_rich_presence::activity::{ActivityType, Assets, Button};
-use crate::database::settings::database_settings::database_settings_get_active_setting;
-use crate::global::global::PREFIX_FOR_SETTING;
+use crate::inits::manifest::init_manifest::setting_active;
 use crate::types::settings::type_settings::SettingKeys;
-use crate::utils::prefix::util_prefix::util_prefix_add_prefix;
 
 const ID: &str = "1292058064416931963";
 
 pub fn init() {
-    if database_settings_get_active_setting(&*util_prefix_add_prefix(PREFIX_FOR_SETTING, &SettingKeys::DiscordRichPresence.to_key().as_str())) {
+    if setting_active(&SettingKeys::DiscordRichPresence.to_key()) {
         let Ok(mut client) = DiscordIpcClient::new(ID) else {
             return;
         };

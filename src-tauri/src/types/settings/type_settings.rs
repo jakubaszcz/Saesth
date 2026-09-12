@@ -5,7 +5,6 @@ use std::sync::atomic::AtomicBool;
 #[serde(rename_all = "snake_case")]
 pub enum SettingKeys {
     MinimizeToTray,
-    SyncLocalDatabase,
     SingleInstance,
     DiscordRichPresence,
 }
@@ -14,7 +13,6 @@ impl SettingKeys {
     pub fn to_key(&self) -> String {
         match self {
             SettingKeys::MinimizeToTray => "minimize_to_tray".to_string(),
-            SettingKeys::SyncLocalDatabase => "sync_local_database".to_string(),
             SettingKeys::SingleInstance => "single_instance".to_string(),
             SettingKeys::DiscordRichPresence => "discord_rich_presence".to_string(),
         }

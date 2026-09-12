@@ -6,9 +6,8 @@ use std::thread;
 use rdev::{listen, Event, EventType};
 use rodio::{DeviceSinkBuilder, Player};
 use rodio::buffer::SamplesBuffer;
-use crate::global::global::{PACK, PREFIX_FOR_SETUP, SETUP};
+use crate::global::global::{PACK, SETUP};
 use crate::types::manifest::type_manifest::ManifestSetup;
-use crate::utils::prefix::util_prefix::util_prefix_add_prefix;
 
 enum Type {
     Keys,
@@ -156,12 +155,12 @@ pub fn function_setup_init() {
         ));
 
         while let Ok(kind) = rx.recv() {
-            if !function_setup_get_setup_toggled(util_prefix_add_prefix(PREFIX_FOR_SETUP, GLOBAL)) {
+            if !function_setup_get_setup_toggled(GLOBAL.to_string()) {
                 continue;
             }
 
             player.lock().unwrap().set_volume(
-                function_setup_get_setup_volume(util_prefix_add_prefix(PREFIX_FOR_SETUP, GLOBAL))
+                function_setup_get_setup_volume(GLOBAL.to_string())
             );
 
             play_sound(kind, &player);
@@ -189,7 +188,7 @@ fn key_event(tx: Sender<Type>) {
         match event.event_type {
             EventType::KeyPress(key) => {
                 if pressed_keys.insert(key) {
-                    if function_setup_get_setup_toggled(util_prefix_add_prefix(PREFIX_FOR_SETUP, KEYBOARD)) {
+                    if function_setup_get_setup_toggled(KEYBOARD.to_string()) {
                         let kind = match key {
                             rdev::Key::Space => Some(Type::Space),
                             rdev::Key::Delete => Some(Type::Delete),
@@ -208,7 +207,7 @@ fn key_event(tx: Sender<Type>) {
 
             EventType::ButtonPress(button) => {
                 if pressed_buttons.insert(button) {
-                    if function_setup_get_setup_toggled(util_prefix_add_prefix(PREFIX_FOR_SETUP, MOUSE)) {
+                    if function_setup_get_setup_toggled(MOUSE.to_string()) {
                         let kind = match button {
                             rdev::Button::Left => Some(Type::LMB),
                             rdev::Button::Right => Some(Type::RMB),

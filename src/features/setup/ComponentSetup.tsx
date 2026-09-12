@@ -3,15 +3,15 @@ import {Setup} from "./data-setup.ts";
 import {invoke} from "@tauri-apps/api/core";
 
 const SETUP_METADATA: Record<string, { title: string; description: string }> = {
-    "setup_global": {
+    "global": {
         title: "Global",
         description: "Toggle the global setup."
     },
-    "setup_keyboard": {
+    "keyboard": {
         title: "Keyboard",
         description: "Toggle the keyboard setup."
     },
-    "setup_mouse": {
+    "mouse": {
         title: "Mouse",
         description: "Toggle the mouse setup."
     },

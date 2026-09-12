@@ -1,19 +1,15 @@
 import { useSettings } from "../hooks/settings/useSettings.ts";
 
 const SETTING_METADATA: Record<string, { title: string; description: string }> = {
-    "setting_minimize_to_tray": {
+    "minimize_to_tray": {
         title: "Minimize to Tray",
         description: "When closed, the application will continue to run in the system tray."
     },
-    "setting_sync_local_database": {
-        title: "New Database",
-        description: "Automatically reset the database when the application is opened."
-    },
-    "setting_single_instance": {
+    "single_instance": {
         title: "Single Instance",
         description: "Launching multiple instances of the application will result in only one instance running."
     },
-    "setting_discord_rich_presence": {
+    "discord_rich_presence": {
         title: "Discord Rich Presence",
         description: "When enabled, the application will display on your Discord."
     }

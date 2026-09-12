@@ -12,6 +12,7 @@ import {usePacks} from "./hooks/packs/usePacks.ts";
 
 function App() {
 
+
     const soundsManager = useSounds();
     const packsManager = usePacks();
 

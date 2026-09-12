@@ -2,19 +2,15 @@ use crate::types::sounds::type_sounds::{Sound, SoundDTO};
 use rodio::Source;
 use std::sync::{Mutex, OnceLock};
 use tauri::{Emitter, Manager};
-use crate::database::settings::database_settings::database_settings_get_active_setting;
+use crate::inits::manifest::init_manifest::setting_active;
 use crate::functions::functions::functions;
-use crate::global::global::PREFIX_FOR_SETTING;
 use crate::types::packs::type_packs::Pack;
 use crate::types::settings::type_settings::{SettingDTO, SettingKeys};
 use crate::types::setup::type_setup::{SetupDTO};
-use crate::utils::prefix::util_prefix::util_prefix_add_prefix;
 
-mod database;
 mod inits;
 mod types;
 mod global;
-mod utils;
 
 mod functions;
 
@@ -31,7 +27,7 @@ fn toggle_sound(sound_id: String) -> bool {
 }
 
 #[tauri::command]
-fn toggle_sound_effect(sound_id: String, effect_id: String) -> bool {
+fn toggle_sound_effect(sound_id: String, effect_id: String) -> Result<bool, String> {
     commands::sounds::commands_sounds::commands_sounds_toggle_sound_effect(sound_id, effect_id)
 }
 
@@ -46,7 +42,7 @@ fn fetch_settings() -> Vec<SettingDTO> {
 }
 
 #[tauri::command]
-fn toggle_setting(setting_id: String) -> bool {
+fn toggle_setting(setting_id: String) -> Result<bool, String> {
     commands::settings::commands_settings::commands_settings_toggle_setting(setting_id)
 }
 
@@ -76,8 +72,8 @@ fn fetch_packs() -> Vec<Pack> {
 }
 
 #[tauri::command]
-fn select_pack(id: String) {
-    commands::packs::commands_packs::command_save_pack(id);
+fn select_pack(id: String) -> Result<(), String> {
+    commands::packs::commands_packs::command_save_pack(id)
 }
 
 #[tauri::command]
@@ -91,8 +87,8 @@ fn get_selected_pack() -> Option<String> {
 }
 
 #[tauri::command]
-fn deselect_pack() {
-    commands::packs::commands_packs::command_deselect_pack();
+fn deselect_pack() -> Result<(), String> {
+    commands::packs::commands_packs::command_deselect_pack()
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -142,7 +138,7 @@ pub fn run() {
             Ok(())
         })
         .on_window_event(|window, event| {
-            if database_settings_get_active_setting(format!("{}_{}", PREFIX_FOR_SETTING, SettingKeys::MinimizeToTray.to_key()).as_str()) {
+            if setting_active(SettingKeys::MinimizeToTray.to_key().as_str()) {
                 if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                     api.prevent_close();
                     window.hide().unwrap();
@@ -151,7 +147,7 @@ pub fn run() {
         })
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-            if database_settings_get_active_setting(format!("{}_{}", PREFIX_FOR_SETTING, SettingKeys::SingleInstance.to_key()).as_str()) {
+            if setting_active(SettingKeys::SingleInstance.to_key().as_str()) {
                 if let Some(window) = app.get_webview_window("main") {
                     let _ = window.show();
                     let _ = window.unminimize();

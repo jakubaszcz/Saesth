@@ -1,4 +1,22 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(default)]
+pub struct ManifestData {
+    pub pack: String,
+    pub settings: BTreeMap<String, bool>,
+}
+
+impl Default for ManifestData {
+    fn default() -> Self {
+        Self {
+            pack: String::new(),
+            settings: ["minimize_to_tray", "single_instance", "discord_rich_presence"]
+                .into_iter().map(|id| (id.into(), false)).collect(),
+        }
+    }
+}
 
 #[derive(Debug, Deserialize)]
 pub struct Manifest {

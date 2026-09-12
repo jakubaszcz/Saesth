@@ -7,7 +7,6 @@ use crate::functions::sounds::effect::function_sound_effect::function_sound_effe
 use crate::functions::sounds::play::fade::function_sound_fade::function_sound_fade;
 use crate::global::global::PACK;
 use crate::types::sounds::type_sounds::Sound;
-use crate::utils::prefix::util_prefix::util_prefix_remove_prefix;
 
 pub fn function_sound_play(sound: &mut Sound) {
     if sound.player.is_some() {
@@ -24,7 +23,7 @@ pub fn function_sound_play(sound: &mut Sound) {
     };
 
     let path = sounds_path
-        .join(util_prefix_remove_prefix(&sound.sound_id).as_str())
+        .join(&sound.sound_id)
         .join("default.mp3");
 
     let handle = DeviceSinkBuilder::open_default_sink().unwrap();
