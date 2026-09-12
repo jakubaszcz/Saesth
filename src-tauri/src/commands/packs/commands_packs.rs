@@ -55,6 +55,7 @@ pub fn command_select_temp_pack(app: &AppHandle, path: Option<PathBuf>) -> Resul
     };
 
     let selected_pack = SelectedPack {
+        name: manifest.name.clone(),
         id: manifest.id.clone(),
         root: path,
         sound: sounds,
@@ -122,6 +123,7 @@ pub fn command_select_pack(id: String) -> Result<(), String> {
     update(|manifest| manifest.pack = id.clone())?;
 
     let selected_pack = SelectedPack {
+        name: manifest.name.clone(),
         id,
         root: pack,
         sound: sounds,
@@ -176,6 +178,7 @@ pub fn command_deselect_pack() -> Result<(), String> {
     }
     if let Some(pack) = PACK.get() {
         let mut pack = pack.lock().unwrap();
+        pack.name.clear();
         pack.id.clear();
         pack.root.clear();
         pack.sound.clear();

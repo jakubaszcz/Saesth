@@ -12,6 +12,7 @@ pub struct Pack {
 
 #[derive(Debug, Clone)]
 pub struct SelectedPack {
+    pub name: String,
     pub id: String,
     pub root: PathBuf,
     pub sound: PathBuf,
