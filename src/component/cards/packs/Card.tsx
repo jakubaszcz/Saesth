@@ -18,7 +18,7 @@ export const Card = ( {
                          icon
                      }: CardProps) => {
     const { selectPack, deselectPack, selectedPack } = packsManager;
-    const isSelected = selectedPack === id;
+    const isSelected = !packsManager.tempPack && selectedPack === id;
     const { fetchSound } = soundManager;
 
     async function select(id: string) {

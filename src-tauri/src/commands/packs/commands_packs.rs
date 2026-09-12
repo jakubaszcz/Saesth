@@ -4,6 +4,7 @@ use std::path::PathBuf;
 use std::sync::Mutex;
 use opener;
 use rfd::FileDialog;
+use tauri::{AppHandle, Manager};
 use crate::inits::manifest::init_manifest::update;
 use crate::global::global::{PACK, PACKS, PATHS, SETUP, SOUNDS};
 use crate::inits::pack::init_pack::init_pack_sound;
@@ -17,7 +18,7 @@ pub fn command_open_packs() {
     opener::open(path).unwrap();
 }
 
-pub fn command_open_temp_pack() -> Result<Option<String>, String> {
+pub fn command_open_temp_pack(app: &AppHandle) -> Result<Option<Pack>, String> {
     let path = &PATHS.get().unwrap().packs;
 
     let folder = FileDialog::new()
@@ -26,10 +27,10 @@ pub fn command_open_temp_pack() -> Result<Option<String>, String> {
 
         .pick_folder();
 
-    command_select_temp_pack(folder)
+    command_select_temp_pack(app, folder)
 }
 
-pub fn command_select_temp_pack(path: Option<PathBuf>) -> Result<Option<String>, String> {
+pub fn command_select_temp_pack(app: &AppHandle, path: Option<PathBuf>) -> Result<Option<Pack>, String> {
     let Some(path) = path else { return Ok(None); };
     let manifest_path = path.join("manifest.json");
     let file = File::open(&manifest_path)
@@ -41,6 +42,17 @@ pub fn command_select_temp_pack(path: Option<PathBuf>) -> Result<Option<String>,
     }
     let sounds = path.join("sounds");
     if !sounds.is_dir() { return Err("Pack sounds directory missing".into()); }
+
+    // Resolve the icon within the chosen pack and grant access to that file only.
+    let root = fs::canonicalize(&path).map_err(|e| e.to_string())?;
+    let icon_path = root.join(manifest.icon.as_deref().filter(|icon| !icon.is_empty()).unwrap_or("icon.png"));
+    let icon = match fs::canonicalize(icon_path) {
+        Ok(icon) if icon.starts_with(&root) && icon.is_file() => {
+            app.asset_protocol_scope().allow_file(&icon).map_err(|e| e.to_string())?;
+            icon.to_string_lossy().into_owned()
+        }
+        _ => String::new(),
+    };
 
     let selected_pack = SelectedPack {
         id: manifest.id.clone(),
@@ -65,7 +77,12 @@ pub fn command_select_temp_pack(path: Option<PathBuf>) -> Result<Option<String>,
         .lock()
         .unwrap() = new_sounds;
 
-    Ok(Some(manifest.id))
+    Ok(Some(Pack {
+        id: manifest.id,
+        name: manifest.name,
+        description: manifest.description.unwrap_or_default(),
+        icon,
+    }))
 
 }
 

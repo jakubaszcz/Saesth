@@ -9,10 +9,10 @@ type HeaderProps = {
 
 export const Header = ({ packsManager }: HeaderProps) => {
 
-  const {packs, selectedPack} = packsManager;
+  const {packs, selectedPack, tempPack} = packsManager;
   const currentPackName = selectedPack === null
     ? "No pack selected"
-    : packs.find(pack => pack.id === selectedPack)?.name || selectedPack;
+    : tempPack?.name || packs.find(pack => pack.id === selectedPack)?.name || selectedPack;
 
   const appWindow = getCurrentWindow();
 

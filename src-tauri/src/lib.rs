@@ -67,8 +67,8 @@ fn open_packs() {
 }
 
 #[tauri::command]
-fn open_temp_pack() -> Result<Option<String>, String> {
-    commands::packs::commands_packs::command_open_temp_pack()
+fn open_temp_pack(app: tauri::AppHandle) -> Result<Option<Pack>, String> {
+    commands::packs::commands_packs::command_open_temp_pack(&app)
 }
 
 #[tauri::command]

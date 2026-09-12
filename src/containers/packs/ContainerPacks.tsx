@@ -1,7 +1,16 @@
-﻿import type {usePacks} from "../../hooks/packs/usePacks.ts";
+import {useState} from "react";
+import {convertFileSrc} from "@tauri-apps/api/core";
+import type {usePacks} from "../../hooks/packs/usePacks.ts";
 import type {useSounds} from "../../hooks/sounds/useSounds.ts";
 import {Card} from "../../component/cards/packs/Card.tsx";
-import {ArrowUpRight, Clock, FolderOpen, Headphones, Moon, PackagePlus, Sparkles} from "lucide-react";
+import {Check, Clock, X, FolderOpen, Headphones, Moon, PackagePlus, Sparkles} from "lucide-react";
+
+function TemporaryPackIcon({path}: {path: string}) {
+    const [failed, setFailed] = useState(false);
+    return path && !failed
+        ? <img src={convertFileSrc(path)} alt="" onError={() => setFailed(true)} className="h-full w-full rounded-2xl object-cover" />
+        : <Headphones size={32} strokeWidth={1.5} />;
+}
 
 const steps = [
     {icon: FolderOpen, title: "Open your packs folder", description: "Use the button below to find the right place for your packs."},
@@ -10,13 +19,17 @@ const steps = [
 ];
 
 export function ContainerPacks({soundsManager, packsManager}: {soundsManager: ReturnType<typeof useSounds>; packsManager: ReturnType<typeof usePacks>}) {
-    const {packs, openPack, openTempPack} = packsManager;
+    const {packs, tempPack, openPack, openTempPack, deselectPack} = packsManager;
     const isEmpty = packs.length === 0;
 
     const loadTemporaryPack = async () => {
         if (await openTempPack()) {
             await soundsManager.fetchSound();
         }
+    };
+    const closeTemporaryPack = async () => {
+        await deselectPack();
+        await soundsManager.fetchSound();
     };
     const folderButtonClass = "inline-flex items-center justify-center gap-2 rounded-2xl border border-primary-500/30 bg-primary-700/50 px-5 py-3 text-sm font-semibold text-primary-100 transition-colors duration-300 hover:bg-primary-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 motion-reduce:transition-none";
 
@@ -28,23 +41,45 @@ export function ContainerPacks({soundsManager, packsManager}: {soundsManager: Re
                     <h1 className="font-secondary text-3xl font-medium tracking-tight text-primary-50">A space to settle into.</h1>
                     <p className="mt-2 text-sm leading-relaxed text-primary-200">Little collections of sound, for moments that are yours.</p>
                 </div>
-                {!isEmpty && (
-                    <div>
-                        <button type="button" onClick={openPack} className={folderButtonClass}>
-                            <FolderOpen size={17} aria-hidden="true" />
-                            Open packs folder
-                        </button>
-                        <button type="button" onClick={loadTemporaryPack} className={folderButtonClass}>
-                            <Clock size={17} aria-hidden="true" />
-                            Open temporary pack
-                        </button>
-                    </div>
-
-
-                )}
+                <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+                    <button type="button" onClick={openPack} className={folderButtonClass}>
+                        <FolderOpen size={17} aria-hidden="true" />
+                        Open packs folder
+                    </button>
+                    <button type="button" onClick={loadTemporaryPack}
+                        className="inline-flex items-center justify-center gap-2 rounded-2xl border border-primary-300/40 bg-primary-200 px-5 py-3 text-sm font-bold text-primary-900 transition-colors hover:bg-primary-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300">
+                        <Clock size={17} aria-hidden="true" />
+                        {tempPack ? "Replace temporary pack" : "Open temporary pack"}
+                    </button>
+                </div>
             </header>
 
-            {isEmpty ? (
+            {tempPack && (
+                <section aria-labelledby="temporary-pack-title" className="w-full">
+                    <div className="mb-4 flex items-center gap-3">
+                        <h2 id="temporary-pack-title" className="text-sm font-semibold text-primary-200">Temporary pack</h2>
+                        <div className="h-px flex-1 bg-primary-700/50" />
+                    </div>
+                    <article className="flex w-full flex-col gap-6 rounded-3xl border border-primary-400/60 bg-primary-800/80 p-6 sm:flex-row sm:items-center sm:p-7">
+                        <div aria-hidden="true" className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl border border-primary-500/30 bg-primary-900/60 text-primary-200">
+                            <TemporaryPackIcon key={tempPack.icon} path={tempPack.icon} />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-primary-200">
+                                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-700/60 px-3 py-1"><Check size={13} aria-hidden="true" />Selected</span>
+                                <span className="inline-flex items-center gap-1.5"><Clock size={13} aria-hidden="true" />This session only</span>
+                            </div>
+                            <h3 className="break-words font-secondary text-2xl font-medium text-primary-50">{tempPack.name}</h3>
+                            {tempPack.description && <p className="mt-2 break-words text-sm leading-6 text-primary-200">{tempPack.description}</p>}
+                        </div>
+                        <button type="button" onClick={closeTemporaryPack} className={`${folderButtonClass} shrink-0`}>
+                            <X size={17} aria-hidden="true" />Close pack
+                        </button>
+                    </article>
+                </section>
+            )}
+
+            {isEmpty ? (!tempPack && (
                 <section aria-labelledby="empty-packs-title" className="relative isolate overflow-hidden rounded-3xl border border-primary-700/60 bg-primary-800/35 p-6 sm:p-10">
                     <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgba(152,180,208,0.10),transparent_65%)]" />
                     <div className="max-w-lg">
@@ -69,20 +104,8 @@ export function ContainerPacks({soundsManager, packsManager}: {soundsManager: Re
                         ))}
                     </ol>
 
-                    <div className="flex flex-wrap items-center gap-4">
-                        <button type="button" onClick={openPack} className={folderButtonClass}>
-                            <FolderOpen size={17} aria-hidden="true" />
-                            Open packs folder
-                            <ArrowUpRight size={15} className="text-primary-300" aria-hidden="true" />
-                        </button>
-                        <button type="button" onClick={loadTemporaryPack} className={folderButtonClass}>
-                            <Clock size={17} aria-hidden="true" />
-                            Open temporary pack
-                        </button>
-                        <span className="text-xs text-primary-300">One pack is all you need to get started.</span>
-                    </div>
                 </section>
-            ) : (
+            )) : (
                 <section aria-labelledby="packs-library-title">
                     <div className="mb-4 flex items-center gap-3">
                         <h2 id="packs-library-title" className="text-sm font-semibold text-primary-200">Your packs</h2>

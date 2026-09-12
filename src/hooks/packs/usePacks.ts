@@ -8,6 +8,7 @@ import {Pack} from "../../structures/packs/packs.ts";
 export const usePacks = () => {
 
     const [packs, setPacks] = useState<Pack[]>([]);
+    const [tempPack, setTempPack] = useState<Pack | null>(null);
     const [selectedPack, setSelectedPack] = useState<string | null>(null);
 
     useEffect(() => {
@@ -35,7 +36,8 @@ export const usePacks = () => {
         try {
             const response = await APIOpenTempPack();
             if (!response) return false;
-            setSelectedPack(response);
+            setTempPack(response);
+            setSelectedPack(response.id);
             return true;
         } catch (error) {
             console.error("Failed to open temporary packs:", error);
@@ -55,6 +57,7 @@ export const usePacks = () => {
     const selectPack = async (id: string) => {
         try {
             await APISelectPack(id);
+            setTempPack(null);
             setSelectedPack(id);
         } catch (error) {
             console.error("Failed to select pack:", id);
@@ -64,11 +67,12 @@ export const usePacks = () => {
     const deselectPack = async () => {
         try {
             await APIDeselectPack();
+            setTempPack(null);
             setSelectedPack(null);
         } catch (error) {
             console.error("Failed to deselect pack:", error);
         }
     };
 
-    return { packs, openPack, openTempPack, loadPacks, selectPack, deselectPack, selectedPack };
+    return { packs, tempPack, openPack, openTempPack, loadPacks, selectPack, deselectPack, selectedPack };
 };

@@ -4,9 +4,9 @@ use crate::types::manifest::type_manifest::ManifestSetup;
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Pack {
-    name: String,
+    pub name: String,
     pub(crate) id: String,
-    description: String,
+    pub description: String,
     pub(crate) icon: String,
 }
 
