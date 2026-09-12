@@ -21,9 +21,9 @@ function App() {
         changeNavigation
     } = useNavigation()
 
-    const { packs, selectedPack } = packsManager;
+    const { selectedPack } = packsManager;
     const activeNavigation =
-        (packs.length === 0 || !selectedPack) &&
+        !selectedPack &&
         (navigation === Navigation.Sounds || navigation === Navigation.Setup)
             ? Navigation.Pack
             : navigation;

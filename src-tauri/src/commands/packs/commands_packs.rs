@@ -1,4 +1,6 @@
+use std::fs;
 use std::fs::File;
+use std::path::PathBuf;
 use std::sync::Mutex;
 use opener;
 use rfd::FileDialog;
@@ -15,16 +17,56 @@ pub fn command_open_packs() {
     opener::open(path).unwrap();
 }
 
-pub fn command_open_temp_pack() {
+pub fn command_open_temp_pack() -> Result<Option<String>, String> {
     let path = &PATHS.get().unwrap().packs;
 
     let folder = FileDialog::new()
+        .set_directory(path)
         .set_title("Select a temporary pack")
+
         .pick_folder();
 
-    if let Some(folder) = folder {
-        println!("Select a temporary pack {}", folder.display());
+    command_select_temp_pack(folder)
+}
+
+pub fn command_select_temp_pack(path: Option<PathBuf>) -> Result<Option<String>, String> {
+    let Some(path) = path else { return Ok(None); };
+    let manifest_path = path.join("manifest.json");
+    let file = File::open(&manifest_path)
+        .map_err(|e| format!("Cannot open {}: {e}", manifest_path.display()))?;
+    let manifest: Manifest = serde_json::from_reader(file)
+        .map_err(|e| format!("Invalid manifest {}: {e}", manifest_path.display()))?;
+    if manifest.id.trim().is_empty() {
+        return Err("Pack ID must not be empty".into());
     }
+    let sounds = path.join("sounds");
+    if !sounds.is_dir() { return Err("Pack sounds directory missing".into()); }
+
+    let selected_pack = SelectedPack {
+        id: manifest.id.clone(),
+        root: path,
+        sound: sounds,
+        setup: manifest.setup
+    };
+
+    {
+        let mut current_pack = PACK
+            .get_or_init(|| Mutex::new(selected_pack.clone()))
+            .lock()
+            .unwrap();
+        *current_pack = selected_pack;
+    }
+
+    let new_setup = crate::inits::setup::init_setup::init();
+    *SETUP.get_or_init(|| Mutex::new(Vec::new())).lock().unwrap() = new_setup;
+
+    let new_sounds = init_pack_sound();
+    *SOUNDS.get_or_init(|| Mutex::new(Vec::new()))
+        .lock()
+        .unwrap() = new_sounds;
+
+    Ok(Some(manifest.id))
+
 }
 
 pub fn command_display_pack() -> Vec<Pack> {

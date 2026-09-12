@@ -33,9 +33,13 @@ export const usePacks = () => {
 
     const openTempPack = async () => {
         try {
-            await APIOpenTempPack();
+            const response = await APIOpenTempPack();
+            if (!response) return false;
+            setSelectedPack(response);
+            return true;
         } catch (error) {
             console.error("Failed to open temporary packs:", error);
+            return false;
         }
     };
 

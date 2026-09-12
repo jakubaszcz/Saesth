@@ -6,7 +6,7 @@ export async function APIOpenPack() {
 }
 
 export async function APIOpenTempPack() {
-    return await invoke("open_temp_pack");
+    return await invoke<string | null>("open_temp_pack");
 }
 
 export async function APIFetchPack(): Promise<Pack[]> {

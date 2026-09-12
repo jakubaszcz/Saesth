@@ -1,7 +1,7 @@
 ﻿import type {usePacks} from "../../hooks/packs/usePacks.ts";
 import type {useSounds} from "../../hooks/sounds/useSounds.ts";
 import {Card} from "../../component/cards/packs/Card.tsx";
-import {ArrowUpRight, FolderOpen, Headphones, Moon, PackagePlus, Sparkles} from "lucide-react";
+import {ArrowUpRight, Clock, FolderOpen, Headphones, Moon, PackagePlus, Sparkles} from "lucide-react";
 
 const steps = [
     {icon: FolderOpen, title: "Open your packs folder", description: "Use the button below to find the right place for your packs."},
@@ -12,6 +12,12 @@ const steps = [
 export function ContainerPacks({soundsManager, packsManager}: {soundsManager: ReturnType<typeof useSounds>; packsManager: ReturnType<typeof usePacks>}) {
     const {packs, openPack, openTempPack} = packsManager;
     const isEmpty = packs.length === 0;
+
+    const loadTemporaryPack = async () => {
+        if (await openTempPack()) {
+            await soundsManager.fetchSound();
+        }
+    };
     const folderButtonClass = "inline-flex items-center justify-center gap-2 rounded-2xl border border-primary-500/30 bg-primary-700/50 px-5 py-3 text-sm font-semibold text-primary-100 transition-colors duration-300 hover:bg-primary-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 motion-reduce:transition-none";
 
     return (
@@ -28,8 +34,8 @@ export function ContainerPacks({soundsManager, packsManager}: {soundsManager: Re
                             <FolderOpen size={17} aria-hidden="true" />
                             Open packs folder
                         </button>
-                        <button type="button" onClick={openTempPack} className={folderButtonClass}>
-                            <FolderOpen size={17} aria-hidden="true" />
+                        <button type="button" onClick={loadTemporaryPack} className={folderButtonClass}>
+                            <Clock size={17} aria-hidden="true" />
                             Open temporary pack
                         </button>
                     </div>
@@ -68,6 +74,10 @@ export function ContainerPacks({soundsManager, packsManager}: {soundsManager: Re
                             <FolderOpen size={17} aria-hidden="true" />
                             Open packs folder
                             <ArrowUpRight size={15} className="text-primary-300" aria-hidden="true" />
+                        </button>
+                        <button type="button" onClick={loadTemporaryPack} className={folderButtonClass}>
+                            <Clock size={17} aria-hidden="true" />
+                            Open temporary pack
                         </button>
                         <span className="text-xs text-primary-300">One pack is all you need to get started.</span>
                     </div>

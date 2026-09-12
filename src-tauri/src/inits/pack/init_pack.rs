@@ -118,6 +118,7 @@ pub fn init_pack_sound() -> Vec<Sound> {
         return Vec::new();
     }
     let manifest_path = selected_pack.root.join("manifest.json");
+
     drop(selected_pack);
 
     let file = match File::open(manifest_path) {
