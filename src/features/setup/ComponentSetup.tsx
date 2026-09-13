@@ -87,8 +87,8 @@ export function ComponentSetup() {
                 <p className="page-description">Tune the sounds that accompany your keyboard, mouse and everyday moments.</p>
             </header>
             {isWayland && (
-                <aside aria-labelledby="wayland-notice-title" className="quiet-panel border border-amber-400/30 text-sm text-primary-200">
-                    <h2 id="wayland-notice-title" className="text-base font-medium text-amber-200">
+                <aside aria-labelledby="wayland-notice-title" className="quiet-panel border border-warning-400/30 text-sm text-primary-200">
+                    <h2 id="wayland-notice-title" className="text-base font-medium text-warning-200">
                         Wayland: keyboard and mouse permissions
                     </h2>
                     <p className="mt-2 leading-6">
