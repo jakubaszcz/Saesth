@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "build:msi": "tauri build --bundles msi"
+    "build:msi": "tauri build --bundles msi",
+    "build:appimage": "node scripts/build-appimage.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",

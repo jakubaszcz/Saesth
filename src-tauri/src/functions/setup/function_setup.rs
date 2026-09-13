@@ -3,6 +3,7 @@ use std::sync::{Arc, Mutex};
 use std::sync::atomic::{Ordering};
 use std::sync::mpsc::Sender;
 use std::thread;
+#[cfg(target_os = "windows")]
 use rdev::{listen, Event, EventType};
 use rodio::{DeviceSinkBuilder, Player};
 use rodio::buffer::SamplesBuffer;
@@ -175,7 +176,97 @@ pub fn function_setup_init() {
 
 #[cfg(target_os = "linux")]
 fn key_event(tx: Sender<Type>) {
+    use evdev::{Device, EventType, KeyCode};
+    use std::collections::{HashMap, HashSet};
+    use std::io::ErrorKind;
+    use std::path::PathBuf;
+    use std::time::{Duration, Instant};
 
+    let mut devices: HashMap<PathBuf, Device> = HashMap::new();
+    let mut reported_errors = HashSet::new();
+    let mut next_scan = Instant::now();
+
+    loop {
+        if Instant::now() >= next_scan {
+            // Rescan for hotplug and permission changes, without grabbing devices.
+            match std::fs::read_dir("/dev/input") {
+                Ok(entries) => {
+                    let paths: HashSet<_> = entries.flatten()
+                        .filter(|entry| entry.file_name().to_string_lossy().starts_with("event"))
+                        .map(|entry| entry.path())
+                        .collect();
+                    devices.retain(|path, _| paths.contains(path));
+                    reported_errors.retain(|path| paths.contains(path));
+                    for path in paths {
+                        if devices.contains_key(&path) {
+                            continue;
+                        }
+                        let opened = Device::open(&path).and_then(|device| {
+                            device.set_nonblocking(true)?;
+                            Ok(device)
+                        });
+                        match opened {
+                            Ok(device) => {
+                                reported_errors.remove(&path);
+                                if device.supported_keys().is_some() {
+                                    devices.insert(path, device);
+                                }
+                            }
+                            Err(error) => {
+                                if reported_errors.insert(path.clone()) {
+                                    eprintln!("Cannot read {}: {error}. Linux input sounds require read access to /dev/input/event* (see README).", path.display());
+                                }
+                            }
+                        }
+                    }
+                }
+                Err(error) => {
+                    if reported_errors.insert(PathBuf::from("/dev/input")) {
+                        eprintln!("Cannot discover Linux input devices: {error}");
+                    }
+                }
+            }
+            next_scan = Instant::now() + Duration::from_secs(2);
+        }
+
+        let mut disconnected = false;
+        devices.retain(|path, device| {
+            match device.fetch_events() {
+                Ok(events) => {
+                    for event in events {
+                        // 1 = press; ignore releases (0) and autorepeat (2).
+                        if event.event_type() != EventType::KEY || event.value() != 1 {
+                            continue;
+                        }
+                        let key = KeyCode::new(event.code());
+                        let (kind, setting) = match key {
+                            KeyCode::BTN_LEFT => (Type::LMB, MOUSE),
+                            KeyCode::BTN_RIGHT => (Type::RMB, MOUSE),
+                            KeyCode::KEY_SPACE => (Type::Space, KEYBOARD),
+                            KeyCode::KEY_DELETE => (Type::Delete, KEYBOARD),
+                            // BTN_* includes touch, joystick and extra mouse buttons.
+                            _ if matches!(key.code(), 0x001..=0x0ff | 0x160..=0x21f | 0x230..=0x2bf) => (Type::Keys, KEYBOARD),
+                            _ => continue,
+                        };
+                        if function_setup_get_setup_toggled(setting.to_string()) && tx.send(kind).is_err() {
+                            disconnected = true;
+                            break;
+                        }
+                    }
+                    true
+                }
+                Err(error) if matches!(error.kind(), ErrorKind::WouldBlock | ErrorKind::Interrupted) => true,
+                Err(error) => {
+                    eprintln!("Linux input device {} disconnected: {error}", path.display());
+                    false
+                }
+            }
+        });
+        if disconnected {
+            return;
+        }
+        thread::sleep(Duration::from_millis(5));
+    }
 }
 
 #[cfg(target_os = "windows")]

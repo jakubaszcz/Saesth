@@ -47,6 +47,22 @@ fn toggle_setting(setting_id: String) -> Result<bool, String> {
 }
 
 #[tauri::command]
+fn is_wayland_session() -> bool {
+    #[cfg(target_os = "linux")]
+    {
+        std::env::var("XDG_SESSION_TYPE")
+            .map(|session| session.eq_ignore_ascii_case("wayland"))
+            .unwrap_or(false)
+            || std::env::var_os("WAYLAND_DISPLAY")
+                .is_some_and(|display| !display.is_empty())
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        false
+    }
+}
+
+#[tauri::command]
 fn fetch_setup() -> Vec<SetupDTO> {
     commands::setup::commands_setup::commands_setup_fetch_setup()
 }
@@ -167,6 +183,7 @@ pub fn run() {
             toggle_sound_effect,
             volume_sound,
             fetch_setup,
+            is_wayland_session,
             toggle_setup,
             volume_setup,
             fetch_settings,

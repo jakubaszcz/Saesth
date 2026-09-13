@@ -20,6 +20,17 @@ const SETUP_METADATA: Record<string, { title: string; description: string }> = {
 export function ComponentSetup() {
 
     const [setup, setSetup] = useState<Setup[]>([]);
+    const [isWayland, setIsWayland] = useState(false);
+
+    useEffect(() => {
+        let cancelled = false;
+        invoke<boolean>("is_wayland_session")
+            .then((wayland) => {
+                if (!cancelled) setIsWayland(wayland);
+            })
+            .catch((error) => console.error("Failed to detect desktop session:", error));
+        return () => { cancelled = true; };
+    }, []);
 
     const toggleSetup = async (setup_id: string) => {
         try {
@@ -75,6 +86,25 @@ export function ComponentSetup() {
                 <h1 className="page-title">A softer kind of focus.</h1>
                 <p className="page-description">Tune the sounds that accompany your keyboard, mouse and everyday moments.</p>
             </header>
+            {isWayland && (
+                <aside aria-labelledby="wayland-notice-title" className="quiet-panel border border-amber-400/30 text-sm text-primary-200">
+                    <h2 id="wayland-notice-title" className="text-base font-medium text-amber-200">
+                        Wayland: keyboard and mouse permissions
+                    </h2>
+                    <p className="mt-2 leading-6">
+                        If keyboard and mouse sounds do not play, Saesth may need permission to read your input devices.
+                        On distributions using the input group, run this command in a terminal:
+                    </p>
+                    <pre className="mt-3 overflow-x-auto rounded-lg bg-primary-900/60 p-3 text-primary-100 select-text"><code>{'sudo usermod -aG input "$USER"'}</code></pre>
+                    <p className="mt-3 leading-6">
+                        Then fully log out and log back in, and restart Saesth. Closing the app alone is not enough.
+                    </p>
+                    <p className="mt-2 leading-6">
+                        This grants applications running under your account access to keyboard and mouse input across apps.
+                        If the input group does not exist, follow your distribution's input-device permission instructions.
+                    </p>
+                </aside>
+            )}
             {setup.length === 0 && <div className="quiet-panel text-sm text-primary-200">This pack has no setup sounds to adjust.</div>}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {setup.map((s) => {

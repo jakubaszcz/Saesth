@@ -31,11 +31,48 @@ Create packs containing custom sounds and configurations, then share them with o
 
 > **Status:** Upcoming
 
+## Building an AppImage on Linux
+
+With the Linux build dependencies and npm dependencies installed, run from the project root:
+
+```sh
+npm run build:appimage
+```
+
+This sets `NO_STRIP=1` for the build (avoiding linuxdeploy strip incompatibilities)
+and copies the resulting executable to `saesth.AppImage` at the project root.
+A successful build replaces the previous root copy; the versioned original remains
+in Cargo's bundle directory. The root copy is ignored by Git.
+
 ## Download
 
 Download the latest version of Saesth from:
 
 https://www.saesth.com/
+
+## Linux input sounds (X11 and Wayland)
+
+Linux uses `evdev` to read physical keyboard presses and left/right mouse clicks.
+Devices plugged in after startup are detected automatically. Key autorepeat is ignored,
+as on Windows. Touchpad tap-to-click synthesized by the desktop is not a physical
+button event and is not captured by this backend.
+
+Your account needs read access to the relevant `/dev/input/event*` devices.
+If the application reports `Permission denied`, on distributions using the `input`
+group you can grant access with:
+
+```sh
+sudo usermod -aG input "$USER"
+```
+
+Log out of the desktop session completely and log back in, then restart Saesth.
+This group allows applications running as your user to read input across applications;
+only grant it on a trusted account. Do not run Saesth as root. Distributions without
+this group require their own device ACL/udev configuration.
+
+To verify: enable global, keyboard and mouse sounds, select a sound pack, then test
+letters, Space, Delete, held keys and left/right clicks in both Saesth and another
+application. Repeat under X11 and Wayland, and unplug/reconnect a USB input device.
 
 ## License
 
