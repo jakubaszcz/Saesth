@@ -31,6 +31,19 @@ Create packs containing custom sounds and configurations, then share them with o
 
 > **Status:** Upcoming
 
+## Building an AppImage on Linux
+
+With the Linux build dependencies and npm dependencies installed, run from the project root:
+
+```sh
+npm run build:appimage
+```
+
+This sets `NO_STRIP=1` for the build (avoiding linuxdeploy strip incompatibilities)
+and copies the resulting executable to `saesth.AppImage` at the project root.
+A successful build replaces the previous root copy; the versioned original remains
+in Cargo's bundle directory. The root copy is ignored by Git.
+
 ## Download
 
 Download the latest version of Saesth from:
