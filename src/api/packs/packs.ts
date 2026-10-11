@@ -1,5 +1,6 @@
 import {invoke} from "@tauri-apps/api/core";
 import {Pack} from "../../structures/packs/packs.ts";
+import {updateSaesthWidget} from "../wist.ts";
 
 export async function APIOpenPack() {
     return await invoke("open_packs");
@@ -14,16 +15,32 @@ export async function APIFetchPack(): Promise<Pack[]> {
 }
 
 export async function APISelectPack(id: string) {
-    return await invoke("select_pack", {id})
+
+    const response = await invoke<string>("select_pack", {id});
+
+    await updateSaesthWidget({ pack: id });
+
+    return response
+
 }
 
 export async function APIHasActivePack() {
     return await invoke<boolean>("has_active_pack");
 }
 export async function APIGetSelectedPack() {
-    return await invoke<string | null>("get_selected_pack");
+    const response = await invoke<string>("get_selected_pack");
+
+
+    await updateSaesthWidget({ pack: response });
+    return response
 }
 
 export async function APIDeselectPack() {
-    return await invoke("deselect_pack");
+
+    const response = await invoke<string>("deselect_pack");
+
+
+    await updateSaesthWidget({ pack: null, sounds: [] }).catch((error) => console.error("Wist update failed:", error));
+    return response
+
 }

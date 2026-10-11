@@ -1,3 +1,4 @@
+import { onSaesthWidgetAction } from "../../api/wist";
 import {listen} from "@tauri-apps/api/event";
 import {
     APIFetchPack,
@@ -36,6 +37,18 @@ export const usePacks = () => {
             void subscription.then(unlisten => unlisten()).catch(() => {});
         };
     }, [])
+    useEffect(() => {
+        let disposed = false;
+        const unsubscribe = onSaesthWidgetAction(async (action) => {
+            if (action.type !== "deselect-pack") return;
+            await APIDeselectPack();
+            if (!disposed) {
+                setTempPack(null);
+                setSelectedPack(null);
+            }
+        });
+        return () => { disposed = true; unsubscribe(); };
+    }, []);
     const openPack = async () => {
         try {
             await APIOpenPack();

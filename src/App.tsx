@@ -1,4 +1,6 @@
 import "./App.css";
+import {useEffect} from "react";
+import {initializeWistSetting} from "./api/settings/settings.ts";
 import {Header} from "./component/Header.tsx";
 import {DrawSettings} from "./pages/DrawSettings.tsx";
 import {useNavigation} from "./hooks/navbar/useNavigation.ts";
@@ -10,7 +12,12 @@ import {ContainerPacks} from "./containers/packs/ContainerPacks.tsx";
 import {useSounds} from "./hooks/sounds/useSounds.ts";
 import {usePacks} from "./hooks/packs/usePacks.ts";
 
+
+
 function App() {
+    useEffect(() => {
+        void initializeWistSetting().catch(error => console.error("Wist initialization failed:", error));
+    }, []);
 
 
     const soundsManager = useSounds();

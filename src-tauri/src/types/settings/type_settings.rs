@@ -7,6 +7,7 @@ pub enum SettingKeys {
     MinimizeToTray,
     SingleInstance,
     DiscordRichPresence,
+    WistWidget,
 }
 
 impl SettingKeys {
@@ -15,6 +16,7 @@ impl SettingKeys {
             SettingKeys::MinimizeToTray => "minimize_to_tray".to_string(),
             SettingKeys::SingleInstance => "single_instance".to_string(),
             SettingKeys::DiscordRichPresence => "discord_rich_presence".to_string(),
+            SettingKeys::WistWidget => "wist_widget".to_string(),
         }
     }
 }

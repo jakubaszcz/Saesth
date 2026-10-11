@@ -12,7 +12,7 @@ impl Default for ManifestData {
     fn default() -> Self {
         Self {
             pack: String::new(),
-            settings: ["minimize_to_tray", "single_instance", "discord_rich_presence"]
+            settings: ["minimize_to_tray", "single_instance", "discord_rich_presence", "wist_widget"]
                 .into_iter().map(|id| (id.into(), false)).collect(),
         }
     }

@@ -1,4 +1,7 @@
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { useSettings } from "../hooks/settings/useSettings.ts";
+
+const isWindows = typeof navigator !== "undefined" && /Windows NT/i.test(navigator.userAgent);
 
 const SETTING_METADATA: Record<string, { title: string; description: string }> = {
     "minimize_to_tray": {
@@ -12,6 +15,10 @@ const SETTING_METADATA: Record<string, { title: string; description: string }> =
     "discord_rich_presence": {
         title: "Discord Rich Presence",
         description: "When enabled, the application will display on your Discord."
+    },
+    "wist_widget": {
+        title: "Wist Widget",
+        description: "Display the Saesth widget in Wist. Disabling this removes the widget."
     }
 };
 
@@ -30,6 +37,8 @@ export function DrawSettings() {
             </header>
             <div className="flex max-w-3xl flex-col gap-4">
             {settings.map((setting) => {
+                if (setting.setting_id === "wist_widget" && !isWindows) return null;
+
                 const metadata = SETTING_METADATA[setting.setting_id] || {
                     title: setting.setting_id,
                     description: "No description available."
@@ -46,6 +55,26 @@ export function DrawSettings() {
                             <p className="text-primary-200 text-sm leading-6 font-primary">
                                 {metadata.description}
                             </p>
+                            {setting.setting_id === "wist_widget" && (
+                                <aside aria-labelledby="wist-notice-title" className="mt-3 rounded-2xl border border-warning-400/30 bg-warning-950/20 p-4 font-primary text-sm leading-6">
+                                    <h2 id="wist-notice-title" className="font-medium text-warning-200">
+                                        Wist required
+                                    </h2>
+                                    <p className="mt-1 text-warning-100">
+                                        The Wist app must be installed and running to enable this widget.
+                                    </p>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            void openUrl("https://github.com/jakubaszcz/Widget/releases/tag/v0.1.0")
+                                                .catch(error => console.error("Unable to open the Wist download page:", error));
+                                        }}
+                                        className="mt-3 inline-flex items-center justify-center rounded-xl border border-warning-400/30 bg-warning-400/10 px-4 py-2 font-medium text-warning-200 transition-colors hover:bg-warning-400/20 hover:text-warning-100"
+                                    >
+                                        Download
+                                    </button>
+                                </aside>
+                            )}
                         </div>
 
                         <button

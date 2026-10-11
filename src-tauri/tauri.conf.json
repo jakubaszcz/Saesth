@@ -5,7 +5,7 @@
   "identifier": "com.ontic.saesth",
   "build": {
     "beforeDevCommand": "npm run dev",
-    "devUrl": "http://localhost:1420",
+    "devUrl": "http://localhost:1430",
     "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist"
   },
@@ -29,7 +29,7 @@
         "enable": true,
         "scope": []
       },
-      "csp": "default-src 'self'; img-src 'self' asset: http://asset.localhost https://asset.localhost; connect-src 'self' ipc: http://ipc.localhost"
+      "csp": "default-src 'self'; img-src 'self' asset: http://asset.localhost https://asset.localhost; connect-src 'self' ipc: http://ipc.localhost http://127.0.0.1:47832 ws://127.0.0.1:47832"
     }
   },
   "bundle": {
