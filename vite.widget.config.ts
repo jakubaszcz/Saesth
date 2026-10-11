@@ -7,6 +7,6 @@ export default defineConfig({
     base: "./",
     plugins: [react(), tailwindcss()],
     build: {
-        outDir: "../../dist-widget",
+        outDir: "../src-tauri/wist-widget",
     },
 });

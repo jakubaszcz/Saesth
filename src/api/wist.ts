@@ -1,3 +1,4 @@
+import { resolveResource } from "@tauri-apps/api/path";
 import  { WistClient } from "wist-sdk";
 import type { WidgetAction } from "wist-sdk";
 
@@ -69,7 +70,7 @@ export function setSaesthWidgetEnabled(enabled: boolean): Promise<void> {
             title: "Saesth",
             width: 320,
             height: 160,
-            path: "C:\\Users\\bangl\\Documents\\dist-widget",
+            path: await resolveResource("wist-widget"),
         });
         wist = client;
         for (const listener of actionListeners.keys()) {
